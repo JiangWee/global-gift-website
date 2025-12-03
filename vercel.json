@@ -2,11 +2,23 @@
   "version": 2,
   "builds": [
     {
-      "src": "index.html",
+      "src": "**/*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.css", 
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.html",
       "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/(js|css|images)/.*",
+      "dest": "/$0"
+    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
