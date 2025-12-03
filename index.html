@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Gift - 高端商务礼品平台</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Global Gift</div>
+            <div class="nav-links">
+                <a href="#" onclick="goToPage('page-home')">首页</a>
+                <a href="#" onclick="goToPage('page-filters')">选购礼品</a>
+                <a href="#" onclick="goToPage('page-gifts')">礼品目录</a>
+                <a href="#">关于我们</a>
+                <a href="#">联系我们</a>
+            </div>
+            <div class="language-selector">
+                <button class="lang-btn active" onclick="setLanguage('zh')">中文</button>
+                <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 第一页：首页 -->
+    <section id="page-home" class="page active">
+        <div class="container">
+            <h1 class="hero-title">Global Gift</h1>
+            <p class="hero-subtitle">高端商务礼品，连接全球情谊。专业跨国送礼解决方案，让心意无国界。</p>
+            <div class="cta-buttons">
+                <a href="#" class="cta-btn cta-primary" onclick="goToPage('page-filters')">开始选购</a>
+                <a href="#" class="cta-btn cta-secondary">了解更多</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第二页：筛选页面 -->
+    <section id="page-filters" class="page">
+        <div class="container">
+            <h2 class="page-title">选择您的礼品偏好</h2>
+            <p class="page-subtitle">根据您的需求筛选合适的商务礼品，我们提供全球配送服务</p>
+            
+            <div class="filter-section">
+                <div class="filter-options">
+                    <div class="filter-group">
+                        <label for="country">送达国家</label>
+                        <select id="country">
+                            <option value="">选择国家</option>
+                            <option value="china">中国</option>
+                            <option value="usa">美国</option>
+                            <option value="uk">英国</option>
+                            <option value="germany">德国</option>
+                            <option value="japan">日本</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="holiday">节日</label>
+                        <select id="holiday">
+                            <option value="">选择节日</option>
+                            <option value="christmas">圣诞节</option>
+                            <option value="newyear">新年</option>
+                            <option value="thanksgiving">感恩节</option>
+                            <option value="midautumn">中秋节</option>
+                            <option value="spring">春节</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="delivery-date">送达日期</label>
+                        <input type="date" id="delivery-date">
+                    </div>
+                </div>
+                <div class="notice-box">
+                    <p>温馨提示：为确保准时送达，请至少提前7天提交订单。圣诞节期间请提前1个月下单。</p>
+                </div>
+                <button class="next-btn" onclick="goToPage('page-gifts')">浏览礼品</button>
+            </div>
+            
+            <h3 class="page-title">礼品分类</h3>
+            <div class="category-grid">
+                <div class="category-card" onclick="selectCategory('cultural')">
+                    <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1547036967-23a11daca0d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80');"></div>
+                    <div class="category-name">文化礼品</div>
+                </div>
+                <div class="category-card" onclick="selectCategory('tech')">
+                    <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                    <div class="category-name">科技产品</div>
+                </div>
+                <div class="category-card" onclick="selectCategory('custom')">
+                    <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1580996448440-9a4dc859a364?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                    <div class="category-name">定制礼品</div>
+                </div>
+                <div class="category-card" onclick="selectCategory('food')">
+                    <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1556909114-4d0d853e5e15?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                    <div class="category-name">美食佳酿</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第三页：礼品列表 -->
+    <section id="page-gifts" class="page">
+        <div class="container">
+            <h2 class="page-title">精选礼品</h2>
+            <p class="page-subtitle">从我们的精品礼品库中挑选最合适的商务赠礼</p>
+            
+            <div class="gift-grid">
+                <div class="gift-card" onclick="viewGiftDetail(1)">
+                    <div class="gift-img" style="background-image: url('https://images.unsplash.com/photo-1534452203293-494a7a73e8a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                    <div class="gift-info">
+                        <div class="gift-name">中国传统茶具套装</div>
+                        <div class="gift-price">¥ 1,280</div>
+                        <div class="gift-desc">精选紫砂茶具，蕴含中国传统文化，适合商务赠礼。</div>
+                    </div>
+                </div>
+                <div class="gift-card" onclick="viewGiftDetail(2)">
+                    <div class="gift-img" style="background-image: url('https://images.unsplash.com/photo-1543512214-318c7553f230?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80');"></div>
+                    <div class="gift-info">
+                        <div class="gift-name">智能办公套装</div>
+                        <div class="gift-price">¥ 2,580</div>
+                        <div class="gift-desc">高端智能办公设备，提升工作效率，彰显专业品味。</div>
+                    </div>
+                </div>
+                <div class="gift-card" onclick="viewGiftDetail(3)">
+                    <div class="gift-img" style="background-image: url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-1.2.1&auto=format&fit=crop&w=1089&q=80');"></div>
+                    <div class="gift-info">
+                        <div class="gift-name">定制企业礼盒</div>
+                        <div class="gift-price">¥ 3,880</div>
+                        <div class="gift-desc">可定制企业Logo的高端礼盒，内含精选礼品。</div>
+                    </div>
+                </div>
+                <div class="gift-card" onclick="viewGiftDetail(4)">
+                    <div class="gift-img" style="background-image: url('https://images.unsplash.com/photo-1556909114-4d0d853e5e15?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                    <div class="gift-info">
+                        <div class="gift-name">法国红酒礼篮</div>
+                        <div class="gift-price">¥ 1,980</div>
+                        <div class="gift-desc">精选法国波尔多红酒，搭配进口奶酪和巧克力。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第四页：礼品详情 -->
+    <section id="page-detail" class="page">
+        <div class="container">
+            <div class="gift-detail">
+                <div class="gift-image-large" style="background-image: url('https://images.unsplash.com/photo-1534452203293-494a7a73e8a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="gift-detail-info">
+                    <h2 class="detail-name">中国传统茶具套装</h2>
+                    <div class="detail-price">¥ 1,280</div>
+                    <p>这款茶具套装精选宜兴紫砂泥，由工艺大师手工制作，每一件都蕴含中国传统文化精髓。</p>
+                    <button class="buy-btn" onclick="showLogin()">立即购买</button>
+                </div>
+            </div>
+            
+            <div class="detail-tabs">
+                <div class="tab-headers">
+                    <div class="tab-header active" onclick="switchTab('description')">产品描述</div>
+                    <div class="tab-header" onclick="switchTab('specs')">规格参数</div>
+                    <div class="tab-header" onclick="switchTab('shipping')">配送信息</div>
+                </div>
+                <div class="tab-content active" id="description">
+                    <h3>为什么选择这款茶具？</h3>
+                    <p>这款茶具不仅是一件实用的饮茶工具，更是一件艺术品。它体现了中国茶文化的精髓，是商务赠礼的绝佳选择。</p>
+                    <p>紫砂茶具具有独特的双气孔结构，能够吸收茶香，使用越久，茶具本身会越显光泽，茶汤味道也更加醇厚。</p>
+                </div>
+                <div class="tab-content" id="specs">
+                    <h3>产品规格</h3>
+                    <ul>
+                        <li>材质：宜兴紫砂泥</li>
+                        <li>套装内容：茶壶x1，茶杯x6，茶盘x1，茶匙x1</li>
+                        <li>尺寸：茶壶 12x8x10cm</li>
+                        <li>重量：1.8kg</li>
+                        <li>包装：精美礼盒包装</li>
+                    </ul>
+                </div>
+                <div class="tab-content" id="shipping">
+                    <h3>配送说明</h3>
+                    <p>为确保礼品准时送达，请至少提前7个工作日下单。</p>
+                    <p>圣诞、新年等节日期间，建议提前1个月下单。</p>
+                    <p>配送范围：全球主要国家和地区。</p>
+                    <p>配送时间：国内3-5个工作日，国际7-15个工作日。</p>
+                </div>
+            </div>
+            
+            <div class="checkout-form">
+                <h3>填写订单信息</h3>
+                <div class="form-section">
+                    <h4 class="form-section-title">购买者信息</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="buyer-name">姓名</label>
+                            <input type="text" id="buyer-name" placeholder="购买者姓名">
+                        </div>
+                        <div class="form-group">
+                            <label for="buyer-phone">电话</label>
+                            <input type="tel" id="buyer-phone" placeholder="购买者电话">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="buyer-email">邮箱</label>
+                        <input type="email" id="buyer-email" placeholder="购买者邮箱">
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4 class="form-section-title">收件人信息</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recipient-name">姓名</label>
+                            <input type="text" id="recipient-name" placeholder="收件人姓名">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-phone">电话</label>
+                            <input type="tel" id="recipient-phone" placeholder="收件人电话">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-street">街道地址</label>
+                        <input type="text" id="recipient-street" placeholder="街道地址">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recipient-city">城市</label>
+                            <input type="text" id="recipient-city" placeholder="城市">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-state">州/省</label>
+                            <input type="text" id="recipient-state" placeholder="州/省">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recipient-zip">邮编</label>
+                            <input type="text" id="recipient-zip" placeholder="邮编">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-country">国家</label>
+                            <select id="recipient-country">
+                                <option value="china">中国</option>
+                                <option value="usa">美国</option>
+                                <option value="uk">英国</option>
+                                <option value="germany">德国</option>
+                                <option value="japan">日本</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4 class="form-section-title">礼品卡信息</h4>
+                    <div class="form-group gift-card-text">
+                        <label for="gift-card-text">留言内容</label>
+                        <textarea id="gift-card-text" placeholder="请输入您的祝福语（最多180字）" rows="4" oninput="updateCharCount()"></textarea>
+                        <div class="char-count">0/180</div>
+                    </div>
+                </div>
+                
+                <button class="final-buy-btn">立即购买</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 登录模态框 -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-container">
+            <div class="login-tabs">
+                <div class="login-tab active" onclick="switchLoginTab('login')">登录</div>
+                <div class="login-tab" onclick="switchLoginTab('register')">注册</div>
+            </div>
+            
+            <div class="login-form active" id="loginForm">
+                <div class="form-group">
+                    <label for="login-account">账号</label>
+                    <input type="text" id="login-account" placeholder="邮箱/手机/用户名">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">密码</label>
+                    <input type="password" id="login-password" placeholder="密码">
+                </div>
+                <div class="form-options">
+                    <label>
+                        <input type="checkbox"> 保持会话
+                    </label>
+                    <a href="#" class="forgot-password">忘记密码?</a>
+                </div>
+                <button class="login-submit" onclick="login()">登录</button>
+                <div class="register-link">
+                    还没有账号? <a href="#" onclick="switchLoginTab('register')">点击注册</a>
+                </div>
+            </div>
+            
+            <div class="login-form" id="registerForm">
+                <div class="form-group">
+                    <label for="register-email">邮箱</label>
+                    <input type="email" id="register-email" placeholder="请输入邮箱">
+                </div>
+                <div class="form-group">
+                    <label for="register-phone">手机号</label>
+                    <input type="tel" id="register-phone" placeholder="请输入手机号">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">密码</label>
+                    <input type="password" id="register-password" placeholder="请输入密码">
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm">确认密码</label>
+                    <input type="password" id="register-confirm" placeholder="请再次输入密码">
+                </div>
+                <button class="login-submit" onclick="register()">注册</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>关于我们</h3>
+                    <p>Global Gift 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>联系我们</h3>
+                    <p>电话: +86 138 0013 8000</p>
+                    <p>微信: GlobalGift</p>
+                    <p>邮箱: service@globalgift.com</p>
+                    <p>地址: 北京市朝阳区商务中心区</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <a href="#" onclick="goToPage('page-home')">首页</a>
+                    <a href="#" onclick="goToPage('page-filters')">选购礼品</a>
+                    <a href="#">关于我们</a>
+                    <a href="#">隐私政策</a>
+                </div>
+                <div class="footer-section">
+                    <h3>关注我们</h3>
+                    <a href="#">微信公众号</a>
+                    <a href="#">Instagram</a>
+                    <a href="#">LinkedIn</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Global Gift. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
