@@ -20,6 +20,9 @@ body {
     background-color: #f5f7fa;
     color: #333;
     line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
@@ -94,6 +97,7 @@ body {
     display: none;
     min-height: 100vh;
     padding: 100px 0 40px;
+    flex: 1;
 }
 
 .page.active {
@@ -124,28 +128,47 @@ body {
     background-size: cover;
     background-position: center;
     color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 100px 0 0;
+}
+
+.home-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: calc(100vh - 140px);
+    flex: 1;
+}
+
+.hero-section {
     text-align: center;
+    padding: 2rem 0;
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
 }
 
 .hero-title {
     font-size: 3.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     color: var(--secondary-color);
 }
 
 .hero-subtitle {
     font-size: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
     max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .cta-buttons {
     display: flex;
     gap: 1.5rem;
+    justify-content: center;
     margin-top: 2rem;
 }
 
@@ -180,6 +203,35 @@ body {
 .cta-secondary:hover {
     background: white;
     color: var(--primary-color);
+}
+
+/* 信息栏 - 放在主页底部，不需要滚动就能看到 */
+.info-section {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2rem 0;
+    margin-top: auto;
+}
+
+.info-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    text-align: center;
+}
+
+.info-item {
+    padding: 1rem;
+}
+
+.info-item h3 {
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.info-item p {
+    color: #ccc;
+    margin-bottom: 0.5rem;
 }
 
 /* 第二页：筛选页面 */
@@ -562,14 +614,15 @@ body {
 .footer {
     background: var(--dark-color);
     color: white;
-    padding: 40px 0;
-    margin-top: 50px;
+    padding: 40px 0 20px;
+    margin-top: auto;
 }
 
 .footer-content {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 30px;
+    margin-bottom: 30px;
 }
 
 .footer-section h3 {
@@ -601,11 +654,7 @@ body {
     .gift-detail {
         grid-template-columns: 1fr;
     }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-    
+        
     .nav-links {
         display: none;
     }
@@ -619,7 +668,7 @@ body {
         align-items: center;
     }
     
-    .filter-options {
+    .info-content {
         grid-template-columns: 1fr;
     }
     
