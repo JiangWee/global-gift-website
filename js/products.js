@@ -72,22 +72,27 @@ function renderProducts(filteredProducts = null) {
         giftGrid.innerHTML = '<div class="no-products">暂无产品</div>';
         return;
     }
-    
-    giftGrid.innerHTML = products.map(product => `
-        <div class="gift-card" onclick="viewGiftDetail(${product.ID})">
-            <div class="gift-img" style="background-image: url('${product.图片URL}');"></div>
-            <div class="gift-info">
-                <div class="gift-name">${product.产品名称}</div>
-                <div class="gift-price">¥ ${product.价格.toLocaleString()}</div>
-                <div class="gift-stock ${product.库存 < 10 ? 'low-stock' : ''}">
-                    库存: ${product.库存}件
-                    ${product.库存 < 5 ? '<span class="stock-warning">(库存紧张)</span>' : ''}
+
+    giftGrid.innerHTML = products.map(product => {
+        // 为每个产品单独构建图片路径
+        const localImagePath = `./images/${product.图片URL}`;
+        
+        return `
+            <div class="gift-card" onclick="viewGiftDetail(${product.ID})">
+                <div class="gift-img" style="background-image: url('${localImagePath}');"></div>
+                <div class="gift-info">
+                    <div class="gift-name">${product.产品名称}</div>
+                    <div class="gift-price">¥ ${product.价格.toLocaleString()}</div>
+                    <div class="gift-stock ${product.库存 < 10 ? 'low-stock' : ''}">
+                        库存: ${product.库存}件
+                        ${product.库存 < 5 ? '<span class="stock-warning">(库存紧张)</span>' : ''}
+                    </div>
+                    <div class="gift-desc">${product.展示页描述}</div>
+                    ${product.库存 === 0 ? '<div class="out-of-stock">暂时缺货</div>' : ''}
                 </div>
-                <div class="gift-desc">${product.展示页描述}</div>
-                ${product.库存 === 0 ? '<div class="out-of-stock">暂时缺货</div>' : ''}
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 
@@ -102,7 +107,7 @@ function renderProductDetail(product) {
     console.log('渲染产品详情:', product.产品名称);
     console.log('礼品详情描述:', product.礼品详情描述);
     console.log('图片URL:', product.图片URL);
-    
+
     // 处理规格参数 - 将换行符转换为<br>
     let descriptionHtml = '';
     if (product.产品描述) {
@@ -138,13 +143,12 @@ function renderProductDetail(product) {
             .join('');
     }
 
-    // 处理配送信息
-    const shippingInfo = product.配送信息 || '为确保礼品准时送达，请至少提前7个工作日下单。圣诞、新年等节日期间，建议提前1个月下单。配送范围：全球主要国家和地区。配送时间：国内3-5个工作日，国际7-15个工作日。';
-    
+    const localImagePath = `./images/${product.图片URL}`;
+
     // 生成详情页HTML
     container.innerHTML = `
         <div class="gift-detail">
-            <div class="gift-image-large" style="background-image: url('${product.图片URL}');"></div>
+            <div class="gift-image-large" style="background-image: url('${localImagePath}');"></div>
             <div class="gift-detail-info">
                 <h2 class="detail-name">${product.产品名称}</h2>
                 <div class="detail-price">¥ ${product.价格.toLocaleString()}</div>

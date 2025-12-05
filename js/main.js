@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 window.addEventListener('load', function() {
-    console.log('Global Gift网站加载完成');
+    console.log('Gift Buy Buy网站加载完成');
     loadProducts();
 });
 

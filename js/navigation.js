@@ -16,7 +16,12 @@ function goToPage(pageId) {
     
     targetPage.classList.add('active');
     window.scrollTo(0, 0);
-    
+    // 如果不是首页，启用滚动
+    if (pageId !== 'page-home') {
+        targetPage.style.overflowY = 'auto';
+    } else {
+        targetPage.style.overflowY = 'hidden'; // 首页禁用滚动
+    }
     console.log('成功跳转到:', pageId);
     
     if (pageId === 'page-gifts') {
