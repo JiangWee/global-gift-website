@@ -1,0 +1,267 @@
+/* components.css - 组件样式 */
+/* 按钮样式 */
+.cta-btn {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.cta-primary {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.cta-primary:hover {
+    background: #e6b400;
+    transform: translateY(-3px);
+}
+
+.cta-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.cta-secondary:hover {
+    background: white;
+    color: var(--primary-color);
+}
+
+.next-btn {
+    display: block;
+    width: 200px;
+    margin: 30px auto;
+    padding: 15px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.next-btn:hover {
+    background: #2c5282;
+}
+
+.buy-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: var(--border-radius);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.buy-btn:hover {
+    background: #2c5282;
+}
+
+/* 卡片样式 */
+.category-card {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s;
+    cursor: pointer;
+    text-align: center;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+}
+
+.category-img {
+    height: 150px;
+    background-size: cover;
+    background-position: center;
+}
+
+.category-name {
+    padding: 15px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.gift-card {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.gift-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.gift-img {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+}
+
+.gift-info {
+    padding: 20px;
+}
+
+.gift-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+.gift-price {
+    font-size: 1.1rem;
+    color: var(--success-color);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.gift-desc {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.forgot-password {
+ color: var(--primary-color);
+    text-decoration: none;
+}
+
+.form-section {
+    margin-bottom: 30px;
+}
+
+.form-section-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.gift-card-text {
+    position: relative;
+}
+
+.char-count {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    color: #999;
+    font-size: 0.8rem;
+}
+
+.final-buy-btn {
+    background: var(--success-color);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: var(--border-radius);
+    font-size: 1.2rem;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* 模态框样式 */
+.login-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {    
+    background: white;
+    border-radius: var(--border-radius);
+    width: 400px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.login-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.login-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+}
+
+.login-tab.active {
+    border-bottom: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.login-form {
+    display: none;
+}
+
+.login-form.active {
+    display: block;
+}
+
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+}
