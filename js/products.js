@@ -95,7 +95,6 @@ function renderProducts(filteredProducts = null) {
     }).join('');
 }
 
-
 // 渲染产品详情页
 function renderProductDetail(product) {
     const container = document.getElementById('page-detail-container');
@@ -296,26 +295,69 @@ function reBindDetailPageEvents(product) {
     });
 }
 
-// 提交订单函数
-function submitOrder(product) {
+async function submitOrder(product) {
     // 表单验证
     const buyerName = document.getElementById('buyer-name').value;
     const buyerPhone = document.getElementById('buyer-phone').value;
     const recipientName = document.getElementById('recipient-name').value;
+    const recipientStreet = document.getElementById('recipient-street').value;
     
-    if (!buyerName || !buyerPhone || !recipientName) {
-        alert('请填写完整的必填信息');
+    if (!buyerName || !buyerPhone || !recipientName || !recipientStreet) {
+        showMessage('请填写完整的必填信息', 'error');
         return;
     }
     
-    // 实际应用中这里会有订单提交逻辑
-    alert(`订单提交成功！\n产品: ${product.产品名称}\n价格: ¥${product.价格.toLocaleString()}\n我们将尽快处理您的订单。`);
+    // 检查登录状态
+    if (!apiService.token) {
+        showMessage('请先登录', 'error');
+        showLogin();
+        return;
+    }
     
-    // 可以在这里减少库存（需要额外的API）
-    console.log('订单信息:', {
-        产品: product.产品名称,
-        价格: product.价格,
-        购买者: buyerName,
-        收件人: recipientName
-    });
+    // 收集所有订单数据
+    const orderData = {
+        productId: product.ID,
+        productName: product.产品名称,
+        price: product.价格,
+        quantity: 1,
+        buyerInfo: {
+            name: buyerName,
+            phone: buyerPhone,
+            email: document.getElementById('buyer-email').value
+        },
+        recipientInfo: {
+            name: recipientName,
+            phone: document.getElementById('recipient-phone').value,
+            street: recipientStreet,
+            city: document.getElementById('recipient-city').value,
+            state: document.getElementById('recipient-state').value,
+            zip: document.getElementById('recipient-zip').value,
+            country: document.getElementById('recipient-country').value
+        },
+        giftMessage: document.getElementById('gift-card-text').value,
+        deliveryDate: document.getElementById('delivery-date').value
+    };
+    
+    showLoading(true);
+    
+    try {
+        const result = await apiService.createOrder(orderData);
+        
+        if (result.success) {
+            showMessage(`订单提交成功！订单号: ${result.data.orderId}`, 'success');
+            
+            // 清空表单
+            document.querySelector('.checkout-form').reset();
+            updateCharCount();
+            
+            // 可以跳转到订单确认页面或首页
+            setTimeout(() => goToPage('page-home'), 2000);
+        } else {
+            showMessage(result.error || '订单提交失败', 'error');
+        }
+    } catch (error) {
+        showMessage('订单提交失败，请检查网络连接', 'error');
+    } finally {
+        showLoading(false);
+    }
 }

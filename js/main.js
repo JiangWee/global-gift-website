@@ -1,11 +1,18 @@
 // main.js - 主逻辑和初始化
 document.addEventListener('DOMContentLoaded', function() {
+
+    // 检查用户登录状态
+    checkAuthStatus();
+
     // 设置默认送达日期为7天后
     const today = new Date();
     const nextWeek = new Date(today);
     nextWeek.setDate(today.getDate() + 7);
     document.getElementById('delivery-date').valueAsDate = nextWeek;
     
+    // 初始化页面
+    initializePage();
+
     // 购买表单提交
     const finalBuyBtn = document.querySelector('.final-buy-btn');
     if (finalBuyBtn) {
@@ -39,6 +46,47 @@ document.addEventListener('DOMContentLoaded', function() {
         deliveryDate.addEventListener('change', updateFilters);
     }
 });
+
+function initializePage() {
+    // 添加全局加载指示器
+    const loadingEl = document.createElement('div');
+    loadingEl.id = 'global-loading';
+    loadingEl.innerHTML = `
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <div>加载中...</div>
+        </div>
+    `;
+    loadingEl.style.cssText = `
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 1.2rem;
+    `;
+    document.body.appendChild(loadingEl);
+}
+
+// 显示/隐藏全局加载
+function showGlobalLoading(show) {
+    const loadingEl = document.getElementById('global-loading');
+    if (loadingEl) {
+        loadingEl.style.display = show ? 'flex' : 'none';
+    }
+}
+
+// 筛选更新
+function updateFilters() {
+    console.log('筛选条件已更新');
+    // 这里可以添加筛选逻辑
+}
 
 window.addEventListener('load', function() {
     console.log('Gift Buy Buy网站加载完成');
