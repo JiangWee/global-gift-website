@@ -78,3 +78,56 @@
         gap: 0.5rem;
     }
 } 
+
+
+/* 消息提示样式 */
+.message-toast {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    z-index: 10000;
+    font-weight: 500;
+    max-width: 300px;
+    animation: slideIn 0.3s ease;
+}
+
+.message-success { background: #38a169; }
+.message-error { background: #e53e3e; }
+.message-warning { background: #dd6b20; }
+.message-info { background: #3182ce; }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* 用户信息样式 */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    margin-right: 15px;
+}
+
+.logout-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.logout-btn:hover {
+    background: rgba(255,255,255,0.3);
+}

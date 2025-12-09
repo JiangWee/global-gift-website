@@ -20,61 +20,129 @@ function switchLoginTab(tab) {
     }
 }
 
-function login() {
+// forms.js - 表单处理（更新版）
+async function login() {
     const account = document.getElementById('login-account').value;
     const password = document.getElementById('login-password').value;
     
     if (!account || !password) {
-        alert('请输入账号和密码');
+        showMessage('请输入账号和密码', 'error');
         return;
     }
     
-    console.log('登录信息:', { account, password });
-    alert('登录成功！');
-    document.getElementById('loginModal').style.display = 'none';
+    showLoading(true);
+    
+    try {
+        const result = await apiService.login({ account, password });
+        
+        if (result.success) {
+            apiService.setToken(result.data.token);
+            showMessage('登录成功！', 'success');
+            document.getElementById('loginModal').style.display = 'none';
+            updateUserStatus();
+        } else {
+            showMessage(result.error || '登录失败', 'error');
+        }
+    } catch (error) {
+        showMessage('登录请求失败，请检查网络连接', 'error');
+    } finally {
+        showLoading(false);
+    }
 }
 
-function register() {
+async function register() {
     const email = document.getElementById('register-email').value;
     const phone = document.getElementById('register-phone').value;
     const password = document.getElementById('register-password').value;
     const confirm = document.getElementById('register-confirm').value;
     
     if (!email || !phone || !password || !confirm) {
-        alert('请填写所有必填字段');
+        showMessage('请填写所有必填字段', 'error');
         return;
     }
     
     if (password !== confirm) {
-        alert('两次输入的密码不一致');
+        showMessage('两次输入的密码不一致', 'error');
         return;
     }
     
     if (password.length < 6) {
-        alert('密码长度至少6位');
+        showMessage('密码长度至少6位', 'error');
         return;
     }
     
-    console.log('注册信息:', { email, phone, password });
-    alert('注册成功！');
-    document.getElementById('loginModal').style.display = 'none';
-}
-
-function updateCharCount() {
-    const textarea = document.getElementById('gift-card-text');
-    const count = textarea.value.length;
-    document.querySelector('.char-count').textContent = `${count}/180`;
+    showLoading(true);
     
-    if (count > 180) {
-        textarea.value = textarea.value.substring(0, 180);
-        document.querySelector('.char-count').textContent = '180/180';
+    try {
+        const result = await apiService.register({ email, phone, password });
+        
+        if (result.success) {
+            showMessage('注册成功！请登录', 'success');
+            switchLoginTab('login');
+        } else {
+            showMessage(result.error || '注册失败', 'error');
+        }
+    } catch (error) {
+        showMessage('注册请求失败，请检查网络连接', 'error');
+    } finally {
+        showLoading(false);
     }
 }
 
-function updateFilters() {
-    const country = document.getElementById('country').value;
-    const holiday = document.getElementById('holiday').value;
-    const deliveryDate = document.getElementById('delivery-date').value;
+// 显示消息提示
+function showMessage(message, type = 'info') {
+    // 移除现有的消息
+    const existingMessage = document.querySelector('.message-toast');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
     
-    console.log('筛选条件更新:', { country, holiday, deliveryDate });
+    const messageEl = document.createElement('div');
+    messageEl.className = `message-toast message-${type}`;
+    messageEl.textContent = message;
+    
+    // 添加样式
+    messageEl.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        z-index: 10000;
+        font-weight: 500;
+        max-width: 300px;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    const backgroundColor = type === 'success' ? '#38a169' : 
+                           type === 'error' ? '#e53e3e' : 
+                           type === 'warning' ? '#dd6b20' : '#3182ce';
+    
+    messageEl.style.background = backgroundColor;
+    
+    document.body.appendChild(messageEl);
+    
+    // 3秒后自动消失
+    setTimeout(() => {
+        messageEl.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => messageEl.remove(), 300);
+    }, 3000);
+}
+
+// 字符计数更新
+function updateCharCount() {
+    const textarea = document.getElementById('gift-card-text');
+    const charCount = document.querySelector('.char-count');
+    
+    if (textarea && charCount) {
+        const count = textarea.value.length;
+        charCount.textContent = `${count}/180`;
+        
+        if (count > 180) {
+            charCount.style.color = '#e53e3e';
+        } else {
+            charCount.style.color = '#999';
+        }
+    }
 }
