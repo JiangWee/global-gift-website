@@ -34,7 +34,7 @@ function loadBackupProducts() {
             产品名称: "中国传统茶具套装",
             价格: 1280,
             分类: "cultural",
-            图片URL: "https://images.unsplash.com/photo-1534452203293-494a7a73e8a3",
+            图片URL: "1.png",
             描述: "精选紫砂茶具，蕴含中国传统文化，适合商务赠礼。",
             库存: 50,
             状态: "上架",

@@ -22,10 +22,10 @@ function switchLoginTab(tab) {
 
 // forms.js - 表单处理（更新版）
 async function login() {
-    const account = document.getElementById('login-account').value;
+    const identifier = document.getElementById('login-account').value;
     const password = document.getElementById('login-password').value;
     
-    if (!account || !password) {
+    if (!identifier || !password) {
         showMessage('请输入账号和密码', 'error');
         return;
     }
@@ -33,7 +33,7 @@ async function login() {
     showLoading(true);
     
     try {
-        const result = await apiService.login({ account, password });
+        const result = await apiService.login({ identifier, password });
         
         if (result.success) {
             apiService.setToken(result.data.token);
@@ -74,7 +74,7 @@ async function register() {
     showLoading(true);
     
     try {
-        const result = await apiService.register({ email, phone, password });
+        const result = await apiService.register({ email, phone, password, confirm });
         
         if (result.success) {
             showMessage('注册成功！请登录', 'success');
