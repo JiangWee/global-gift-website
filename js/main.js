@@ -2,7 +2,9 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     // 检查用户登录状态
-    checkAuthStatus();
+    checkAuthStatus().then(isLoggedIn => {
+        console.log('用户登录状态:', isLoggedIn ? '已登录' : '未登录');
+    });
 
     // 设置默认送达日期为7天后
     const today = new Date();

@@ -20,7 +20,7 @@ function switchLoginTab(tab) {
     }
 }
 
-// forms.js - 表单处理（更新版）
+
 async function login() {
     const identifier = document.getElementById('login-account').value;
     const password = document.getElementById('login-password').value;
@@ -39,7 +39,18 @@ async function login() {
             apiService.setToken(result.data.token);
             showMessage('登录成功！', 'success');
             document.getElementById('loginModal').style.display = 'none';
-            updateUserStatus();
+            
+            // 保存用户信息并更新导航栏
+            if (result.data.user) {
+                updateUserInfo(result.data.user);
+            } else {
+                // 如果没有返回用户信息，使用默认信息
+                const userInfo = {
+                    name: document.getElementById('login-account').value,
+                    email: document.getElementById('login-account').value
+                };
+                updateUserInfo(userInfo);
+            }
         } else {
             showMessage(result.error || '登录失败', 'error');
         }
@@ -48,6 +59,7 @@ async function login() {
     } finally {
         showLoading(false);
     }
+
 }
 
 async function register() {
@@ -79,6 +91,9 @@ async function register() {
         if (result.success) {
             showMessage('注册成功！请登录', 'success');
             switchLoginTab('login');
+            
+            // 注册成功后自动填充登录表单
+            document.getElementById('login-account').value = email || phone;
         } else {
             showMessage(result.error || '注册失败', 'error');
         }
