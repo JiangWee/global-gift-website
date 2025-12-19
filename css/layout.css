@@ -144,6 +144,7 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
 }
+
 /* 精简用户信息样式 */
 .user-info-logged-in {
     display: flex;

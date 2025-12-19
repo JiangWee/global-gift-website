@@ -98,8 +98,11 @@ window.addEventListener('load', function() {
 // 模态框外部点击关闭
 window.onclick = function(event) {
     const modal = document.getElementById('loginModal');
+    // 只有当点击模态框的背景（不是内容区域）时才关闭
     if (event.target === modal) {
-        modal.style.display = 'none';
+        // 这里可以选择是否允许点击外部关闭
+        // 根据需求，可以注释掉下面这行来禁止点击外部关闭
+        // closeLoginModal();
     }
 };
 

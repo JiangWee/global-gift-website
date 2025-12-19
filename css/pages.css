@@ -68,7 +68,7 @@
                 url('/images/background.jpg') center/cover no-repeat;
     padding: 0; /* 顶部留出导航栏空间 */
     text-align: center;
-    min-height: calc(100vh - 150px); /* 减去导航栏高度 */
+    min-height: calc(100vh - 1.5rem); /* 减去导航栏高度 */
 }
 
 .hero-title {

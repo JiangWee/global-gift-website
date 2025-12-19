@@ -1,6 +1,25 @@
 // forms.js - 表单处理
+
+function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+    // 清空表单
+    document.getElementById('login-account').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('register-email').value = '';
+    document.getElementById('register-phone').value = '';
+    document.getElementById('register-password').value = '';
+    document.getElementById('register-confirm').value = '';
+}
+
 function showLogin() {
     document.getElementById('loginModal').style.display = 'flex';
+}
+
+function showRegister() {
+    // 显示登录模态框
+    document.getElementById('loginModal').style.display = 'flex';
+    // 切换到注册标签
+    switchLoginTab('register');
 }
 
 function switchLoginTab(tab) {
@@ -38,7 +57,7 @@ async function login() {
         if (result.success) {
             apiService.setToken(result.data.token);
             showMessage('登录成功！', 'success');
-            document.getElementById('loginModal').style.display = 'none';
+            closeLoginModal(); // 登录成功时关闭模态框
             
             // 保存用户信息并更新导航栏
             if (result.data.user) {
