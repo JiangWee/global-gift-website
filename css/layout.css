@@ -8,7 +8,7 @@
     width: 100%;
     background: rgba(0, 0, 0, 0.9);
     backdrop-filter: blur(10px);
-    padding: 1rem 0;
+    padding: 1.5rem 0;
     z-index: 1000;
     display: flex;
     justify-content: center;
@@ -144,7 +144,74 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
 }
+/* 精简用户信息样式 */
+.user-info-logged-in {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
 
+.user-email {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    padding: 8px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.user-email:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.user-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    min-width: 120px;
+    z-index: 1000;
+    margin-top: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-dropdown a {
+    display: block;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.user-dropdown a:hover {
+    background: rgba(212, 175, 55, 0.1);
+    color: #d4af37;
+}
+
+.user-dropdown a:last-child {
+    border-bottom: none;
+    color: #e74c3c;
+}
+
+.user-dropdown a:last-child:hover {
+    background: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+}
 /* 语言选择器 */
 .language-selector {
     display: flex;

@@ -1,4 +1,15 @@
 /* pages.css - 页面特定样式 */
+.page {
+    display: none; /* 默认隐藏所有页面 */
+    min-height: 100vh;
+    padding-top: 80px; /* 为固定导航栏留出空间 */
+}
+
+.page.active {
+    display: block; /* 只显示活动页面 */
+}
+
+
 .page-title {
     text-align: center;
     margin-bottom: 2rem;
@@ -21,7 +32,7 @@
 
 /* 首页容器 - 禁止滚动 */
 #page-home {
-    position: fixed;
+    position: relative;
     top: 0;
     left: 0;
     width: 100%;
@@ -31,10 +42,12 @@
     z-index: 1;
     background: white;
     overflow: hidden; /* 禁止滚动 */
+    min-height: 100vh;
 }
 
 #page-home.active {
     display: flex;
+    flex-direction: column;
 }
 
 /* 首页内容 - 填满高度 */
@@ -53,9 +66,9 @@
     justify-content: center;
     background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), 
                 url('/images/background.jpg') center/cover no-repeat;
-    padding: 80px 20px 40px; /* 顶部留出导航栏空间 */
+    padding: 0; /* 顶部留出导航栏空间 */
     text-align: center;
-    min-height: 0; /* 防止内容溢出 */
+    min-height: calc(100vh - 150px); /* 减去导航栏高度 */
 }
 
 .hero-title {

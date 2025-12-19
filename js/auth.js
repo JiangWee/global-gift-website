@@ -31,20 +31,17 @@ function updateNavbarForLoggedInUser(user) {
     const userStatusEl = document.getElementById('userStatus');
     if (!userStatusEl) return;
     
-    // 获取用户名称（优先使用名字，否则使用邮箱/账号）
-    const userName = user.name || user.username || user.email || user.account || '用户';
-    const firstLetter = userName.charAt(0).toUpperCase();
+    // 获取用户邮箱，如果没有则用用户名
+    const userEmail = user.email || user.account || 'user@example.com';
     
     userStatusEl.innerHTML = `
         <div class="user-info-logged-in">
-            <div class="user-avatar" onclick="toggleUserDropdown()">${firstLetter}</div>
-            <div class="user-name" onclick="toggleUserDropdown()">
-                ${userName}
-                <div class="user-dropdown" id="userDropdown">
-                    <a href="#" onclick="goToPage('page-profile')">个人中心</a>
-                    <a href="#" onclick="goToPage('page-orders')">我的订单</a>
-                    <a href="#" onclick="logout()">退出登录</a>
-                </div>
+            <div class="user-email" onclick="toggleUserDropdown()">
+                ${userEmail.split('@')[0]}@...
+            </div>
+            <div class="user-dropdown" id="userDropdown">
+                <a href="#" onclick="goToPage('page-orders')">订单中心</a>
+                <a href="#" onclick="logout()">退出登录</a>
             </div>
         </div>
     `;
