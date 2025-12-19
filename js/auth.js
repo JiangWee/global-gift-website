@@ -28,10 +28,8 @@ async function checkAuthStatus() {
 
 // auth.js - 更新用户状态显示功能
 function updateNavbarForLoggedInUser(user) {
-    console.log('updateNavbarForLoggedInUser1');
     const userStatusEl = document.getElementById('userStatus');
     if (!userStatusEl) return;
-    console.log('updateNavbarForLoggedInUser2');
     // 优先显示用户名，如果没有则显示邮箱
     const displayName = user.username || user.email.split('@')[0];
     
@@ -41,13 +39,13 @@ function updateNavbarForLoggedInUser(user) {
                 ${displayName}
             </div>
             <div class="user-dropdown" id="userDropdown">
+                <a href="#" onclick="goToPage('page-profile')">个人中心</a>
                 <a href="#" onclick="goToPage('page-orders')">订单中心</a>
                 <a href="#" onclick="logout()">退出登录</a>
             </div>
         </div>
     `;
 }
-
 function updateNavbarForLoggedOutUser() {
     const userStatusEl = document.getElementById('userStatus');
     if (!userStatusEl) return;
@@ -89,10 +87,8 @@ function logout() {
 }
 
 function updateUserInfo(userData) {
-    console.log('updateUserInfo1');
     localStorage.setItem('userInfo', JSON.stringify(userData));
     updateNavbarForLoggedInUser(userData);
-    console.log('updateUserInfo2');
 }
 
 // 显示注册表单

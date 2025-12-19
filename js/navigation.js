@@ -13,11 +13,11 @@ function goToPage(pageId) {
         targetPage.classList.add('active');
         targetPage.style.display = 'block'; // 确保显示
         
-        // 如果是首页，隐藏body滚动条
-        if (pageId === 'page-home') {
-            //document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'auto';
+        // 特殊页面处理
+        if (pageId === 'page-profile') {
+            renderProfilePage();
+        } else if (pageId === 'page-orders') {
+            renderOrdersPage();
         }
         
         // 滚动到顶部

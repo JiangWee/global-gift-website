@@ -196,3 +196,33 @@ function updateCharCount() {
         }
     }
 }
+
+
+// 联系表单处理
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleContactSubmit();
+        });
+    }
+});
+
+function handleContactSubmit() {
+    const name = document.getElementById('contact-name').value;
+    const email = document.getElementById('contact-email').value;
+    const subject = document.getElementById('contact-subject').value;
+    const message = document.getElementById('contact-message').value;
+    
+    if (!name || !email || !subject || !message) {
+        showMessage('请填写所有必填字段', 'error');
+        return;
+    }
+    
+    // 模拟发送消息（实际项目中应该调用API）
+    showMessage('消息发送成功！我们会尽快回复您。', 'success');
+    
+    // 清空表单
+    document.getElementById('contactForm').reset();
+}
