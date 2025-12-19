@@ -152,7 +152,7 @@
     position: relative;
 }
 
-.user-email {
+.username {
     color: rgba(255, 255, 255, 0.9);
     font-size: 0.9rem;
     padding: 8px 15px;
@@ -167,7 +167,7 @@
     background: rgba(255, 255, 255, 0.1);
 }
 
-.user-email:hover {
+.username:hover {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.3);
 }

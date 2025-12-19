@@ -28,16 +28,17 @@ async function checkAuthStatus() {
 
 // auth.js - 更新用户状态显示功能
 function updateNavbarForLoggedInUser(user) {
+    console.log('updateNavbarForLoggedInUser1');
     const userStatusEl = document.getElementById('userStatus');
     if (!userStatusEl) return;
-    
-    // 获取用户邮箱，如果没有则用用户名
-    const userEmail = user.email || user.account || 'user@example.com';
+    console.log('updateNavbarForLoggedInUser2');
+    // 优先显示用户名，如果没有则显示邮箱
+    const displayName = user.username || user.email.split('@')[0];
     
     userStatusEl.innerHTML = `
         <div class="user-info-logged-in">
-            <div class="user-email" onclick="toggleUserDropdown()">
-                ${userEmail.split('@')[0]}@...
+            <div class="username" onclick="toggleUserDropdown()">
+                ${displayName}
             </div>
             <div class="user-dropdown" id="userDropdown">
                 <a href="#" onclick="goToPage('page-orders')">订单中心</a>
@@ -88,8 +89,10 @@ function logout() {
 }
 
 function updateUserInfo(userData) {
+    console.log('updateUserInfo1');
     localStorage.setItem('userInfo', JSON.stringify(userData));
     updateNavbarForLoggedInUser(userData);
+    console.log('updateUserInfo2');
 }
 
 // 显示注册表单

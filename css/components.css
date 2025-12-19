@@ -273,9 +273,29 @@
     display: block;
 }
 
+/* 更明显的注册链接样式 */
 .register-link {
     text-align: center;
     margin-top: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.register-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.register-link a:hover {
+    color: #0056b3;
+    background-color: #e3f2fd;
+    text-decoration: none;
 }
 
 /* 模态框关闭按钮 */
@@ -319,12 +339,13 @@
 }
 
 .login-submit {
-    background: var(--primary-color);
-    color: linear-gradient(135deg, #ffd700, #d4af37);
+    background: #f5f5f5;
+    color: #ffd700
+    border: 1px solid #ddd;
 }
 
 .login-submit:hover {
-    background: #2c5282;
+    background: #e5e5e5;
 }
 
 .login-cancel {
