@@ -1,13 +1,23 @@
 /* base.css - 基础样式和变量 */
+/* 在 base.css 中添加 */
 :root {
-    --primary-color: #1a365d;
-    --secondary-color: #d4af37;
-    --accent-color: #2d3748;
-    --light-color: #f8f9fa;
-    --dark-color: #2d3748;
-    --success-color: #38a169;
-    --border-radius: 12px;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* 主色调 - 金色系 */
+    --primary-gold: #d4af37;
+    --light-gold: #ffd700;
+    --dark-gold: #b8860b;
+    
+    /* 导航栏背景 */
+    --nav-bg: rgba(0, 0, 0, 0.85);
+    --nav-bg-solid: #1a1a1a;
+    
+    /* 文字颜色 */
+    --text-white: rgba(255, 255, 255, 0.9);
+    --text-light: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.5);
+    
+    /* 边框颜色 */
+    --border-light: rgba(255, 255, 255, 0.2);
+    --border-gold: rgba(212, 175, 55, 0.3);
 }
 
 * {
@@ -42,3 +52,4 @@ a {
 a:hover {
     color: var(--primary-color);
 }
+

@@ -1,33 +1,34 @@
 // navigation.js - 导航功能
+// navigation.js - 修复页面滚动问题
 function goToPage(pageId) {
-    console.log('尝试跳转到页面:', pageId);
-    
-    const targetPage = document.getElementById(pageId);
-    
-    if (!targetPage) {
-        console.error('页面不存在:', pageId);
-        return;
-    }
-    
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(page => {
+    // 隐藏所有页面
+    document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
+        page.style.display = 'none'; // 确保隐藏
     });
     
-    targetPage.classList.add('active');
-    window.scrollTo(0, 0);
-    // 如果不是首页，启用滚动
-    if (pageId !== 'page-home') {
-        targetPage.style.overflowY = 'auto';
-    } else {
-        targetPage.style.overflowY = 'hidden'; // 首页禁用滚动
-    }
-    console.log('成功跳转到:', pageId);
-    
-    if (pageId === 'page-gifts') {
-        loadProducts();
+    // 显示目标页面
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.classList.add('active');
+        targetPage.style.display = 'block'; // 确保显示
+        
+        // 特殊页面处理
+        if (pageId === 'page-profile') {
+            renderProfilePage();
+        } else if (pageId === 'page-orders') {
+            renderOrdersPage();
+        } else if (pageId === 'page-forgot-password') {
+            // 重置忘记密码流程到第一步
+            switchForgotPasswordStep('step-email');
+        }
+        
+        // 滚动到顶部
+        window.scrollTo(0, 0);
     }
 }
+
+
 
 function setLanguage(lang) {
     document.querySelectorAll('.lang-btn').forEach(btn => {

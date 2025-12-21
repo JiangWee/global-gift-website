@@ -80,7 +80,33 @@ class ApiService {
             body: JSON.stringify(userData)
         });
     }
+    // 忘记密码 - 发送验证码
+    async sendForgotPasswordCode(email) {
+        return this.request(API_CONFIG.ENDPOINTS.FORGOT_PASSWORD_SEND_CODE, {
+            method: 'POST',
+            body: JSON.stringify({ email })
+        });
+    }
 
+    // 忘记密码 - 验证验证码
+    async verifyForgotPasswordCode(email, code) {
+        return this.request(API_CONFIG.ENDPOINTS.FORGOT_PASSWORD_VERIFY_CODE, {
+            method: 'POST',
+            body: JSON.stringify({ email, code })
+        });
+    }
+
+    // 忘记密码 - 重置密码
+    async resetPasswordWithToken(resetToken, newPassword) {
+        return this.request(API_CONFIG.ENDPOINTS.FORGOT_PASSWORD_RESET, {
+            method: 'POST',
+            body: JSON.stringify({ 
+                resetToken, 
+                newPassword 
+            })
+        });
+    }
+    
     // 产品相关
     async getProducts(params = {}) {
         let endpoint = API_CONFIG.ENDPOINTS.PRODUCTS;

@@ -14,17 +14,33 @@
     <!-- 导航栏 -->
     <nav class="navbar">
         <div class="nav-container">
+            <!-- 左侧：Logo -->
             <div class="logo">Gift Buy Buy</div>
+            
+            <!-- 中间：导航链接 -->
             <div class="nav-links">
                 <a href="#" onclick="goToPage('page-home')">首页</a>
                 <a href="#" onclick="goToPage('page-filters')">选购礼品</a>
                 <a href="#" onclick="goToPage('page-gifts')">礼品目录</a>
-                <a href="#">关于我们</a>
-                <a href="#">联系我们</a>
+                <a href="#" onclick="goToPage('page-about')">关于我们</a>
+                <a href="#" onclick="goToPage('page-contact')">联系我们</a>
             </div>
-            <div class="language-selector">
-                <button class="lang-btn active" onclick="setLanguage('zh')">中文</button>
-                <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+            
+            <!-- 右侧：用户状态和语言切换 -->
+            <div class="nav-right">
+                <!-- 用户状态容器 -->
+                <div class="user-status-container" id="userStatus">
+                    <div class="login-register-buttons">
+                        <button class="nav-btn login-nav-btn" onclick="showLogin()">登录</button>
+                        <button class="nav-btn register-nav-btn" onclick="showRegister()">注册</button>
+                    </div>
+                </div>
+                
+                <!-- 语言切换器 -->
+                <div class="language-selector">
+                    <button class="lang-btn active" onclick="setLanguage('zh')">中文</button>
+                    <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+                </div>
             </div>
         </div>
     </nav>
@@ -35,7 +51,7 @@
             <div class="hero-section">
                 <div class="container">
                     <h1 class="hero-title">Gift Buy Buy</h1>
-                    <p class="hero-subtitle">高端商务礼品，连接全球情谊。专业跨国送礼解决方案，让心意无国界。</p>
+                    <p class="hero-main-subtitle">高端商务礼品，连接全球情谊。专业跨国送礼解决方案，让心意无国界。</p>
                     <div class="cta-buttons">
                         <a href="#" class="cta-btn cta-primary" onclick="goToPage('page-filters')">开始选购</a>
                         <a href="#" class="cta-btn cta-secondary">了解更多</a>
@@ -43,42 +59,34 @@
                 </div>
             </div>
       </div>
-      <!-- 页脚放在首页内部 -->
-      <footer class="footer">
-          <div class="footer-content">
-              <div class="footer-section">
-                  <h3>关于我们</h3>
-                  <p>Gift Buy Buy 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。</p>
-              </div>
-              <div class="footer-section">
-                  <h3>联系我们</h3>
-                  <p>电话: +86 138 0013 8000</p>
-                  <p>微信: GiftBuyBuy</p>
-                  <p>邮箱: service@GiftBuyBuy.com</p>
-                  <p>地址: 北京市朝阳区商务中心区</p>
-              </div>
-              <div class="footer-section">
-                  <h3>链接</h3>
-                  <ul>
-                      <li><a href="#" onclick="goToPage('page-home')">首页</a></li>
-                      <li><a href="#" onclick="goToPage('page-filters')">选购礼品</a></li>
-                      <li><a href="#" onclick="goToPage('page-about')">关于我们</a></li>
-                      <li><a href="#">隐私政策</a></li>
-                  </ul>
-              </div>
-              <div class="footer-section">
-                  <h3>关注我们</h3>
-                  <ul>
-                      <li><a href="#">微信公众号</a></li>
-                      <li><a href="#">Instagram</a></li>
-                      <li><a href="#">LinkedIn</a></li>
-                  </ul>
-              </div>
-          </div>
-          <div class="copyright">
-              <p>&copy; 2023 Gift Buy Buy. 保留所有权利。</p>
-          </div>
-      </footer>
+        <!-- 页脚放在首页内部 -->
+        <footer class="footer">
+            <div class="footer-content">
+                <!-- 只保留三列 -->
+                <div class="footer-section">
+                    <h3>关于我们</h3>
+                    <p>Gift Buy Buy 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>联系我们</h3>
+                    <p>电话: +86 138 8888 8888</p>
+                    <p>微信: GiftBuyBuy</p>
+                    <p>邮箱: service@GiftBuyBuy.com</p>
+                    <p>地址: 深圳市南山区粤海中心</p>
+                </div>
+                <div class="footer-section">
+                    <h3>关注我们</h3>
+                    <ul>
+                        <li><a href="#">微信公众号</a></li>
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Gift Buy Buy. 保留所有权利。</p>
+            </div>
+        </footer>
     </section>
 
     <!-- 第二页：筛选页面 -->
@@ -163,9 +171,294 @@
         </div>
     </section>
 
+    <!-- 第五页：个人中心 -->
+    <section id="page-profile" class="page">
+        <div class="container">
+            <h2 class="page-title">个人中心</h2>
+            <div class="profile-container" id="profile-container">
+                <!-- 这里的内容将由JavaScript动态生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 第六页：订单中心 -->
+    <section id="page-orders" class="page">
+        <div class="container">
+            <h2 class="page-title">我的订单</h2>
+            <div class="orders-container" id="orders-container">
+                <!-- 这里的内容将由JavaScript动态生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 第七页：关于我们 -->
+    <section id="page-about" class="page">
+        <div class="container">
+            <h2 class="page-title">关于我们</h2>
+            <div class="about-content">
+                <div class="about-hero">
+                    <div class="hero-text">
+                        <h1>Gift Buy Buy - 高端商务礼品平台</h1>
+                        <p class="hero-subtitle">连接全球情谊，让心意无国界</p>
+                    </div>
+                    <div class="hero-image" style="background-image: url('./images/about-hero.jpg');"></div>
+                </div>
+                
+                <div class="about-sections">
+                    <div class="about-section">
+                        <h3>我们的使命</h3>
+                        <p>Gift Buy Buy 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。我们相信，一份精心挑选的礼物能够跨越地域界限，传递真挚的情感与商业诚意。</p>
+                    </div>
+                    
+                    <div class="about-section">
+                        <h3>我们的优势</h3>
+                        <div class="advantages-grid">
+                            <div class="advantage-card">
+                                <div class="advantage-icon">🌍</div>
+                                <h4>全球配送</h4>
+                                <p>覆盖全球主要国家和地区，确保您的礼物准时送达</p>
+                            </div>
+                            <div class="advantage-card">
+                                <div class="advantage-icon">🎁</div>
+                                <h4>精品选择</h4>
+                                <p>严格筛选高品质礼品，满足不同商务场景需求</p>
+                            </div>
+                            <div class="advantage-card">
+                                <div class="advantage-icon">🔒</div>
+                                <h4>安全保障</h4>
+                                <p>完善的支付和物流跟踪系统，购物更安心</p>
+                            </div>
+                            <div class="advantage-card">
+                                <div class="advantage-icon">💝</div>
+                                <h4>贴心服务</h4>
+                                <p>专业的客服团队，为您提供个性化送礼建议</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="about-section">
+                        <h3>发展历程</h3>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-year">2020</div>
+                                <div class="timeline-content">
+                                    <h4>公司成立</h4>
+                                    <p>Gift Buy Buy 在深圳正式成立，专注于跨国商务礼品服务</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-year">2021</div>
+                                <div class="timeline-content">
+                                    <h4>业务扩展</h4>
+                                    <p>服务范围扩展至全球20多个国家和地区</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-year">2022</div>
+                                <div class="timeline-content">
+                                    <h4>数字化升级</h4>
+                                    <p>推出在线平台，实现礼品选购、支付、配送一站式服务</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-year">2023</div>
+                                <div class="timeline-content">
+                                    <h4>品牌升级</h4>
+                                    <p>成为行业领先的跨国商务礼品服务平台</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第八页：联系我们 -->
+    <section id="page-contact" class="page">
+        <div class="container">
+            <h2 class="page-title">联系我们</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-card">
+                        <h3>联系信息</h3>
+                        <div class="contact-details">
+                            <div class="contact-item">
+                                <div class="contact-icon">📞</div>
+                                <div class="contact-text">
+                                    <strong>电话</strong>
+                                    <p>+86 138 8888 8888</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">📧</div>
+                                <div class="contact-text">
+                                    <strong>邮箱</strong>
+                                    <p>service@GiftBuyBuy.com</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">📍</div>
+                                <div class="contact-text">
+                                    <strong>地址</strong>
+                                    <p>深圳市南山区粤海中心</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">🕒</div>
+                                <div class="contact-text">
+                                    <strong>工作时间</strong>
+                                    <p>周一至周五 9:00-18:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <h3>关注我们</h3>
+                        <div class="social-links">
+                            <a href="#" class="social-link">
+                                <span class="social-icon">📱</span>
+                                <span>微信公众号: GiftBuyBuy</span>
+                            </a>
+                            <a href="#" class="social-link">
+                                <span class="social-icon">📷</span>
+                                <span>Instagram: @GiftBuyBuy</span>
+                            </a>
+                            <a href="#" class="social-link">
+                                <span class="social-icon">💼</span>
+                                <span>LinkedIn: Gift Buy Buy</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form-container">
+                    <h3>发送消息</h3>
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contact-name">姓名 *</label>
+                                <input type="text" id="contact-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-email">邮箱 *</label>
+                                <input type="email" id="contact-email" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-phone">电话</label>
+                            <input type="tel" id="contact-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-subject">主题 *</label>
+                            <input type="text" id="contact-subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-message">消息内容 *</label>
+                            <textarea id="contact-message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">发送消息</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="map-section">
+                <h3>我们的位置</h3>
+                <div class="map-placeholder">
+                    <div class="map-content">
+                        <div class="map-icon">🗺️</div>
+                        <p>北京市朝阳区商务中心区地图</p>
+                        <small>实际服务覆盖全球主要城市</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- 第九页：忘记密码流程 -->
+    <section id="page-forgot-password" class="page">
+        <div class="container">
+            <!-- 步骤1：输入邮箱 -->
+            <div class="forgot-password-step active" id="step-email">
+                <h2 class="page-title">找回密码</h2>
+                <p class="page-subtitle">请输入您注册时使用的邮箱地址</p>
+                
+                <div class="forgot-password-form">
+                    <div class="form-group">
+                        <label for="forgot-email">邮箱地址</label>
+                        <input type="email" id="forgot-email" placeholder="请输入注册邮箱">
+                    </div>
+                    <button class="next-btn" onclick="sendVerificationCode()">发送验证码</button>
+                    
+                    <div class="back-to-login">
+                        <a href="#" onclick="goToPage('page-home'); showLogin()">返回登录</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 步骤2：验证码验证 -->
+            <div class="forgot-password-step" id="step-verify">
+                <h2 class="page-title">验证邮箱</h2>
+                <p class="page-subtitle">我们已向 <span id="verify-email-display"></span> 发送了验证码</p>
+                
+                <div class="forgot-password-form">
+                    <div class="form-group">
+                        <label for="verification-code">验证码</label>
+                        <input type="text" id="verification-code" placeholder="请输入6位验证码" maxlength="6">
+                        <div class="code-actions">
+                            <span class="countdown" id="countdown">05:00</span>
+                            <button type="button" class="resend-btn" id="resend-btn" onclick="resendCode()" disabled>重新发送</button>
+                        </div>
+                    </div>
+                    <button class="next-btn" onclick="verifyCode()">验证验证码</button>
+                    
+                    <div class="back-to-email">
+                        <a href="#" onclick="switchForgotPasswordStep('step-email')">修改邮箱地址</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 在 step-reset 步骤中添加隐藏字段 -->
+            <div class="forgot-password-step" id="step-reset">
+                <h2 class="page-title">重置密码</h2>
+                <p class="page-subtitle">请设置您的新密码</p>
+                
+                <div class="forgot-password-form">
+                    <!-- 添加隐藏字段存储重置令牌 -->
+                    <input type="hidden" id="reset-token" value="">
+                    
+                    <div class="form-group">
+                        <label for="new-password">新密码</label>
+                        <input type="password" id="new-password" placeholder="请输入新密码（至少6位）">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-new-password">确认新密码</label>
+                        <input type="password" id="confirm-new-password" placeholder="请再次输入新密码">
+                    </div>
+                    <button class="next-btn" onclick="resetPassword()">重置密码</button>
+                </div>
+            </div>
+            
+            <!-- 步骤4：完成 -->
+            <div class="forgot-password-step" id="step-complete">
+                <div class="success-message">
+                    <div class="success-icon">✓</div>
+                    <h2>密码重置成功！</h2>
+                    <p>您的密码已成功重置，请使用新密码登录</p>
+                    <button class="next-btn" onclick="goToPage('page-home'); showLogin()">立即登录</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- 登录模态框 -->
     <div class="login-modal" id="loginModal">
         <div class="login-container">
+            <!-- 添加关闭按钮 -->
+            <div class="modal-close-btn" onclick="closeLoginModal()">×</div>
+            
             <div class="login-tabs">
                 <div class="login-tab active" onclick="switchLoginTab('login')">登录</div>
                 <div class="login-tab" onclick="switchLoginTab('register')">注册</div>
@@ -184,15 +477,23 @@
                     <label>
                         <input type="checkbox"> 保持会话
                     </label>
-                    <a href="#" class="forgot-password">忘记密码?</a>
+                    <a href="#" class="forgot-password" onclick="closeLoginModal(); goToPage('page-forgot-password')">忘记密码?</a>
                 </div>
-                <button class="login-submit" onclick="login()">登录</button>
+                <div class="form-actions">
+                    <button class="login-submit" onclick="login()">登录</button>
+                    <button class="login-cancel" onclick="closeLoginModal()">取消</button>
+                </div>
                 <div class="register-link">
                     还没有账号? <a href="#" onclick="switchLoginTab('register')">点击注册</a>
                 </div>
             </div>
             
             <div class="login-form" id="registerForm">
+                <div class="form-group">
+                    <label for="register-username">用户名</label>
+                    <input type="text" id="register-username" placeholder="请输入用户名（2-20个字符）" required>
+                </div>
+                
                 <div class="form-group">
                     <label for="register-email">邮箱</label>
                     <input type="email" id="register-email" placeholder="请输入邮箱">
@@ -209,7 +510,10 @@
                     <label for="register-confirm">确认密码</label>
                     <input type="password" id="register-confirm" placeholder="请再次输入密码">
                 </div>
-                <button class="login-submit" onclick="register()">注册</button>
+                <div class="form-actions">
+                    <button class="login-submit" onclick="register()">注册</button>
+                    <button class="login-cancel" onclick="closeLoginModal()">取消</button>
+                </div>
             </div>
         </div>
     </div>

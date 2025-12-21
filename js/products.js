@@ -34,7 +34,7 @@ function loadBackupProducts() {
             产品名称: "中国传统茶具套装",
             价格: 1280,
             分类: "cultural",
-            图片URL: "https://images.unsplash.com/photo-1534452203293-494a7a73e8a3",
+            图片URL: "1.png",
             描述: "精选紫砂茶具，蕴含中国传统文化，适合商务赠礼。",
             库存: 50,
             状态: "上架",
@@ -360,4 +360,191 @@ async function submitOrder(product) {
     } finally {
         showLoading(false);
     }
+}
+
+
+// 渲染个人中心页面
+function renderProfilePage() {
+    const container = document.getElementById('profile-container');
+    if (!container) return;
+
+    // 从localStorage获取用户信息
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    
+    container.innerHTML = `
+        <div class="profile-header">
+            <h3 class="profile-title">个人信息</h3>
+            <button class="edit-profile-btn" onclick="editProfile()">修改信息</button>
+        </div>
+        <div class="profile-info">
+            <div class="profile-field">
+                <span class="field-label">用户名</span>
+                <span class="field-value">${userInfo.username || '未设置'}</span>
+                <div class="field-actions">
+                    <button class="edit-field-btn" onclick="editField('username')">修改</button>
+                </div>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">邮箱</span>
+                <span class="field-value">${userInfo.email || '未设置'}</span>
+                <div class="field-actions">
+                    <button class="edit-field-btn" onclick="editField('email')">修改</button>
+                </div>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">手机号</span>
+                <span class="field-value">${userInfo.phone || '未设置'}</span>
+                <div class="field-actions">
+                    <button class="edit-field-btn" onclick="editField('phone')">修改</button>
+                </div>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">注册时间</span>
+                <span class="field-value">${userInfo.createdAt ? new Date(userInfo.createdAt).toLocaleDateString() : '未知'}</span>
+                <div class="field-actions">
+                    <span style="color: #6c757d; font-size: 0.9rem;">不可修改</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// 渲染订单中心页面
+async function renderOrdersPage() {
+    const container = document.getElementById('orders-container');
+    if (!container) return;
+
+    // 检查登录状态
+    if (!apiService.token) {
+        container.innerHTML = `
+            <div class="no-orders">
+                <div class="no-orders-icon">🔐</div>
+                <div class="no-orders-message">请先登录查看订单</div>
+                <button class="browse-products-btn" onclick="showLogin()">立即登录</button>
+            </div>
+        `;
+        return;
+    }
+
+    try {
+        showLoading(true);
+        const result = await apiService.getOrders();
+        
+        if (result.success && result.data && result.data.length > 0) {
+            container.innerHTML = result.data.map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <div class="order-number">订单号: ${order.orderId || order.id}</div>
+                            <div class="order-date">下单时间: ${new Date(order.createdAt).toLocaleString()}</div>
+                        </div>
+                        <div class="order-status ${getStatusClass(order.status)}">
+                            ${getStatusText(order.status)}
+                        </div>
+                    </div>
+                    <div class="order-content">
+                        <div class="order-product-image" style="background-image: url('./images/${order.productImage || 'default-product.jpg'}')"></div>
+                        <div class="order-product-info">
+                            <div class="order-product-name">${order.productName}</div>
+                            <div class="order-product-specs">
+                                <div>收件人: ${order.recipientInfo?.name}</div>
+                                <div>电话: ${order.recipientInfo?.phone}</div>
+                                <div>地址: ${order.recipientInfo?.street}, ${order.recipientInfo?.city}</div>
+                            </div>
+                        </div>
+                        <div class="order-price">
+                            <div class="order-product-price">¥ ${order.price?.toLocaleString()}</div>
+                            <div class="order-quantity">数量: ${order.quantity || 1}</div>
+                        </div>
+                    </div>
+                    <div class="order-footer">
+                        <div class="order-total">实付: ¥ ${(order.price * (order.quantity || 1))?.toLocaleString()}</div>
+                        <div class="order-actions">
+                            <button class="view-order-btn" onclick="viewOrderDetail('${order.orderId || order.id}')">查看详情</button>
+                            <button class="track-order-btn" onclick="trackOrder('${order.orderId || order.id}')">跟踪物流</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="no-orders">
+                    <div class="no-orders-icon">📦</div>
+                    <div class="no-orders-message">您还没有任何订单</div>
+                    <button class="browse-products-btn" onclick="goToPage('page-gifts')">去选购</button>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('获取订单失败:', error);
+        container.innerHTML = `
+            <div class="no-orders">
+                <div class="no-orders-icon">❌</div>
+                <div class="no-orders-message">获取订单失败，请稍后重试</div>
+                <button class="browse-products-btn" onclick="location.reload()">重新加载</button>
+            </div>
+        `;
+    } finally {
+        showLoading(false);
+    }
+}
+
+// 获取订单状态样式类
+function getStatusClass(status) {
+    const statusMap = {
+        'pending': 'status-pending',
+        'shipped': 'status-shipped',
+        'delivered': 'status-delivered',
+        'cancelled': 'status-cancelled'
+    };
+    return statusMap[status] || 'status-pending';
+}
+
+// 获取订单状态文本
+function getStatusText(status) {
+    const statusTextMap = {
+        'pending': '待处理',
+        'shipped': '已发货',
+        'delivered': '已送达',
+        'cancelled': '已取消'
+    };
+    return statusTextMap[status] || '待处理';
+}
+
+// 编辑个人信息
+function editProfile() {
+    showMessage('个人信息编辑功能开发中...', 'info');
+}
+
+// 编辑特定字段
+function editField(field) {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    const currentValue = userInfo[field] || '';
+    
+    const newValue = prompt(`请输入新的${getFieldLabel(field)}:`, currentValue);
+    if (newValue !== null && newValue !== currentValue) {
+        showMessage(`${getFieldLabel(field)}修改成功！`, 'success');
+        // 这里应该调用API更新用户信息
+        // updateUserInfo({ [field]: newValue });
+    }
+}
+
+// 获取字段标签
+function getFieldLabel(field) {
+    const labels = {
+        'username': '用户名',
+        'email': '邮箱',
+        'phone': '手机号'
+    };
+    return labels[field] || field;
+}
+
+// 查看订单详情
+function viewOrderDetail(orderId) {
+    showMessage(`查看订单 ${orderId} 的详情功能开发中...`, 'info');
+}
+
+// 跟踪物流
+function trackOrder(orderId) {
+    showMessage(`跟踪订单 ${orderId} 的物流功能开发中...`, 'info');
 }
