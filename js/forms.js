@@ -57,8 +57,7 @@ async function login() {
             console.log('result.data.accessToken:', result.data.accessToken);
             console.log('result.data.refreshToken:', result.data.refreshToken);
             
-            // 修复：使用正确的字段名
-            if (result.data.data.accessToken) {
+            if (result.data.accessToken) {
                 apiService.setToken(result.data.accessToken);
                 console.log('Token已设置');
             } else {
@@ -70,9 +69,9 @@ async function login() {
             closeLoginModal();
             
             // 保存用户信息并更新导航栏
-            if (result.data.data.user) {
-                console.log('保存用户信息:', result.data.data.user);
-                updateUserInfo(result.data.data.user);
+            if (result.data.user) {
+                console.log('保存用户信息:', result.data.user);
+                updateUserInfo(result.data.user);
             } 
         } else {
             // 特殊处理用户不存在的提示
