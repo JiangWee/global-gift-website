@@ -18,6 +18,9 @@ function goToPage(pageId) {
             renderProfilePage();
         } else if (pageId === 'page-orders') {
             renderOrdersPage();
+        } else if (pageId === 'page-forgot-password') {
+            // 重置忘记密码流程到第一步
+            switchForgotPasswordStep('step-email');
         }
         
         // 滚动到顶部

@@ -376,6 +376,83 @@
         </div>
     </section>
 
+
+    <!-- 第九页：忘记密码流程 -->
+    <section id="page-forgot-password" class="page">
+        <div class="container">
+            <!-- 步骤1：输入邮箱 -->
+            <div class="forgot-password-step active" id="step-email">
+                <h2 class="page-title">找回密码</h2>
+                <p class="page-subtitle">请输入您注册时使用的邮箱地址</p>
+                
+                <div class="forgot-password-form">
+                    <div class="form-group">
+                        <label for="forgot-email">邮箱地址</label>
+                        <input type="email" id="forgot-email" placeholder="请输入注册邮箱">
+                    </div>
+                    <button class="next-btn" onclick="sendVerificationCode()">发送验证码</button>
+                    
+                    <div class="back-to-login">
+                        <a href="#" onclick="goToPage('page-home'); showLogin()">返回登录</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 步骤2：验证码验证 -->
+            <div class="forgot-password-step" id="step-verify">
+                <h2 class="page-title">验证邮箱</h2>
+                <p class="page-subtitle">我们已向 <span id="verify-email-display"></span> 发送了验证码</p>
+                
+                <div class="forgot-password-form">
+                    <div class="form-group">
+                        <label for="verification-code">验证码</label>
+                        <input type="text" id="verification-code" placeholder="请输入6位验证码" maxlength="6">
+                        <div class="code-actions">
+                            <span class="countdown" id="countdown">05:00</span>
+                            <button type="button" class="resend-btn" id="resend-btn" onclick="resendCode()" disabled>重新发送</button>
+                        </div>
+                    </div>
+                    <button class="next-btn" onclick="verifyCode()">验证验证码</button>
+                    
+                    <div class="back-to-email">
+                        <a href="#" onclick="switchForgotPasswordStep('step-email')">修改邮箱地址</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 在 step-reset 步骤中添加隐藏字段 -->
+            <div class="forgot-password-step" id="step-reset">
+                <h2 class="page-title">重置密码</h2>
+                <p class="page-subtitle">请设置您的新密码</p>
+                
+                <div class="forgot-password-form">
+                    <!-- 添加隐藏字段存储重置令牌 -->
+                    <input type="hidden" id="reset-token" value="">
+                    
+                    <div class="form-group">
+                        <label for="new-password">新密码</label>
+                        <input type="password" id="new-password" placeholder="请输入新密码（至少6位）">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-new-password">确认新密码</label>
+                        <input type="password" id="confirm-new-password" placeholder="请再次输入新密码">
+                    </div>
+                    <button class="next-btn" onclick="resetPassword()">重置密码</button>
+                </div>
+            </div>
+            
+            <!-- 步骤4：完成 -->
+            <div class="forgot-password-step" id="step-complete">
+                <div class="success-message">
+                    <div class="success-icon">✓</div>
+                    <h2>密码重置成功！</h2>
+                    <p>您的密码已成功重置，请使用新密码登录</p>
+                    <button class="next-btn" onclick="goToPage('page-home'); showLogin()">立即登录</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- 登录模态框 -->
     <div class="login-modal" id="loginModal">
         <div class="login-container">
@@ -400,7 +477,7 @@
                     <label>
                         <input type="checkbox"> 保持会话
                     </label>
-                    <a href="#" class="forgot-password">忘记密码?</a>
+                    <a href="#" class="forgot-password" onclick="closeLoginModal(); goToPage('page-forgot-password')">忘记密码?</a>
                 </div>
                 <div class="form-actions">
                     <button class="login-submit" onclick="login()">登录</button>

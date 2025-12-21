@@ -974,3 +974,108 @@
     font-size: 4rem;
     margin-bottom: 15px;
 }
+
+/* 忘记密码页面样式 */
+.forgot-password-step {
+    display: none;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 40px 0;
+}
+
+.forgot-password-step.active {
+    display: block;
+}
+
+.forgot-password-form {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.code-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.countdown {
+    color: #d4af37;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.countdown.expired {
+    color: #e53e3e;
+}
+
+.resend-btn {
+    background: none;
+    border: none;
+    color: #d4af37;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+.resend-btn:disabled {
+    color: #999;
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+.resend-btn:not(:disabled):hover {
+    color: #b8860b;
+}
+
+.back-to-login,
+.back-to-email {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.back-to-login a,
+.back-to-email a {
+    color: #d4af37;
+    text-decoration: none;
+}
+
+.back-to-login a:hover,
+.back-to-email a:hover {
+    text-decoration: underline;
+}
+
+.success-message {
+    text-align: center;
+    background: white;
+    padding: 50px 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: #38a169;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 20px;
+}
+
+.success-message h2 {
+    color: #38a169;
+    margin-bottom: 15px;
+}
+
+.success-message p {
+    color: #666;
+    margin-bottom: 30px;
+}
