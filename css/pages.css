@@ -1106,3 +1106,12 @@ input.error {
     border-radius: 5px;
     margin: 10px 0;
 }
+
+/* 在 pages.css 的忘记密码表单样式中添加 */
+.next-btn:disabled {
+    background-color: #cccccc !important; /* 使用灰色背景 */
+    color: #666666 !important;
+    cursor: not-allowed !important; /* 显示禁止点击的光标 */
+    /* 可选：稍微降低透明度，增强不可点击感 */
+    /* opacity: 0.7; */
+}

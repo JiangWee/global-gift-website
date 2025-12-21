@@ -262,18 +262,27 @@ function switchForgotPasswordStep(stepId) {
     // 特殊处理
     if (stepId === 'step-verify') {
         startCountdown();
+        // 切换到验证步骤时，确保重新发送按钮状态正确
+        const resendBtn = document.getElementById('resend-btn');
+        if (resendBtn) {
+            resendBtn.disabled = false;
+            resendBtn.textContent = '重新发送';
+        }
     } else if (stepId === 'step-email') {
-        // 重置到第一步时清理数据
+        // 重置到第一步时清理数据并恢复按钮状态
         stopCountdown();
         verificationCode = '';
         resetToken = '';
+        enableVerificationButtons();
     }
 }
 
 // 发送验证码
 async function sendVerificationCode() {
     const email = document.getElementById('forgot-email').value;
-    
+    const sendBtn = document.querySelector('#step-email .next-btn'); // 获取发送按钮
+    const resendBtn = document.getElementById('resend-btn'); // 重新发送按钮
+
     if (!email) {
         showMessage('请输入邮箱地址', 'error');
         return;
@@ -285,6 +294,14 @@ async function sendVerificationCode() {
         showMessage('请输入有效的邮箱地址', 'error');
         return;
     }
+    
+    // 禁用按钮
+    if (sendBtn) sendBtn.disabled = true;
+    if (resendBtn) resendBtn.disabled = true;
+    
+    // 更新按钮文本（可选）
+    if (sendBtn) sendBtn.textContent = '发送中...';
+    if (resendBtn) resendBtn.textContent = '发送中...';
     
     showLoading(true);
     
@@ -303,12 +320,15 @@ async function sendVerificationCode() {
             codeExpiryTime = Date.now() + 10 * 60 * 1000;
             startCountdown();
             
+            if (sendBtn) sendBtn.textContent = '重新发送验证码';
+            if (resendBtn) resendBtn.textContent = '重新发送验证码';
+
             showMessage(result.message || '验证码已发送到您的邮箱', 'success');
             
             // 开发环境下显示验证码（方便测试）
-            if (result.data && result.data.verificationCode) {
-                console.log('开发环境验证码:', result.data.verificationCode);
-            }
+            // if (result.data && result.data.verificationCode) {
+            //     console.log('开发环境验证码:', result.data.verificationCode);
+            // }
 
         } else {
             showMessage(result.message || '发送验证码失败', 'error');
@@ -316,10 +336,30 @@ async function sendVerificationCode() {
         
     } catch (error) {
         showMessage('发送验证码失败，请稍后重试', 'error');
+        // 失败时恢复按钮状态
+        enableVerificationButtons();
+
     } finally {
         showLoading(false);
     }
 }
+
+// 新增函数：启用验证码相关按钮
+function enableVerificationButtons() {
+    const sendBtn = document.querySelector('#step-email .next-btn');
+    const resendBtn = document.getElementById('resend-btn');
+    
+    if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = '发送验证码';
+    }
+    
+    if (resendBtn) {
+        resendBtn.disabled = false;
+        resendBtn.textContent = '重新发送';
+    }
+}
+
 
 // 开始倒计时
 function startCountdown() {
@@ -360,7 +400,10 @@ function stopCountdown() {
 // 重新发送验证码（修改后）
 function resendCode() {
     const resendBtn = document.getElementById('resend-btn');
+    
+    // 立即禁用按钮
     resendBtn.disabled = true;
+    resendBtn.textContent = '发送中...';
     
     // 清除之前的验证码和计时器
     verificationCode = '';
@@ -368,7 +411,6 @@ function resendCode() {
     
     sendVerificationCode();
 }
-
 
 // 验证验证码
 // forms.js - 修复 verifyCode 函数
@@ -452,6 +494,7 @@ async function verifyCode() {
 
 // 重置密码
 async function resetPassword() {
+    const resetBtn = document.querySelector('#step-reset .next-btn'); // 获取重置按钮
     const newPassword = document.getElementById('new-password').value;
     const confirmPassword = document.getElementById('confirm-new-password').value;
     
@@ -479,6 +522,10 @@ async function resetPassword() {
         return;
     }
     
+    resetBtn.disabled = true;
+    const originalText = resetBtn.textContent; // 保存原始文本以便恢复
+    resetBtn.textContent = '密码重置中...'
+
     showLoading(true);
     
     try {
@@ -499,24 +546,28 @@ async function resetPassword() {
             stopCountdown();
         } else {
             showMessage(result.message || '密码重置失败', 'error');
+            resetBtn.disabled = false;
+            resetBtn.textContent = originalText;
         }
     } catch (error) {
         console.error('密码重置失败详情:', error);
         
-        // 显示具体的错误信息
+        // 5. 处理网络错误或服务器500错误
         if (error.validationErrors) {
-            // 显示所有验证错误
+            // 显示具体的验证错误
             error.validationErrors.forEach(err => {
                 showMessage(err.msg, 'error');
             });
-        } else if (error.isNetworkError) {
-            showMessage('网络连接失败，请检查网络设置', 'error');
         } else if (error.message) {
             // 显示具体的错误消息
             showMessage(error.message, 'error');
         } else {
-            showMessage('密码重置失败，请重试', 'error');
+            showMessage('网络连接失败，请检查网络设置', 'error');
         }
+        // 无论何种错误，最终都恢复按钮状态
+        resetBtn.disabled = false;
+        resetBtn.textContent = originalText;
+
     } finally {
         showLoading(false);
     }
