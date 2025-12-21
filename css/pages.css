@@ -1079,3 +1079,30 @@
     color: #666;
     margin-bottom: 30px;
 }
+
+/* 验证错误样式 */
+.validation-error {
+    color: #e53e3e;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    padding: 5px 10px;
+    background-color: #fff5f5;
+    border-left: 3px solid #e53e3e;
+    border-radius: 3px;
+}
+
+/* 输入框错误状态 */
+input.error {
+    border-color: #e53e3e !important;
+    background-color: #fff5f5;
+}
+
+/* 错误消息提示 */
+.error-message {
+    color: #e53e3e;
+    background-color: #fff5f5;
+    border: 1px solid #fed7d7;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+}

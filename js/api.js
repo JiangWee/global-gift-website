@@ -20,51 +20,75 @@ class ApiService {
         }
         return headers;
     }
-
-    async request(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`;
+    
+    // 统一处理响应
+    async handleResponse(response) {
+        const data = await response.json();
         
-        // 处理请求体
-        const config = {
-            method: options.method || 'GET',
-            headers: this.getAuthHeaders(),
-            ...options
-        };
-
-        // 如果是 GET 请求，删除可能的 body
-        if (config.method === 'GET' && config.body) {
-            delete config.body;
+        // 打印响应结构，用于调试
+        console.log('🌐 API响应原始数据:', data);
+        
+        // 如果响应本身是嵌套的，返回内层数据
+        if (data && data.data && data.data.success !== undefined) {
+            return data.data;
         }
-
+        
+        return data;
+    }
+    
+    // 修改请求方法
+    async request(endpoint, options = {}) {
+        const url = `${API_CONFIG.BASE_URL}${endpoint}`;
+        
         try {
-            console.log('API请求:', url, config);
-            const response = await fetch(url, config);
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
             
-            // 检查响应状态
+            const data = await response.json();
+            
+            // 记录原始响应，方便调试
+            console.log(`🌐 ${options.method || 'GET'} ${endpoint} 响应:`, data);
+            
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
+                // 创建错误对象，包含详细信息
+                const error = new Error(data.message || `HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                error.data = data;
+                error.isHttpError = true;
+                throw error;
             }
             
-            // 尝试解析 JSON
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                const data = await response.json();
-                return { success: true, data };
-            } else {
-                // 如果不是 JSON，返回文本
-                const text = await response.text();
-                return { success: true, data: text };
-            }
+            return data;
+            
         } catch (error) {
-            console.error('API请求失败:', error);
-            return { 
-                success: false, 
-                error: error.message,
-                data: null 
-            };
+            console.error('请求失败:', error);
+            
+            // 如果是网络错误（如无法连接）
+            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                error.isNetworkError = true;
+                error.message = '网络连接失败，请检查网络设置';
+            }
+            
+            // 如果是HTTP错误且有错误信息
+            if (error.isHttpError && error.data) {
+                // 如果有具体的验证错误
+                if (Array.isArray(error.data.errors)) {
+                    error.validationErrors = error.data.errors;
+                    error.message = error.data.errors.map(e => e.msg).join('; ');
+                } else if (error.data.message) {
+                    error.message = error.data.message;
+                }
+            }
+            
+            throw error;
         }
     }
+
 
     // 用户认证
     async login(credentials) {
@@ -90,10 +114,30 @@ class ApiService {
 
     // 忘记密码 - 验证验证码
     async verifyForgotPasswordCode(email, code) {
-        return this.request(API_CONFIG.ENDPOINTS.FORGOT_PASSWORD_VERIFY_CODE, {
+        console.log('📤 发送验证码验证请求:', { email, code });
+        
+        const response = await this.request(API_CONFIG.ENDPOINTS.FORGOT_PASSWORD_VERIFY_CODE, {
             method: 'POST',
-            body: JSON.stringify({ email, code })
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                email: email,
+                code: code
+            })
         });
+        
+        console.log('📥 原始验证响应:', response);
+        
+        // 如果后端返回的是嵌套结构，需要正确提取
+        if (response && response.success && response.data) {
+            // 如果response.data本身有success字段，说明是嵌套的
+            if (response.data.success !== undefined) {
+                return response.data; // 返回内层的data
+            }
+        }
+        
+        return response;
     }
 
     // 忘记密码 - 重置密码

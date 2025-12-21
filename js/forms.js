@@ -369,9 +369,15 @@ function resendCode() {
     sendVerificationCode();
 }
 
-// 验证验证码（修改后）
+
+// 验证验证码
+// forms.js - 修复 verifyCode 函数
 async function verifyCode() {
     const inputCode = document.getElementById('verification-code').value;
+    
+    console.log('🔍 verifyCode调试信息:');
+    console.log('当前邮箱:', currentEmail);
+    console.log('输入的验证码:', inputCode);
     
     if (!inputCode) {
         showMessage('请输入验证码', 'error');
@@ -383,7 +389,6 @@ async function verifyCode() {
         return;
     }
     
-    // 检查验证码是否过期
     if (Date.now() > codeExpiryTime) {
         showMessage('验证码已过期，请重新获取', 'error');
         return;
@@ -392,18 +397,51 @@ async function verifyCode() {
     showLoading(true);
     
     try {
-        const result = await apiService.verifyForgotPasswordCode(currentEmail, inputCode);
+        const response = await apiService.verifyForgotPasswordCode(currentEmail, inputCode);
         
-        if (result.success) {
-            // 保存重置令牌
-            resetToken = result.data.resetToken;
-            console.log('重置令牌已保存:', resetToken);
-            
-            showMessage('验证成功', 'success');
-            switchForgotPasswordStep('step-reset');
-        } else {
-            showMessage(result.message || '验证码错误', 'error');
+        console.log('📥 完整验证响应:', response);
+        console.log('🔍 响应结构分析:');
+        console.log('response.data:', response.data);
+        console.log('response.data.data:', response.data?.data);
+        console.log('response.data.data.resetToken:', response.data?.data?.resetToken);
+        
+        // 关键修复：从嵌套结构中获取resetToken
+        let actualResetToken = null;
+        
+        // 检查多层嵌套结构
+        if (response.data && response.data.data && response.data.data.resetToken) {
+            // 结构: { data: { data: { resetToken: "xxx" } } }
+            actualResetToken = response.data.data.resetToken;
+        } else if (response.data && response.data.resetToken) {
+            // 结构: { data: { resetToken: "xxx" } }
+            actualResetToken = response.data.resetToken;
+        } else if (response.resetToken) {
+            // 结构: { resetToken: "xxx" }
+            actualResetToken = response.resetToken;
         }
+        
+        console.log('✅ 提取的resetToken:', actualResetToken);
+        
+        if (!actualResetToken) {
+            console.error('❌ 无法从响应中找到resetToken，完整响应:', response);
+            showMessage('重置令牌获取失败，请重试', 'error');
+            return;
+        }
+        
+        // 保存到模块级变量
+        resetToken = actualResetToken;
+        console.log('✅ 重置令牌已保存:', resetToken);
+        console.log('✅ resetToken类型:', typeof resetToken);
+        console.log('✅ resetToken长度:', resetToken.length);
+        
+        // 验证令牌格式（应该是JWT格式）
+        if (resetToken.split('.').length !== 3) {
+            console.warn('⚠️ resetToken格式可能不是标准JWT');
+        }
+        
+        showMessage('验证成功', 'success');
+        switchForgotPasswordStep('step-reset');
+        
     } catch (error) {
         console.error('验证验证码失败:', error);
         showMessage('验证失败，请检查网络连接', 'error');
@@ -412,16 +450,16 @@ async function verifyCode() {
     }
 }
 
-// 重置密码（修改后）
+// 重置密码
 async function resetPassword() {
     const newPassword = document.getElementById('new-password').value;
     const confirmPassword = document.getElementById('confirm-new-password').value;
-    const resetTokenInput = document.getElementById('reset-token');
     
-    // 从隐藏字段获取令牌（如果使用隐藏字段）
-    const tokenToUse = resetTokenInput ? resetTokenInput.value : resetToken;
+    console.log('🔍 resetPassword调试信息:');
+    console.log('当前resetToken:', resetToken);
+    console.log('新密码长度:', newPassword ? newPassword.length : 0);
     
-    if (!tokenToUse) {
+    if (!resetToken) {
         showMessage('重置令牌无效，请重新验证', 'error');
         return;
     }
@@ -441,37 +479,107 @@ async function resetPassword() {
         return;
     }
     
-    if (!resetToken) {
-        showMessage('重置令牌无效，请重新验证', 'error');
-        return;
-    }
-    
     showLoading(true);
     
     try {
+        console.log('📤 发送重置密码请求:', { 
+            resetTokenLength: resetToken.length,
+            newPasswordLength: newPassword.length 
+        });
+        
         const result = await apiService.resetPasswordWithToken(resetToken, newPassword);
+        
+        console.log('📥 重置密码响应:', result);
         
         if (result.success) {
             showMessage('密码重置成功！', 'success');
-            
-            // 显示成功页面
             switchForgotPasswordStep('step-complete');
-            
-            // 清理数据
             resetToken = '';
-            verificationCode = '';
             currentEmail = '';
             stopCountdown();
-            
         } else {
             showMessage(result.message || '密码重置失败', 'error');
         }
     } catch (error) {
-        console.error('密码重置失败:', error);
-        showMessage('密码重置失败，请检查网络连接', 'error');
+        console.error('密码重置失败详情:', error);
+        
+        // 显示具体的错误信息
+        if (error.validationErrors) {
+            // 显示所有验证错误
+            error.validationErrors.forEach(err => {
+                showMessage(err.msg, 'error');
+            });
+        } else if (error.isNetworkError) {
+            showMessage('网络连接失败，请检查网络设置', 'error');
+        } else if (error.message) {
+            // 显示具体的错误消息
+            showMessage(error.message, 'error');
+        } else {
+            showMessage('密码重置失败，请重试', 'error');
+        }
     } finally {
         showLoading(false);
     }
+}
+
+
+// 显示验证错误
+function showValidationErrors(errors) {
+    if (!Array.isArray(errors) || errors.length === 0) {
+        return;
+    }
+    
+    // 清空之前的错误提示
+    const existingMessages = document.querySelectorAll('.validation-error');
+    existingMessages.forEach(msg => msg.remove());
+    
+    // 为每个错误创建提示
+    errors.forEach(error => {
+        let targetElement = null;
+        
+        // 根据错误字段找到对应的输入框
+        switch(error.path) {
+            case 'newPassword':
+                targetElement = document.getElementById('new-password');
+                break;
+            case 'confirmPassword':
+                targetElement = document.getElementById('confirm-new-password');
+                break;
+            case 'email':
+                targetElement = document.getElementById('forgot-email') || document.getElementById('verify-email-display');
+                break;
+            case 'code':
+                targetElement = document.getElementById('verification-code');
+                break;
+        }
+        
+        if (targetElement) {
+            // 创建错误消息元素
+            const errorElement = document.createElement('div');
+            errorElement.className = 'validation-error';
+            errorElement.style.color = '#e53e3e';
+            errorElement.style.fontSize = '0.85rem';
+            errorElement.style.marginTop = '5px';
+            errorElement.textContent = error.msg;
+            
+            // 在输入框后插入错误提示
+            targetElement.parentNode.appendChild(errorElement);
+            
+            // 高亮输入框
+            targetElement.style.borderColor = '#e53e3e';
+            
+            // 3秒后移除错误提示
+            setTimeout(() => {
+                if (errorElement.parentNode) {
+                    errorElement.remove();
+                }
+                targetElement.style.borderColor = '';
+            }, 5000);
+        } else {
+            // 如果没有找到对应的输入框，直接显示消息
+            showMessage(error.msg, 'error');
+        }
+    });
 }
 
 // 修改登录模态框中的忘记密码链接
@@ -486,6 +594,21 @@ function initForgotPassword() {
         };
     }
 }
+
+// 在forms.js文件末尾添加调试函数
+function debugForgotPassword() {
+    console.log('=== 忘记密码调试信息 ===');
+    console.log('currentEmail:', currentEmail);
+    console.log('resetToken:', resetToken);
+    console.log('resetToken长度:', resetToken ? resetToken.length : 0);
+    console.log('resetToken类型:', typeof resetToken);
+    console.log('codeExpiryTime:', new Date(codeExpiryTime).toLocaleString());
+    console.log('当前时间:', new Date().toLocaleString());
+    console.log('验证码是否过期:', Date.now() > codeExpiryTime ? '是' : '否');
+    console.log('=====================');
+}
+
+// 在控制台运行 debugForgotPassword() 来查看状态
 
 // 在页面加载时初始化
 document.addEventListener('DOMContentLoaded', function() {
