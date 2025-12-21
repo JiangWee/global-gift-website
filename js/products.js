@@ -314,18 +314,18 @@ async function submitOrder(product) {
         return;
     }
     
-    // 收集所有订单数据
+    // 修改订单数据格式以匹配后端
     const orderData = {
-        productId: product.ID,
-        productName: product.产品名称,
+        product_id: product.ID,
+        product_name: product.产品名称,
         price: product.价格,
         quantity: 1,
-        buyerInfo: {
+        buyer_info: {
             name: buyerName,
             phone: buyerPhone,
             email: document.getElementById('buyer-email').value
         },
-        recipientInfo: {
+        recipient_info: {
             name: recipientName,
             phone: document.getElementById('recipient-phone').value,
             street: recipientStreet,
@@ -334,8 +334,8 @@ async function submitOrder(product) {
             zip: document.getElementById('recipient-zip').value,
             country: document.getElementById('recipient-country').value
         },
-        giftMessage: document.getElementById('gift-card-text').value,
-        deliveryDate: document.getElementById('delivery-date').value
+        gift_message: document.getElementById('gift-card-text').value,
+        delivery_date: document.getElementById('delivery-date')?.value || null
     };
     
     showLoading(true);
@@ -430,42 +430,93 @@ async function renderOrdersPage() {
         showLoading(true);
         const result = await apiService.getOrders();
         
-        if (result.success && result.data && result.data.length > 0) {
-            container.innerHTML = result.data.map(order => `
-                <div class="order-card">
-                    <div class="order-header">
-                        <div class="order-info">
-                            <div class="order-number">订单号: ${order.orderId || order.id}</div>
-                            <div class="order-date">下单时间: ${new Date(order.createdAt).toLocaleString()}</div>
-                        </div>
-                        <div class="order-status ${getStatusClass(order.status)}">
-                            ${getStatusText(order.status)}
-                        </div>
-                    </div>
-                    <div class="order-content">
-                        <div class="order-product-image" style="background-image: url('./images/${order.productImage || 'default-product.jpg'}')"></div>
-                        <div class="order-product-info">
-                            <div class="order-product-name">${order.productName}</div>
-                            <div class="order-product-specs">
-                                <div>收件人: ${order.recipientInfo?.name}</div>
-                                <div>电话: ${order.recipientInfo?.phone}</div>
-                                <div>地址: ${order.recipientInfo?.street}, ${order.recipientInfo?.city}</div>
+        console.log('📦 订单数据响应:', result); // 调试日志
+
+        // 修正数据结构处理
+        let orders = [];
+        if (result.success) {
+            // 处理不同的数据结构
+            if (result.data && result.data.orders) {
+                orders = result.data.orders; // 后端返回的数据结构
+            } else if (Array.isArray(result.data)) {
+                orders = result.data; // 直接是数组的情况
+            } else if (Array.isArray(result)) {
+                orders = result; // 直接返回数组
+            }
+        }
+
+        console.log('📦 处理后的订单数据:', orders); // 调试日志
+                if (orders && orders.length > 0) {
+            container.innerHTML = orders.map(order => {
+                // 统一字段名称处理
+                const orderId = order.orderId || order.id;
+                const productName = order.productName || order.product_name;
+                const price = order.price || 0;
+                const quantity = order.quantity || 1;
+                const status = order.status || 'pending';
+                const createdAt = order.createdAt || order.created_at;
+                
+                // 处理收件人信息
+                let recipientInfo = order.recipientInfo;
+                if (typeof recipientInfo === 'string') {
+                    try {
+                        recipientInfo = JSON.parse(recipientInfo);
+                    } catch (e) {
+                        recipientInfo = {};
+                    }
+                }
+                recipientInfo = recipientInfo || {};
+                
+                // 处理购买者信息（如果需要）
+                let buyerInfo = order.buyerInfo;
+                if (typeof buyerInfo === 'string') {
+                    try {
+                        buyerInfo = JSON.parse(buyerInfo);
+                    } catch (e) {
+                        buyerInfo = {};
+                    }
+                }
+                buyerInfo = buyerInfo || {};
+                
+                // 图片处理 - 使用默认图片或根据产品ID查找
+                const productImage = order.productImage || getProductImage(order.productId);
+                
+                return `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <div class="order-number">订单号: ${orderId}</div>
+                                <div class="order-date">下单时间: ${new Date(createdAt).toLocaleString()}</div>
+                            </div>
+                            <div class="order-status ${getStatusClass(status)}">
+                                ${getStatusText(status)}
                             </div>
                         </div>
-                        <div class="order-price">
-                            <div class="order-product-price">¥ ${order.price?.toLocaleString()}</div>
-                            <div class="order-quantity">数量: ${order.quantity || 1}</div>
+                        <div class="order-content">
+                            <div class="order-product-image" style="background-image: url('${productImage}')"></div>
+                            <div class="order-product-info">
+                                <div class="order-product-name">${productName}</div>
+                                <div class="order-product-specs">
+                                    <div>收件人: ${recipientInfo.name || '未设置'}</div>
+                                    <div>电话: ${recipientInfo.phone || '未设置'}</div>
+                                    <div>地址: ${(recipientInfo.street || '') + (recipientInfo.city ? ', ' + recipientInfo.city : '')}</div>
+                                </div>
+                            </div>
+                            <div class="order-price">
+                                <div class="order-product-price">¥ ${price.toLocaleString()}</div>
+                                <div class="order-quantity">数量: ${quantity}</div>
+                            </div>
+                        </div>
+                        <div class="order-footer">
+                            <div class="order-total">实付: ¥ ${(price * quantity).toLocaleString()}</div>
+                            <div class="order-actions">
+                                <button class="view-order-btn" onclick="viewOrderDetail('${orderId}')">查看详情</button>
+                                <button class="track-order-btn" onclick="trackOrder('${orderId}')">跟踪物流</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="order-footer">
-                        <div class="order-total">实付: ¥ ${(order.price * (order.quantity || 1))?.toLocaleString()}</div>
-                        <div class="order-actions">
-                            <button class="view-order-btn" onclick="viewOrderDetail('${order.orderId || order.id}')">查看详情</button>
-                            <button class="track-order-btn" onclick="trackOrder('${order.orderId || order.id}')">跟踪物流</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         } else {
             container.innerHTML = `
                 <div class="no-orders">
@@ -480,13 +531,24 @@ async function renderOrdersPage() {
         container.innerHTML = `
             <div class="no-orders">
                 <div class="no-orders-icon">❌</div>
-                <div class="no-orders-message">获取订单失败，请稍后重试</div>
+                <div class="no-orders-message">获取订单失败: ${error.message}</div>
                 <button class="browse-products-btn" onclick="location.reload()">重新加载</button>
             </div>
         `;
     } finally {
         showLoading(false);
     }
+}
+
+
+// 根据产品ID获取图片路径
+function getProductImage(productId) {
+    // 这里可以根据产品ID从产品数据中查找对应的图片
+    const product = productsData.find(p => p.ID === productId);
+    if (product && product.图片URL) {
+        return `./images/${product.图片URL}`;
+    }
+    return './images/default-product.jpg'; // 默认图片
 }
 
 // 获取订单状态样式类

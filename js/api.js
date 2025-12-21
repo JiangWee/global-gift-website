@@ -40,22 +40,23 @@ class ApiService {
     async request(endpoint, options = {}) {
         const url = `${API_CONFIG.BASE_URL}${endpoint}`;
         
+        console.log(`🌐 发送请求: ${options.method || 'GET'} ${url}`, options.body || '');
+        
         try {
             const response = await fetch(url, {
                 ...options,
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': this.token ? `Bearer ${this.token}` : '',
                     ...options.headers
                 }
             });
             
             const data = await response.json();
             
-            // 记录原始响应，方便调试
-            console.log(`🌐 ${options.method || 'GET'} ${endpoint} 响应:`, data);
+            console.log(`🌐 响应: ${options.method || 'GET'} ${endpoint}`, data);
             
             if (!response.ok) {
-                // 创建错误对象，包含详细信息
                 const error = new Error(data.message || `HTTP error! status: ${response.status}`);
                 error.status = response.status;
                 error.data = data;
