@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             alert('订单提交成功！我们将尽快处理您的订单。');
-            document.querySelector('.checkout-form').reset();
-            updateCharCount();
+            // document.querySelector('.checkout-form').reset();
+            // updateCharCount();
         });
     }
     

@@ -359,7 +359,26 @@
     margin-top: 30px;
 }
 
+.clear-form-btn {
+    background: #f56565 !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+    cursor: pointer !important;
+    margin-left: 10px !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+}
 
+.clear-form-btn:hover {
+    background: #e53e3e !important;
+    transform: translateY(-1px) !important;
+}
+
+.clear-form-btn:active {
+    transform: translateY(0) !important;
+}
 
 /* 个人中心样式 */
 .profile-container {

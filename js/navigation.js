@@ -23,6 +23,11 @@ function goToPage(pageId) {
             switchForgotPasswordStep('step-email');
         }
         
+        // 如果是详情页，增强表单
+        if (pageId === 'page-detail') {
+            setTimeout(enhanceOrderForm, 200);
+        }
+
         // 滚动到顶部
         window.scrollTo(0, 0);
     }

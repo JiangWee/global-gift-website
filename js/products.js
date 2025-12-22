@@ -373,6 +373,11 @@ function reBindDetailPageEvents(product) {
             }
         });
     });
+
+    // 增强表单功能
+    setTimeout(() => {
+        enhanceOrderForm();
+    }, 100);
 }
 
 async function submitOrder(product) {
@@ -464,15 +469,22 @@ async function submitOrder(product) {
         if (result.success) {
             showMessage(`订单提交成功！订单号: ${result.data.orderId}`, 'success');
             
-            // 清空表单
-            document.querySelector('.checkout-form').reset();
-            updateCharCount();
+            // ✅ 移除了表单重置代码，保留用户填写的信息
+            console.log('✅ 订单提交成功，表单信息已保留');
             
             // 跳转到订单确认页面
             setTimeout(() => {
+                console.log('🔄 跳转到订单页面...');
                 goToPage('page-orders');
-                // 刷新订单列表
-                renderOrdersPage();
+                
+                // 延迟刷新订单列表
+                setTimeout(() => {
+                    try {
+                        renderOrdersPage();
+                    } catch (error) {
+                        console.error('❌ 刷新订单列表失败:', error);
+                    }
+                }, 500);
             }, 2000);
         } else {
             showMessage(result.message || '订单提交失败', 'error');
@@ -495,6 +507,53 @@ async function submitOrder(product) {
         }
     } finally {
         showLoading(false);
+    }
+}
+
+// 增强表单功能
+function enhanceOrderForm() {
+    const checkoutForm = document.querySelector('.checkout-form');
+    if (!checkoutForm) return;
+    
+    // 检查是否已经添加过清空按钮
+    if (checkoutForm.querySelector('.clear-form-btn')) {
+        return;
+    }
+    
+    // 创建清空按钮
+    const clearButton = document.createElement('button');
+    clearButton.type = 'button';
+    clearButton.className = 'clear-form-btn';
+    clearButton.innerHTML = '🗑️ 清空表单';
+    clearButton.style.cssText = `
+        background: #f56565;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 10px;
+        font-size: 14px;
+    `;
+    
+    clearButton.onclick = function() {
+        if (confirm('确定要清空所有表单信息吗？这将删除所有已填写的内容。')) {
+            checkoutForm.reset();
+            updateCharCount();
+            showMessage('表单已清空', 'info');
+        }
+    };
+    
+    // 在购买按钮旁边添加清空按钮
+    const formActions = checkoutForm.querySelector('.form-actions');
+    if (formActions) {
+        formActions.appendChild(clearButton);
+    } else {
+        // 如果没有form-actions容器，直接放在购买按钮后面
+        const buyButton = checkoutForm.querySelector('.final-buy-btn');
+        if (buyButton) {
+            buyButton.parentNode.insertBefore(clearButton, buyButton.nextSibling);
+        }
     }
 }
 
