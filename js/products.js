@@ -68,6 +68,9 @@ function renderProducts(filteredProducts = null) {
     
     if (!giftGrid) return;
     
+    // 检查用户登录状态
+    const isLoggedIn = !!apiService.token;
+
     if (products.length === 0) {
         giftGrid.innerHTML = '<div class="no-products">暂无产品</div>';
         return;
@@ -77,8 +80,13 @@ function renderProducts(filteredProducts = null) {
         // 为每个产品单独构建图片路径
         const localImagePath = `./images/${product.图片URL}`;
         
+        // 根据登录状态决定点击行为
+        const onClickHandler = isLoggedIn 
+            ? `viewGiftDetail(${product.ID})` 
+            : `showLogin()`;
+
         return `
-            <div class="gift-card" onclick="viewGiftDetail(${product.ID})">
+            <div class="gift-card" onclick="${onClickHandler}">
                 <div class="gift-img" style="background-image: url('${localImagePath}');"></div>
                 <div class="gift-info">
                     <div class="gift-name">${product.产品名称}</div>
@@ -95,6 +103,35 @@ function renderProducts(filteredProducts = null) {
     }).join('');
 }
 
+function checkLoginForPurchase() {
+    if (!apiService.token) {
+        showMessage('请先登录后再进行购买', 'warning');
+        showLogin();
+        return false;
+    }
+    return true;
+}
+
+// 修改 viewGiftDetail 函数，添加登录检查
+function viewGiftDetail(productId) {
+    // 检查登录状态
+    if (!checkLoginForPurchase()) {
+        return;
+    }
+    
+    console.log('查看礼品详情 ID:', productId);
+    
+    const product = productsData.find(p => p.ID === productId);
+    if (!product) {
+        console.error('产品不存在 ID:', productId);
+        alert('产品不存在');
+        return;
+    }
+    
+    renderProductDetail(product);
+    goToPage('page-detail');
+}
+
 // 渲染产品详情页
 function renderProductDetail(product) {
     const container = document.getElementById('page-detail-container');
@@ -103,7 +140,12 @@ function renderProductDetail(product) {
         return;
     }
     
+    // 检查用户登录状态
+    const isLoggedIn = !!apiService.token;
+    
     console.log('渲染产品详情:', product.产品名称);
+    console.log('用户登录状态:', isLoggedIn);
+    
     console.log('礼品详情描述:', product.礼品详情描述);
     console.log('图片URL:', product.图片URL);
 
@@ -144,7 +186,16 @@ function renderProductDetail(product) {
 
     const localImagePath = `./images/${product.图片URL}`;
 
-    // 生成详情页HTML
+    // 修改购买按钮逻辑 - 根据登录状态显示不同的按钮
+    const buyButtonHTML = isLoggedIn 
+        ? `<button class="buy-btn" onclick="submitOrder(${product.ID})" ${product.库存 === 0 ? 'disabled' : ''}>
+             ${product.库存 === 0 ? '暂时缺货' : '立即购买'}
+           </button>`
+        : `<button class="buy-btn" onclick="showLogin()" ${product.库存 === 0 ? 'disabled' : ''}>
+             ${product.库存 === 0 ? '暂时缺货' : '立即购买'}
+           </button>`;
+
+    // 在生成详情页HTML时使用新的按钮逻辑
     container.innerHTML = `
         <div class="gift-detail">
             <div class="gift-image-large" style="background-image: url('${localImagePath}');"></div>
@@ -157,9 +208,7 @@ function renderProductDetail(product) {
                     ${product.库存 < 3 ? '<span class="stock-warning">(库存紧张)</span>' : ''}
                 </div>
                 <p>${product.描述}</p>
-                <button class="buy-btn" onclick="showLogin()" ${product.库存 === 0 ? 'disabled' : ''}>
-                    ${product.库存 === 0 ? '暂时缺货' : '立即购买'}
-                </button>
+                ${buyButtonHTML}
             </div>
         </div>
         

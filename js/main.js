@@ -4,6 +4,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // 检查用户登录状态
     checkAuthStatus().then(isLoggedIn => {
         console.log('用户登录状态:', isLoggedIn ? '已登录' : '未登录');
+        
+        // 根据登录状态初始化页面
+        if (isLoggedIn) {
+            // 如果已登录，重新渲染当前页面以确保按钮状态正确
+            const activePage = document.querySelector('.page.active');
+            if (activePage && activePage.id === 'page-gifts') {
+                renderProducts();
+            }
+        }
     });
 
     // 设置默认送达日期为7天后

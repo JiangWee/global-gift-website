@@ -45,7 +45,43 @@ function updateNavbarForLoggedInUser(user) {
             </div>
         </div>
     `;
+
+    // 登录后重新渲染当前页面，更新按钮状态
+    refreshCurrentPageForLogin();
+
 }
+
+// 添加页面刷新函数
+function refreshCurrentPageForLogin() {
+    const activePage = document.querySelector('.page.active');
+    if (!activePage) return;
+    
+    const pageId = activePage.id;
+    
+    switch(pageId) {
+        case 'page-gifts':
+            // 重新渲染产品列表
+            renderProducts();
+            break;
+        case 'page-detail':
+            // 重新渲染产品详情
+            const currentProduct = getCurrentProduct(); // 需要实现这个函数
+            if (currentProduct) {
+                renderProductDetail(currentProduct);
+            }
+            break;
+        // 可以添加其他页面的刷新逻辑
+    }
+}
+
+// 添加获取当前产品的辅助函数
+function getCurrentProduct() {
+    // 这里需要根据当前页面状态获取产品信息
+    // 简单实现：从URL参数或全局变量获取
+    // 暂时返回null，实际项目中需要根据具体逻辑实现
+    return null;
+}
+
 function updateNavbarForLoggedOutUser() {
     const userStatusEl = document.getElementById('userStatus');
     if (!userStatusEl) return;
