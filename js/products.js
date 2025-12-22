@@ -3,6 +3,7 @@ const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbwscfYZ0DQuJ4
 
 let productsData = [];
 let currentCategory = 'all';
+let currentProduct = null;
 
 async function loadProducts() {
     console.log('加载产品数据...');
@@ -112,28 +113,36 @@ function checkLoginForPurchase() {
     return true;
 }
 
-// 修改 viewGiftDetail 函数，添加登录检查
+// 修改 viewGiftDetail 函数
 function viewGiftDetail(productId) {
+    console.log('🎯 进入详情页，产品ID:', productId);
+    
     // 检查登录状态
     if (!checkLoginForPurchase()) {
         return;
     }
     
-    console.log('查看礼品详情 ID:', productId);
+    const product = productsData.find(p => p.ID == productId);
+    console.log('🎯 查找到的产品对象:', product);
     
-    const product = productsData.find(p => p.ID === productId);
     if (!product) {
-        console.error('产品不存在 ID:', productId);
-        alert('产品不存在');
+        console.error('❌ 未找到产品，ID:', productId);
+        showMessage('产品不存在', 'error');
         return;
     }
     
     renderProductDetail(product);
     goToPage('page-detail');
+    
+    // 确保传递正确的产品对象
+    reBindDetailPageEvents(product);
 }
 
 // 渲染产品详情页
 function renderProductDetail(product) {
+    currentProduct = product; // 存储当前产品
+    console.log('📝 存储当前产品:', currentProduct);
+    
     const container = document.getElementById('page-detail-container');
     if (!container) {
         console.error('详情页容器未找到');
@@ -143,10 +152,8 @@ function renderProductDetail(product) {
     // 检查用户登录状态
     const isLoggedIn = !!apiService.token;
     
-    console.log('渲染产品详情:', product.产品名称);
-    console.log('用户登录状态:', isLoggedIn);
-    
-    console.log('礼品详情描述:', product.礼品详情描述);
+    console.log('🎨 渲染产品详情:', product.产品名称);
+    console.log('🔍 产品属性检查 - ID:', product.ID, '名称:', product.产品名称, '价格:', product.价格);
     console.log('图片URL:', product.图片URL);
 
     // 处理规格参数 - 将换行符转换为<br>
@@ -315,28 +322,52 @@ function renderProductDetail(product) {
     reBindDetailPageEvents(product);
 }
 
-// 重新绑定详情页事件
+// 修改 reBindDetailPageEvents 函数
 function reBindDetailPageEvents(product) {
+    console.log('🎯 重新绑定详情页事件，产品对象:', product);
+    console.log('🎯 产品ID:', product?.ID);
+    
     // 重新绑定字符计数
     const textarea = document.getElementById('gift-card-text');
     if (textarea) {
         textarea.addEventListener('input', updateCharCount);
     }
     
-    // 重新绑定购买按钮
+    // 重新绑定购买按钮 - 使用闭包确保传递正确的产品对象
     const buyButton = document.querySelector('.final-buy-btn');
-    if (buyButton && product.库存 > 0) {
-        buyButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            submitOrder(product);
-        });
+    if (buyButton) {
+        // 移除旧的事件监听器
+        const newButton = buyButton.cloneNode(true);
+        buyButton.parentNode.replaceChild(newButton, buyButton);
+        
+        // 使用闭包捕获当前产品对象
+        (function(currentProduct) {
+            newButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('🛒 点击购买按钮，当前产品:', currentProduct);
+                
+                if (!currentProduct || !currentProduct.ID) {
+                    console.error('❌ 产品对象无效:', currentProduct);
+                    showMessage('产品信息异常，请刷新页面重试', 'error');
+                    return;
+                }
+                
+                // 验证库存
+                if (currentProduct.库存 === 0) {
+                    showMessage('该产品暂时缺货', 'error');
+                    return;
+                }
+                
+                submitOrder(currentProduct);
+            });
+        })(product); // 立即执行函数，传递当前产品对象
     }
     
     // 重新绑定标签切换
     const tabHeaders = document.querySelectorAll('.tab-header');
-    tabHeaders.forEach(tab => {  // 修复语法
+    tabHeaders.forEach(tab => {
         tab.addEventListener('click', function() {
-            const match = this.getAttribute('onclick').match(/'([^']+)'/);
+            const match = this.getAttribute('onclick')?.match(/'([^']+)'/);
             if (match) {
                 switchTab(match[1]);
             }
@@ -345,11 +376,39 @@ function reBindDetailPageEvents(product) {
 }
 
 async function submitOrder(product) {
+    console.log('🛒 开始提交订单，接收的产品参数:', product);
+    
+    // 容错处理：如果参数不是对象，尝试使用全局的 currentProduct
+    if (typeof product !== 'object' || product === null) {
+        console.warn('⚠️ 参数不是产品对象，尝试使用全局 currentProduct');
+        product = currentProduct;
+    }
+    
+    // 详细调试产品对象
+    console.log('🔍🔍 完整产品对象:', product);
+    console.log('🔍🔍 产品所有属性:', Object.keys(product || {}));
+    
+    if (!product || typeof product !== 'object') {
+        console.error('❌ 产品信息缺失或格式错误:', product);
+        showMessage('产品信息异常，请重新选择产品', 'error');
+        return;
+    }
+    
+    // 使用安全的产品信息获取函数
+    const productInfo = getProductInfo(product);
+    if (!productInfo || !productInfo.id) {
+        console.error('❌ 无法获取产品信息:', productInfo);
+        showMessage('无法获取产品信息，请重试', 'error');
+        return;
+    }
+    
+    console.log('✅ 产品信息验证通过:', productInfo);
+    
     // 表单验证
-    const buyerName = document.getElementById('buyer-name').value;
-    const buyerPhone = document.getElementById('buyer-phone').value;
-    const recipientName = document.getElementById('recipient-name').value;
-    const recipientStreet = document.getElementById('recipient-street').value;
+    const buyerName = document.getElementById('buyer-name')?.value;
+    const buyerPhone = document.getElementById('buyer-phone')?.value;
+    const recipientName = document.getElementById('recipient-name')?.value;
+    const recipientStreet = document.getElementById('recipient-street')?.value;
     
     if (!buyerName || !buyerPhone || !recipientName || !recipientStreet) {
         showMessage('请填写完整的必填信息', 'error');
@@ -363,34 +422,44 @@ async function submitOrder(product) {
         return;
     }
     
-    // 修改订单数据格式以匹配后端
+    // 构建订单数据
     const orderData = {
-        product_id: product.ID,
-        product_name: product.产品名称,
-        price: product.价格,
+        product_id: productInfo.id,
+        product_name: productInfo.name,
+        price: productInfo.price,
         quantity: 1,
         buyer_info: {
             name: buyerName,
             phone: buyerPhone,
-            email: document.getElementById('buyer-email').value
+            email: document.getElementById('buyer-email')?.value || ''
         },
         recipient_info: {
             name: recipientName,
-            phone: document.getElementById('recipient-phone').value,
+            phone: document.getElementById('recipient-phone')?.value || '',
             street: recipientStreet,
-            city: document.getElementById('recipient-city').value,
-            state: document.getElementById('recipient-state').value,
-            zip: document.getElementById('recipient-zip').value,
-            country: document.getElementById('recipient-country').value
+            city: document.getElementById('recipient-city')?.value || '',
+            state: document.getElementById('recipient-state')?.value || '',
+            zip: document.getElementById('recipient-zip')?.value || '',
+            country: document.getElementById('recipient-country')?.value || 'china'
         },
-        gift_message: document.getElementById('gift-card-text').value,
+        gift_message: document.getElementById('gift-card-text')?.value || '',
         delivery_date: document.getElementById('delivery-date')?.value || null
     };
     
+    console.log('📤 提交的订单数据:', orderData);
+    
+        // 验证必要字段
+    if (!orderData.product_id || !orderData.product_name || orderData.price <= 0) {
+        showMessage('产品信息不完整，请重新选择产品', 'error');
+        return;
+    }
+
     showLoading(true);
     
     try {
         const result = await apiService.createOrder(orderData);
+        
+        console.log('📥📥 订单创建响应:', result);
         
         if (result.success) {
             showMessage(`订单提交成功！订单号: ${result.data.orderId}`, 'success');
@@ -399,18 +468,60 @@ async function submitOrder(product) {
             document.querySelector('.checkout-form').reset();
             updateCharCount();
             
-            // 可以跳转到订单确认页面或首页
-            setTimeout(() => goToPage('page-home'), 2000);
+            // 跳转到订单确认页面
+            setTimeout(() => {
+                goToPage('page-orders');
+                // 刷新订单列表
+                renderOrdersPage();
+            }, 2000);
         } else {
-            showMessage(result.error || '订单提交失败', 'error');
+            showMessage(result.message || '订单提交失败', 'error');
         }
     } catch (error) {
-        showMessage('订单提交失败，请检查网络连接', 'error');
+        console.error('❌❌ 订单提交错误详情:', error);
+        
+        // 更详细的错误处理
+        if (error.isNetworkError) {
+            showMessage('网络连接失败，请检查网络设置', 'error');
+        } else if (error.validationErrors) {
+            // 显示具体的验证错误
+            error.validationErrors.forEach(err => {
+                showMessage(err.msg, 'error');
+            });
+        } else if (error.message) {
+            showMessage(error.message, 'error');
+        } else {
+            showMessage('订单提交失败，请稍后重试', 'error');
+        }
     } finally {
         showLoading(false);
     }
 }
 
+// 安全的产品信息获取函数
+function getProductInfo(product) {
+    if (!product || typeof product !== 'object') {
+        console.error('❌ 无效的产品对象:', product);
+        return null;
+    }
+    
+    // 尝试多种可能的属性名
+    const productInfo = {
+        id: product.ID || product.id || product.productId || product.product_id,
+        name: product['产品名称'] || product.产品名称 || product.name || product.productName,
+        price: parseFloat(product['价格'] || product.价格 || product.price || 0)
+    };
+    
+    console.log('🔍 提取的产品信息:', productInfo);
+    
+    // 验证必要字段
+    if (!productInfo.id || !productInfo.name || productInfo.price <= 0) {
+        console.error('❌ 产品信息不完整:', productInfo);
+        return null;
+    }
+    
+    return productInfo;
+}
 
 // 渲染个人中心页面
 function renderProfilePage() {
