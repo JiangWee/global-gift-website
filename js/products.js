@@ -698,6 +698,7 @@ async function renderOrdersPage() {
                 buyerInfo = buyerInfo || {};
                 
                 // 图片处理 - 使用默认图片或根据产品ID查找
+                console.log('🎯 order.productImage:', order.productImage);
                 const productImage = order.productImage || getProductImage(order.productId);
                 
                 return `
@@ -763,7 +764,10 @@ async function renderOrdersPage() {
 // 根据产品ID获取图片路径
 function getProductImage(productId) {
     // 这里可以根据产品ID从产品数据中查找对应的图片
-    const product = productsData.find(p => p.ID === productId);
+    const product = productsData.find(p => p.ID == productId);
+    console.log('🎯 查找到的产品对象:', product);
+    console.log('🎯 全局的产品信息:', productsData);
+
     if (product && product.图片URL) {
         return `./images/${product.图片URL}`;
     }

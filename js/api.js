@@ -36,11 +36,11 @@ class ApiService {
         return data;
     }
     
-    // 修改请求方法
+
     async request(endpoint, options = {}) {
-        const url = `${API_CONFIG.BASE_URL}${endpoint}`;
+        const url = `${this.baseURL}${endpoint}`;
         
-        console.log(`🌐 发送请求: ${options.method || 'GET'} ${url}`, options.body || '');
+        console.log(`🌐🌐 发送请求: ${options.method || 'GET'} ${url}`, options.body || '');
         
         try {
             const response = await fetch(url, {
@@ -54,13 +54,20 @@ class ApiService {
             
             const data = await response.json();
             
-            console.log(`🌐 响应: ${options.method || 'GET'} ${endpoint}`, data);
+            console.log(`🌐🌐 响应: ${options.method || 'GET'} ${endpoint}`, data);
             
             if (!response.ok) {
                 const error = new Error(data.message || `HTTP error! status: ${response.status}`);
                 error.status = response.status;
                 error.data = data;
                 error.isHttpError = true;
+                
+                // 特别处理 401 未授权错误 和 403 禁止访问（Token过期)
+                if (response.status === 401 || response.status === 403) {
+                    error.isTokenExpired = true;
+                    error.message = '登录已过期，请重新登录';
+                }
+                
                 throw error;
             }
             
@@ -69,15 +76,20 @@ class ApiService {
         } catch (error) {
             console.error('请求失败:', error);
             
-            // 如果是网络错误（如无法连接）
+            // 处理 Token 过期
+            if (error.isTokenExpired) {
+                this.handleTokenExpired();
+                // 不再抛出错误，因为已经处理了
+                return { success: false, message: error.message, handled: true };
+            }
+            
+            // 原有的其他错误处理...
             if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
                 error.isNetworkError = true;
                 error.message = '网络连接失败，请检查网络设置';
             }
             
-            // 如果是HTTP错误且有错误信息
             if (error.isHttpError && error.data) {
-                // 如果有具体的验证错误
                 if (Array.isArray(error.data.errors)) {
                     error.validationErrors = error.data.errors;
                     error.message = error.data.errors.map(e => e.msg).join('; ');
@@ -90,6 +102,37 @@ class ApiService {
         }
     }
 
+    // 添加 Token 过期处理
+    handleTokenExpired() {
+        console.log('🔐 Token 已过期，执行退出登录流程');
+        
+        // 清除本地存储
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userInfo');
+        
+        // 重置 API token
+        this.token = null;
+        
+        // 显示友好的提示
+        showMessage('登录已过期，请重新登录', 'warning');
+        
+        // 延迟执行，避免阻塞当前操作
+        setTimeout(() => {
+            // 更新导航栏状态
+            updateNavbarForLoggedOutUser();
+            
+            // 如果当前在需要登录的页面，跳转到首页
+            const protectedPages = ['page-orders', 'page-profile', 'page-detail'];
+            const currentPage = document.querySelector('.page.active')?.id;
+            
+            if (protectedPages.includes(currentPage)) {
+                goToPage('page-home');
+            }
+            
+            // 显示登录框
+            showLogin();
+        }, 1000);
+    }
 
     // 用户认证
     async login(credentials) {
