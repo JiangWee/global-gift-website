@@ -433,6 +433,7 @@ async function submitOrder(product) {
         product_name: productInfo.name,
         price: productInfo.price,
         quantity: 1,
+        status_front: 'unpaid', // 新增：设置初始状态为未支付
         buyer_info: {
             name: buyerName,
             phone: buyerPhone,
@@ -665,7 +666,7 @@ async function renderOrdersPage() {
         }
 
         console.log('📦 处理后的订单数据:', orders); // 调试日志
-                if (orders && orders.length > 0) {
+        if (orders && orders.length > 0) {
             container.innerHTML = orders.map(order => {
                 // 统一字段名称处理
                 const orderId = order.orderId || order.id;
@@ -700,7 +701,20 @@ async function renderOrdersPage() {
                 // 图片处理 - 使用默认图片或根据产品ID查找
                 console.log('🎯 order.productImage:', order.productImage);
                 const productImage = order.productImage || getProductImage(order.productId);
-                
+                // 在订单操作区域添加支付按钮逻辑
+                const orderActions = order.status === 'unpaid' 
+                    ? `
+                        <div class="order-actions">
+                            <button class="pay-now-btn" onclick="showPaymentModal('${orderId}', ${price})">立即支付</button>
+                            <button class="view-order-btn" onclick="viewOrderDetail('${orderId}')">查看详情</button>
+                        </div>
+                    `
+                    : `
+                        <div class="order-actions">
+                            <button class="view-order-btn" onclick="viewOrderDetail('${orderId}')">查看详情</button>
+                            <button class="track-order-btn" onclick="trackOrder('${orderId}')">跟踪物流</button>
+                        </div>
+                    `;
                 return `
                     <div class="order-card">
                         <div class="order-header">
@@ -729,10 +743,7 @@ async function renderOrdersPage() {
                         </div>
                         <div class="order-footer">
                             <div class="order-total">实付: ¥ ${(price * quantity).toLocaleString()}</div>
-                            <div class="order-actions">
-                                <button class="view-order-btn" onclick="viewOrderDetail('${orderId}')">查看详情</button>
-                                <button class="track-order-btn" onclick="trackOrder('${orderId}')">跟踪物流</button>
-                            </div>
+                            ${orderActions}
                         </div>
                     </div>
                 `;
@@ -777,6 +788,7 @@ function getProductImage(productId) {
 // 获取订单状态样式类
 function getStatusClass(status) {
     const statusMap = {
+        'unpaid': 'status-unpaid',
         'pending': 'status-pending',
         'shipped': 'status-shipped',
         'delivered': 'status-delivered',
@@ -788,6 +800,7 @@ function getStatusClass(status) {
 // 获取订单状态文本
 function getStatusText(status) {
     const statusTextMap = {
+        'unpaid': '未支付',
         'pending': '待处理',
         'shipped': '已发货',
         'delivered': '已送达',
