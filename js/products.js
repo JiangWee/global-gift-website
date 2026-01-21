@@ -701,20 +701,14 @@ async function renderOrdersPage() {
                 // 图片处理 - 使用默认图片或根据产品ID查找
                 console.log('🎯 order.productImage:', order.productImage);
                 const productImage = order.productImage || getProductImage(order.productId);
-                // 在订单操作区域添加支付按钮逻辑
                 const orderActions = order.status === 'unpaid' 
                     ? `
                         <div class="order-actions">
-                            <button class="pay-now-btn" onclick="showPaymentModal('${orderId}', ${price})">立即支付</button>
+                            <button class="pay-now-btn">立即支付</button>
                             <button class="view-order-btn" onclick="viewOrderDetail('${orderId}')">查看详情</button>
                         </div>
                     `
-                    : `
-                        <div class="order-actions">
-                            <button class="view-order-btn" onclick="viewOrderDetail('${orderId}')">查看详情</button>
-                            <button class="track-order-btn" onclick="trackOrder('${orderId}')">跟踪物流</button>
-                        </div>
-                    `;
+                    : `...`;
                 return `
                     <div class="order-card">
                         <div class="order-header">
@@ -769,6 +763,12 @@ async function renderOrdersPage() {
     } finally {
         showLoading(false);
     }
+
+    console.log('📦 订单列表渲染完成，初始化支付按钮');
+    setTimeout(() => {
+        initPaymentButtonEvents();
+        refreshPaymentButtons();
+    }, 100);
 }
 
 
@@ -778,7 +778,8 @@ function getProductImage(productId) {
     const product = productsData.find(p => p.ID == productId);
     console.log('🎯 查找到的产品对象:', product);
     console.log('🎯 全局的产品信息:', productsData);
-
+    console.log('🎯 productId:', productId);
+    console.log('🎯 product.图片URL:', product.图片URL);
     if (product && product.图片URL) {
         return `./images/${product.图片URL}`;
     }
@@ -837,6 +838,30 @@ function getFieldLabel(field) {
     return labels[field] || field;
 }
 
+// 在 products.js 文件末尾添加
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('pay-now-btn')) {
+        e.preventDefault();
+        
+        // 获取订单信息
+        const orderCard = e.target.closest('.order-card');
+        const orderId = orderCard.querySelector('.order-number').textContent.replace('订单号: ', '');
+        const priceText = orderCard.querySelector('.order-product-price').textContent.replace('¥ ', '');
+        const price = parseFloat(priceText.replace(/,/g, ''));
+        const productName = orderCard.querySelector('.order-product-name').textContent;
+        
+        // 检查支付函数是否存在
+        if (typeof showPaymentModal === 'function') {
+            showPaymentModal(orderId, price, productName);
+        } else {
+            console.error('showPaymentModal 函数未定义');
+            showMessage('支付功能暂不可用，请稍后重试', 'error');
+        }
+    }
+});
+
+
+
 // 查看订单详情
 function viewOrderDetail(orderId) {
     showMessage(`查看订单 ${orderId} 的详情功能开发中...`, 'info');
@@ -845,4 +870,80 @@ function viewOrderDetail(orderId) {
 // 跟踪物流
 function trackOrder(orderId) {
     showMessage(`跟踪订单 ${orderId} 的物流功能开发中...`, 'info');
+}
+
+
+// 修复支付按钮事件绑定
+function initPaymentButtonEvents() {
+    console.log('🔄 初始化支付按钮事件');
+    
+    // 移除旧的事件监听器（避免重复绑定）
+    document.removeEventListener('click', handlePaymentButtonClick);
+    
+    // 添加新的事件监听器
+    document.addEventListener('click', handlePaymentButtonClick);
+}
+
+function handlePaymentButtonClick(e) {
+    if (e.target.classList.contains('pay-now-btn') || 
+        e.target.closest('.pay-now-btn')) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('💰 支付按钮被点击');
+        
+        let payButton = e.target;
+        if (!payButton.classList.contains('pay-now-btn')) {
+            payButton = e.target.closest('.pay-now-btn');
+        }
+        
+        const orderCard = payButton.closest('.order-card');
+        if (!orderCard) {
+            console.error('❌ 未找到订单卡片');
+            showMessage('订单信息异常，请刷新页面重试', 'error');
+            return;
+        }
+        
+        // 获取订单信息
+        const orderNumberElement = orderCard.querySelector('.order-number');
+        const priceElement = orderCard.querySelector('.order-product-price');
+        const productNameElement = orderCard.querySelector('.order-product-name');
+        
+        if (!orderNumberElement || !priceElement || !productNameElement) {
+            console.error('❌ 订单信息元素缺失');
+            showMessage('订单信息不完整，无法支付', 'error');
+            return;
+        }
+        
+        const orderId = orderNumberElement.textContent.replace('订单号: ', '').trim();
+        const priceText = priceElement.textContent.replace('¥ ', '').replace(/,/g, '');
+        const price = parseFloat(priceText);
+        const productName = productNameElement.textContent.trim();
+        
+        console.log('📦 支付信息:', { orderId, price, productName });
+        
+        if (!orderId || isNaN(price) || price <= 0) {
+            console.error('❌ 订单信息格式错误');
+            showMessage('订单信息格式错误，请刷新页面', 'error');
+            return;
+        }
+        
+        // 显示支付模态框
+        showPaymentModal(orderId, price, productName);
+    }
+}
+
+// 在页面加载时初始化支付功能
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 初始化支付功能');
+    initPaymentButtonEvents();
+    
+    // 确保支付模态框事件已绑定
+    setTimeout(initPaymentModalEvents, 1000);
+});
+
+// 在渲染订单页面后重新绑定事件
+function refreshPaymentButtons() {
+    console.log('🔄 刷新支付按钮事件绑定');
+    setTimeout(initPaymentButtonEvents, 100);
 }

@@ -34,3 +34,4 @@ build/
 # 缓存文件
 .cache/
 .parcel-cache/
+temp/

@@ -62,10 +62,16 @@ class ApiService {
                 error.data = data;
                 error.isHttpError = true;
                 
-                // 特别处理 401 未授权错误 和 403 禁止访问（Token过期)
                 if (response.status === 401 || response.status === 403) {
-                    error.isTokenExpired = true;
-                    error.message = '登录已过期，请重新登录';
+                    // 如果是登录接口的认证失败，保留原始错误消息
+                    if (endpoint === API_CONFIG.ENDPOINTS.LOGIN) {
+                        error.isTokenExpired = false; // 登录失败，不是token过期
+                        error.message = data.message || '认证失败'; // 使用后端返回的消息
+                    } else {
+                        // 其他接口的401/403才是token过期
+                        error.isTokenExpired = true;
+                        error.message = '登录已过期，请重新登录';
+                    }
                 }
                 
                 throw error;
@@ -220,6 +226,32 @@ class ApiService {
     async getOrders() {
         return this.request(API_CONFIG.ENDPOINTS.ORDERS);
     }
+
+    // 支付相关API
+    async createPayment(paymentData) {
+        return this.request('/api/payment/create', {
+            method: 'POST',
+            body: JSON.stringify(paymentData)
+        });
+    }
+
+    async queryPaymentStatus(orderId, paymentMethod) {
+        return this.request(`/api/payment/status?orderId=${orderId}&paymentMethod=${paymentMethod}`);
+    }
+
+    async getPaymentResult(orderId) {
+        return this.request(`/api/payment/result?orderId=${orderId}`);
+    }
+
+    // 更新订单状态
+    async updateOrderStatus(orderId, newStatus) {
+        return this.request(`/api/orders/${orderId}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ status: newStatus })
+        });
+    }
+    
+    
 }
 
 const apiService = new ApiService();

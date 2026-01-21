@@ -693,3 +693,112 @@
     background: #2f855a;
     transform: translateY(-2px);
 }
+
+/* 确保模态框正确显示 */
+#paymentModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+    z-index: 9999; /* 确保在最上层 */
+    display: none; /* 默认隐藏 */
+    justify-content: center;
+    align-items: center;
+}
+
+/* 清理重复的CSS规则 */
+.payment-modal-content {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    min-height: 300px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    padding: 24px;
+    position: relative;
+    /* 注意：这里不要设置 display: none ! */
+    /* 默认应该是显示的，由外层模态框控制隐藏 */
+    display: block; /* 或者 flex，取决于布局 */
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.payment-modal-content.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 动画效果 */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 确保内容可见 */
+.payment-modal-body {
+    padding: 20px 0;
+}
+
+/* 支付方式选择 */
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.payment-method-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.payment-method-item:hover {
+    border-color: #4a6bff;
+    background-color: #f5f7ff;
+}
+
+.payment-method-item.selected {
+    border-color: #4a6bff;
+    background-color: #f5f7ff;
+}
+
+/* 按钮样式 */
+.payment-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.payment-confirm {
+    background-color: #4a6bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.payment-cancel {
+    background-color: #f1f1f1;
+    color: #666;
+    border: 1px solid #ddd;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+}

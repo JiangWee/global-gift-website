@@ -1,17 +1,16 @@
 // navigation.js - 导航功能
-// navigation.js - 修复页面滚动问题
 function goToPage(pageId) {
     // 隐藏所有页面
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
-        page.style.display = 'none'; // 确保隐藏
+        page.style.display = 'none';
     });
     
     // 显示目标页面
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
         targetPage.classList.add('active');
-        targetPage.style.display = 'block'; // 确保显示
+        targetPage.style.display = 'block';
         
         // 特殊页面处理
         if (pageId === 'page-profile') {
@@ -19,15 +18,15 @@ function goToPage(pageId) {
         } else if (pageId === 'page-orders') {
             renderOrdersPage();
         } else if (pageId === 'page-forgot-password') {
-            // 重置忘记密码流程到第一步
             switchForgotPasswordStep('step-email');
-        }
-        
-        // 如果是详情页，增强表单
-        if (pageId === 'page-detail') {
+        } else if (pageId === 'page-gifts') {
+            // 🔥 关键修复：切换到商品页面时重新渲染
+            console.log('🔄 切换到商品页面，重新渲染产品列表');
+            renderProducts();
+        } else if (pageId === 'page-detail') {
             setTimeout(enhanceOrderForm, 200);
         }
-
+        
         // 滚动到顶部
         window.scrollTo(0, 0);
     }

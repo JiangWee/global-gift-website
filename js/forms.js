@@ -75,10 +75,11 @@ async function login() {
             } 
         } else {
             // 特殊处理用户不存在的提示
-            showMessage(result.error, 'error');
+            showMessage(result.message || '登录失败', 'error');
         }
     } catch (error) {
         console.error('登录请求错误:', error);
+        showMessage(error.message || '登录失败，请检查网络连接', 'error');
     } finally {
         showLoading(false);
     }

@@ -48,29 +48,27 @@ function updateNavbarForLoggedInUser(user) {
 
     // 登录后重新渲染当前页面，更新按钮状态
     refreshCurrentPageForLogin();
-
 }
 
-// 添加页面刷新函数
 function refreshCurrentPageForLogin() {
     const activePage = document.querySelector('.page.active');
     if (!activePage) return;
     
     const pageId = activePage.id;
+    console.log('🔄 刷新页面状态，当前页面:', pageId);
     
     switch(pageId) {
         case 'page-gifts':
             // 重新渲染产品列表
             renderProducts();
+            console.log('✅ 已重新渲染商品列表');
             break;
         case 'page-detail':
-            // 重新渲染产品详情
-            const currentProduct = getCurrentProduct(); // 需要实现这个函数
+            // 如果有当前产品，重新渲染详情页
             if (currentProduct) {
                 renderProductDetail(currentProduct);
             }
             break;
-        // 可以添加其他页面的刷新逻辑
     }
 }
 

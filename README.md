@@ -7,6 +7,9 @@ Gift Buy Buy 是一个专业的跨国商务礼品服务平台，为客户提供�
 http-server -p 8000
 打开浏览器访问 http://localhost:8000
 
+开发者工具强制刷新
+Ctrl + Shift + R (Windows) 
+
 ## 功能特性
 - 🌍 跨国礼品配送服务
 - 🎁 多样化礼品分类选择
