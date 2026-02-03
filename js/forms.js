@@ -15,6 +15,10 @@ function closeLoginModal() {
 
 function showLogin() {
     document.getElementById('loginModal').style.display = 'flex';
+    // 确保模态框文本正确更新
+    setTimeout(() => {
+        i18n.updateModalText();
+    }, 100);
 }
 
 function switchLoginTab(tab) {
@@ -141,6 +145,7 @@ async function register() {
 
 // 显示消息提示
 function showMessage(message, type = 'info') {
+
     // 处理特定的错误消息
     if (type === 'error') {
         // 如果是验证码相关的错误，可以特殊处理
@@ -284,14 +289,14 @@ async function sendVerificationCode() {
     const resendBtn = document.getElementById('resend-btn'); // 重新发送按钮
 
     if (!email) {
-        showMessage('请输入邮箱地址', 'error');
+        showMessage(i18n.t('forgot.email.required'), 'error');
         return;
     }
     
     // 简单的邮箱格式验证
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        showMessage('请输入有效的邮箱地址', 'error');
+        showMessage(i18n.t('forgot.email.inputValidEmail'), 'error');
         return;
     }
     
@@ -300,9 +305,9 @@ async function sendVerificationCode() {
     if (resendBtn) resendBtn.disabled = true;
     
     // 更新按钮文本（可选）
-    if (sendBtn) sendBtn.textContent = '发送中...';
-    if (resendBtn) resendBtn.textContent = '发送中...';
-    
+    if (sendBtn) sendBtn.textContent = i18n.t('forgot.sending');
+    if (resendBtn) resendBtn.textContent = i18n.t('forgot.sending');
+
     showLoading(true);
     
     try {
@@ -320,10 +325,10 @@ async function sendVerificationCode() {
             codeExpiryTime = Date.now() + 10 * 60 * 1000;
             startCountdown();
             
-            if (sendBtn) sendBtn.textContent = '重新发送验证码';
-            if (resendBtn) resendBtn.textContent = '重新发送验证码';
+            if (sendBtn) sendBtn.textContent = i18n.t('forgot.verify.resend');
+            if (resendBtn) resendBtn.textContent = i18n.t('forgot.verify.resend');
 
-            showMessage(result.message || '验证码已发送到您的邮箱', 'success');
+            showMessage(result.message || i18n.t('forgot.code.sent'), 'success');
             
             // 开发环境下显示验证码（方便测试）
             // if (result.data && result.data.verificationCode) {
@@ -331,11 +336,11 @@ async function sendVerificationCode() {
             // }
 
         } else {
-            showMessage(result.message || '发送验证码失败', 'error');
+            showMessage(result.message || i18n.t('forgot.send.failed'), 'error');
         }
         
     } catch (error) {
-        showMessage('发送验证码失败，请稍后重试', 'error');
+        showMessage(i18n.t('forgot.send.failed'), 'error');
         // 失败时恢复按钮状态
         enableVerificationButtons();
 
@@ -351,12 +356,12 @@ function enableVerificationButtons() {
     
     if (sendBtn) {
         sendBtn.disabled = false;
-        sendBtn.textContent = '发送验证码';
+        sendBtn.textContent = i18n.t('forgot.sending');
     }
-    
+
     if (resendBtn) {
         resendBtn.disabled = false;
-        resendBtn.textContent = '重新发送';
+        resendBtn.textContent = i18n.t('forgot.verify.resend');
     }
 }
 
@@ -400,10 +405,10 @@ function stopCountdown() {
 // 重新发送验证码（修改后）
 function resendCode() {
     const resendBtn = document.getElementById('resend-btn');
-    
+
     // 立即禁用按钮
     resendBtn.disabled = true;
-    resendBtn.textContent = '发送中...';
+    resendBtn.textContent = i18n.t('forgot.sending');
     
     // 清除之前的验证码和计时器
     verificationCode = '';
@@ -422,17 +427,17 @@ async function verifyCode() {
     console.log('输入的验证码:', inputCode);
     
     if (!inputCode) {
-        showMessage('请输入验证码', 'error');
+        showMessage(i18n.t('forgot.code.required'), 'error');
         return;
     }
-    
+
     if (inputCode.length !== 6) {
-        showMessage('验证码必须是6位数字', 'error');
+        showMessage(i18n.t('forgot.password.length'), 'error');
         return;
     }
     
     if (Date.now() > codeExpiryTime) {
-        showMessage('验证码已过期，请重新获取', 'error');
+        showMessage(i18n.t('forgot.code.failed'), 'error');
         return;
     }
     
@@ -463,10 +468,10 @@ async function verifyCode() {
         }
         
         console.log('✅ 提取的resetToken:', actualResetToken);
-        
+
         if (!actualResetToken) {
             console.error('❌ 无法从响应中找到resetToken，完整响应:', response);
-            showMessage('重置令牌获取失败，请重试', 'error');
+            showMessage(i18n.t('forgot.token.resetfailed'), 'error');
             return;
         }
         
@@ -508,23 +513,23 @@ async function resetPassword() {
     }
     
     if (!newPassword || !confirmPassword) {
-        showMessage('请填写新密码和确认密码', 'error');
+        showMessage(i18n.t('forgot.password.required'), 'error');
         return;
     }
     
     if (newPassword.length < 6) {
-        showMessage('密码长度至少6位', 'error');
+        showMessage(i18n.t('forgot.password.length'), 'error');
         return;
     }
     
     if (newPassword !== confirmPassword) {
-        showMessage('两次输入的密码不一致', 'error');
+        showMessage(i18n.t('forgot.password.mismatch'), 'error');
         return;
     }
     
     resetBtn.disabled = true;
     const originalText = resetBtn.textContent; // 保存原始文本以便恢复
-    resetBtn.textContent = '密码重置中...'
+    resetBtn.textContent = i18n.t('forgot.reset.title')
 
     showLoading(true);
     
@@ -539,7 +544,7 @@ async function resetPassword() {
         console.log('📥 重置密码响应:', result);
         
         if (result.success) {
-            showMessage('密码重置成功！', 'success');
+            showMessage(i18n.t('forgot.success.title'), 'success');
             switchForgotPasswordStep('step-complete');
             resetToken = '';
             currentEmail = '';

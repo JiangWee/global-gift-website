@@ -15,15 +15,15 @@
     <nav class="navbar">
         <div class="nav-container">
             <!-- 左侧：Logo -->
-            <div class="logo">Gift Buy Buy</div>
+            <div class="logo" data-i18n="nav.home">Gift Buy Buy</div>
             
             <!-- 中间：导航链接 -->
             <div class="nav-links">
-                <a href="#" onclick="goToPage('page-home')">首页</a>
-                <a href="#" onclick="goToPage('page-filters')">选购礼品</a>
-                <a href="#" onclick="goToPage('page-gifts')">礼品目录</a>
-                <a href="#" onclick="goToPage('page-about')">关于我们</a>
-                <a href="#" onclick="goToPage('page-contact')">联系我们</a>
+                <a href="#" onclick="goToPage('page-home')" data-i18n="nav.home">首页</a>
+                <a href="#" onclick="goToPage('page-filters')" data-i18n="nav.filters">选购礼品</a>
+                <a href="#" onclick="goToPage('page-gifts')" data-i18n="nav.gifts">礼品目录</a>
+                <a href="#" onclick="goToPage('page-about')" data-i18n="nav.about">关于我们</a>
+                <a href="#" onclick="goToPage('page-contact')" data-i18n="nav.contact">联系我们</a>
             </div>
             
             <!-- 右侧：用户状态和语言切换 -->
@@ -31,8 +31,8 @@
                 <!-- 用户状态容器 -->
                 <div class="user-status-container" id="userStatus">
                     <div class="login-register-buttons">
-                        <button class="nav-btn login-nav-btn" onclick="showLogin()">登录</button>
-                        <button class="nav-btn register-nav-btn" onclick="showRegister()">注册</button>
+                        <button class="nav-btn login-nav-btn" onclick="showLogin()" data-i18n="nav.login">登录</button>
+                        <button class="nav-btn register-nav-btn" onclick="showRegister()" data-i18n="nav.register">注册</button>
                     </div>
                 </div>
                 
@@ -50,11 +50,11 @@
       <div class="home-content">
             <div class="hero-section">
                 <div class="container">
-                    <h1 class="hero-title">Gift Buy Buy</h1>
-                    <p class="hero-main-subtitle">高端商务礼品，连接全球情谊。专业跨国送礼解决方案，让心意无国界。</p>
+                    <h1 class="hero-title" data-i18n="home.title">Gift Buy Buy</h1>
+                    <p class="hero-main-subtitle" data-i18n="home.subtitle">高端商务礼品，连接全球情谊。专业跨国送礼解决方案，让心意无国界。</p>
                     <div class="cta-buttons">
-                        <a href="#" class="cta-btn cta-primary" onclick="goToPage('page-filters')">开始选购</a>
-                        <a href="#" class="cta-btn cta-secondary">了解更多</a>
+                        <a href="#" class="cta-btn cta-primary" onclick="goToPage('page-filters')" data-i18n="home.cta.start">开始选购</a>
+                        <a href="#" class="cta-btn cta-secondary" data-i18n="home.cta.learnmore">了解更多</a>
                     </div>
                 </div>
             </div>
@@ -64,27 +64,27 @@
             <div class="footer-content">
                 <!-- 只保留三列 -->
                 <div class="footer-section">
-                    <h3>关于我们</h3>
-                    <p>Gift Buy Buy 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。</p>
+                    <h3 data-i18n="footer.about">关于我们</h3>
+                    <p data-i18n="footer.about.text">Gift Buy Buy 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。</p>
                 </div>
                 <div class="footer-section">
-                    <h3>联系我们</h3>
+                    <h3 data-i18n="footer.contact">联系我们</h3>
                     <p>电话: +86 138 8888 8888</p>
                     <p>微信: GiftBuyBuy</p>
                     <p>邮箱: service@GiftBuyBuy.com</p>
-                    <p>地址: 深圳市南山区粤海中心</p>
+                    <p data-i18n="footer.address">地址: 深圳市南山区粤海中心</p>
                 </div>
                 <div class="footer-section">
-                    <h3>关注我们</h3>
+                    <h3 data-i18n="footer.follow">关注我们</h3>
                     <ul>
-                        <li><a href="#">微信公众号</a></li>
-                        <li><a href="#">Instagram</a></li>
-                        <li><a href="#">LinkedIn</a></li>
+                        <li><a href="#" data-i18n="footer.wechat">微信公众号</a></li>
+                        <li><a href="#" data-i18n="footer.instagram">Instagram</a></li>
+                        <li><a href="#" data-i18n="footer.linkedin">LinkedIn</a></li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 Gift Buy Buy. 保留所有权利。</p>
+                <p data-i18n="footer.copyright">&copy; 2023 Gift Buy Buy. 保留所有权利。</p>
             </div>
         </footer>
     </section>
@@ -92,61 +92,61 @@
     <!-- 第二页：筛选页面 -->
     <section id="page-filters" class="page">
         <div class="container">
-            <h2 class="page-title">选择您的礼品偏好</h2>
-            <p class="page-subtitle">根据您的需求筛选合适的商务礼品，我们提供全球配送服务</p>
+            <h2 class="page-title" data-i18n="filters.title">选择您的礼品偏好</h2>
+            <p class="page-subtitle" data-i18n="filters.subtitle">根据您的需求筛选合适的商务礼品，我们提供全球配送服务</p>
             
             <div class="filter-section">
                 <div class="filter-options">
                     <div class="filter-group">
-                        <label for="country">送达国家</label>
+                        <label for="country" data-i18n="filters.country">送达国家</label>
                         <select id="country">
-                            <option value="">选择国家</option>
-                            <option value="china">中国</option>
-                            <option value="usa">美国</option>
-                            <option value="uk">英国</option>
-                            <option value="germany">德国</option>
-                            <option value="japan">日本</option>
+                            <option value="" data-i18n="filters.country.placeholder">选择国家</option>
+                            <option value="china" data-i18n="country.china">中国</option>
+                            <option value="usa" data-i18n="country.usa">美国</option>
+                            <option value="uk" data-i18n="country.uk">英国</option>
+                            <option value="germany" data-i18n="country.germany">德国</option>
+                            <option value="japan" data-i18n="country.japan">日本</option>
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label for="holiday">节日</label>
+                        <label for="holiday" data-i18n="filters.holiday">节日</label>
                         <select id="holiday">
-                            <option value="">选择节日</option>
-                            <option value="christmas">圣诞节</option>
-                            <option value="newyear">新年</option>
-                            <option value="thanksgiving">感恩节</option>
-                            <option value="midautumn">中秋节</option>
-                            <option value="spring">春节</option>
+                            <option value="" data-i18n="filters.holiday.placeholder">选择节日</option>
+                            <option value="christmas" data-i18n="holiday.christmas">圣诞节</option>
+                            <option value="newyear" data-i18n="holiday.newyear">新年</option>
+                            <option value="thanksgiving" data-i18n="holiday.thanksgiving">感恩节</option>
+                            <option value="midautumn" data-i18n="holiday.midautumn">中秋节</option>
+                            <option value="spring" data-i18n="holiday.spring">春节</option>
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label for="delivery-date">送达日期</label>
+                        <label for="delivery-date" data-i18n="filters.delivery">送达日期</label>
                         <input type="date" id="delivery-date">
                     </div>
                 </div>
                 <div class="notice-box">
-                    <p>温馨提示：为确保准时送达，请至少提前7天提交订单。圣诞节期间请提前1个月下单。</p>
+                    <p data-i18n="filters.notice">温馨提示：为确保准时送达，请至少提前7天提交订单。圣诞节期间请提前1个月下单。</p>
                 </div>
-                <button class="next-btn" onclick="goToPage('page-gifts')">浏览礼品</button>
+                <button class="next-btn" onclick="goToPage('page-gifts')" data-i18n="filters.browse">浏览礼品</button>
             </div>
             
-            <h3 class="page-title">礼品分类</h3>
+            <h3 class="page-title" data-i18n="filters.categories">礼品分类</h3>
             <div class="category-grid">
                 <div class="category-card" onclick="selectCategory('cultural')">
                     <div class="category-img" style="background-image: url('/images/1.png');"></div>
-                    <div class="category-name">文化礼品</div>
+                    <div class="category-name" data-i18n="filters.category.cultural">文化礼品</div>
                 </div>
                 <div class="category-card" onclick="selectCategory('tech')">
                     <div class="category-img" style="background-image: url('/images/2.png');"></div>
-                    <div class="category-name">科技产品</div>
+                    <div class="category-name" data-i18n="filters.category.tech">科技产品</div>
                 </div>
                 <div class="category-card" onclick="selectCategory('custom')">
                     <div class="category-img" style="background-image: url('/images/4.png');"></div>
-                    <div class="category-name">定制礼品</div>
+                    <div class="category-name" data-i18n="filters.category.custom">定制礼品</div>
                 </div>
                 <div class="category-card" onclick="selectCategory('food')">
                     <div class="category-img" style="background-image: url('/images/3.png');"></div>
-                    <div class="category-name">美食佳酿</div>
+                    <div class="category-name" data-i18n="filters.category.food">美食佳酿</div>
                 </div>
             </div>
         </div>
@@ -155,8 +155,8 @@
     <!-- 第三页：礼品列表 -->
     <section id="page-gifts" class="page">
         <div class="container">
-            <h2 class="page-title">精选礼品</h2>
-            <p class="page-subtitle">从我们的精品礼品库中挑选最合适的商务赠礼</p>
+            <h2 class="page-title" data-i18n="gifts.title">精选礼品</h2>
+            <p class="page-subtitle" data-i18n="gifts.subtitle">从我们的精品礼品库中挑选最合适的商务赠礼</p>
             
             <div class="gift-grid" id="gift-grid">
                 <!-- 这里的内容将由JavaScript动态生成 -->
@@ -174,7 +174,7 @@
     <!-- 第五页：个人中心 -->
     <section id="page-profile" class="page">
         <div class="container">
-            <h2 class="page-title">个人中心</h2>
+            <h2 class="page-title" data-i18n="personal.title">个人中心</h2>
             <div class="profile-container" id="profile-container">
                 <!-- 这里的内容将由JavaScript动态生成 -->
             </div>
@@ -184,7 +184,7 @@
     <!-- 第六页：订单中心 -->
     <section id="page-orders" class="page">
         <div class="container">
-            <h2 class="page-title">我的订单</h2>
+            <h2 class="page-title" data-i18n="orders.title">我的订单</h2>
             <div class="orders-container" id="orders-container">
                 <!-- 这里的内容将由JavaScript动态生成 -->
             </div>
@@ -194,77 +194,77 @@
     <!-- 第七页：关于我们 -->
     <section id="page-about" class="page">
         <div class="container">
-            <h2 class="page-title">关于我们</h2>
+            <h2 class="page-title" data-i18n="about.title">关于我们</h2>
             <div class="about-content">
                 <div class="about-hero">
                     <div class="hero-text">
-                        <h1>Gift Buy Buy - 高端商务礼品平台</h1>
-                        <p class="hero-subtitle">连接全球情谊，让心意无国界</p>
+                        <h1 data-i18n="about.hero.title">Gift Buy Buy - 高端商务礼品平台</h1>
+                        <p class="hero-subtitle" data-i18n="about.hero.subtitle">连接全球情谊，让心意无国界</p>
                     </div>
                     <div class="hero-image" style="background-image: url('./images/1.png');"></div>
                 </div>
                 
                 <div class="about-sections">
                     <div class="about-section">
-                        <h3>我们的使命</h3>
-                        <p>Gift Buy Buy 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。我们相信，一份精心挑选的礼物能够跨越地域界限，传递真挚的情感与商业诚意。</p>
+                        <h3 data-i18n="about.mission">我们的使命</h3>
+                        <p data-i18n="about.mission.text">Gift Buy Buy 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。我们相信，一份精心挑选的礼物能够跨越地域界限，传递真挚的情感与商业诚意。</p>
                     </div>
                     
                     <div class="about-section">
-                        <h3>我们的优势</h3>
+                        <h3 data-i18n="about.advantages">我们的优势</h3>
                         <div class="advantages-grid">
                             <div class="advantage-card">
                                 <div class="advantage-icon">🌍</div>
-                                <h4>全球配送</h4>
-                                <p>覆盖全球主要国家和地区，确保您的礼物准时送达</p>
+                                <h4 data-i18n="about.advantage.global">全球配送</h4>
+                                <p data-i18n="about.advantage.global.desc">覆盖全球主要国家和地区，确保您的礼物准时送达</p>
                             </div>
                             <div class="advantage-card">
                                 <div class="advantage-icon">🎁</div>
-                                <h4>精品选择</h4>
-                                <p>严格筛选高品质礼品，满足不同商务场景需求</p>
+                                <h4 data-i18n="about.advantage.quality">精品选择</h4>
+                                <p data-i18n="about.advantage.quality.desc">严格筛选高品质礼品，满足不同商务场景需求</p>
                             </div>
                             <div class="advantage-card">
                                 <div class="advantage-icon">🔒</div>
-                                <h4>安全保障</h4>
-                                <p>完善的支付和物流跟踪系统，购物更安心</p>
+                                <h4 data-i18n="about.advantage.security">安全保障</h4>
+                                <p data-i18n="about.advantage.security.desc">完善的支付和物流跟踪系统，购物更安心</p>
                             </div>
                             <div class="advantage-card">
                                 <div class="advantage-icon">💝</div>
-                                <h4>贴心服务</h4>
-                                <p>专业的客服团队，为您提供个性化送礼建议</p>
+                                <h4 data-i18n="about.advantage.service">贴心服务</h4>
+                                <p data-i18n="about.advantage.service.desc">专业的客服团队，为您提供个性化送礼建议</p>
                             </div>
                         </div>
                     </div>
                     
                     <div class="about-section">
-                        <h3>发展历程</h3>
+                        <h3 data-i18n="about.history">发展历程</h3>
                         <div class="timeline">
                             <div class="timeline-item">
                                 <div class="timeline-year">2020</div>
                                 <div class="timeline-content">
-                                    <h4>公司成立</h4>
-                                    <p>Gift Buy Buy 在深圳正式成立，专注于跨国商务礼品服务</p>
+                                    <h4 data-i18n="about.timeline.2020.title">公司成立</h4>
+                                    <p data-i18n="about.timeline.2020.text">Gift Buy Buy 在深圳正式成立，专注于跨国商务礼品服务</p>
                                 </div>
                             </div>
                             <div class="timeline-item">
                                 <div class="timeline-year">2021</div>
                                 <div class="timeline-content">
-                                    <h4>业务扩展</h4>
-                                    <p>服务范围扩展至全球20多个国家和地区</p>
+                                    <h4 data-i18n="about.timeline.2021.title">业务扩展</h4>
+                                    <p data-i18n="about.timeline.2021.text">服务范围扩展至全球20多个国家和地区</p>
                                 </div>
                             </div>
                             <div class="timeline-item">
                                 <div class="timeline-year">2022</div>
                                 <div class="timeline-content">
-                                    <h4>数字化升级</h4>
-                                    <p>推出在线平台，实现礼品选购、支付、配送一站式服务</p>
+                                    <h4 data-i18n="about.timeline.2022.title">数字化升级</h4>
+                                    <p data-i18n="about.timeline.2022.text">推出在线平台，实现礼品选购、支付、配送一站式服务</p>
                                 </div>
                             </div>
                             <div class="timeline-item">
                                 <div class="timeline-year">2023</div>
                                 <div class="timeline-content">
-                                    <h4>品牌升级</h4>
-                                    <p>成为行业领先的跨国商务礼品服务平台</p>
+                                    <h4 data-i18n="about.timeline.2023.title">品牌升级</h4>
+                                    <p data-i18n="about.timeline.2023.text">成为行业领先的跨国商务礼品服务平台</p>
                                 </div>
                             </div>
                         </div>
@@ -274,40 +274,41 @@
         </div>
     </section>
 
+
     <!-- 第八页：联系我们 -->
     <section id="page-contact" class="page">
         <div class="container">
-            <h2 class="page-title">联系我们</h2>
+            <h2 class="page-title" data-i18n="contact.title">联系我们</h2>
             <div class="contact-content">
                 <div class="contact-info">
                     <div class="contact-card">
-                        <h3>联系信息</h3>
+                        <h3 data-i18n="contact.info">联系信息</h3>
                         <div class="contact-details">
                             <div class="contact-item">
                                 <div class="contact-icon">📞</div>
                                 <div class="contact-text">
-                                    <strong>电话</strong>
+                                    <strong data-i18n="contact.phone">电话</strong>
                                     <p>+86 138 8888 8888</p>
                                 </div>
                             </div>
                             <div class="contact-item">
                                 <div class="contact-icon">📧</div>
                                 <div class="contact-text">
-                                    <strong>邮箱</strong>
+                                    <strong data-i18n="contact.email">邮箱</strong>
                                     <p>service@GiftBuyBuy.com</p>
                                 </div>
                             </div>
                             <div class="contact-item">
                                 <div class="contact-icon">📍</div>
                                 <div class="contact-text">
-                                    <strong>地址</strong>
+                                    <strong data-i18n="contact.address">地址</strong>
                                     <p>深圳市南山区粤海中心</p>
                                 </div>
                             </div>
                             <div class="contact-item">
                                 <div class="contact-icon">🕒</div>
                                 <div class="contact-text">
-                                    <strong>工作时间</strong>
+                                    <strong data-i18n="contact.hours">工作时间</strong>
                                     <p>周一至周五 9:00-18:00</p>
                                 </div>
                             </div>
@@ -315,7 +316,7 @@
                     </div>
                     
                     <div class="contact-card">
-                        <h3>关注我们</h3>
+                        <h3 data-i18n="contact.follow">关注我们</h3>
                         <div class="social-links">
                             <a href="#" class="social-link">
                                 <span class="social-icon">📱</span>
@@ -334,42 +335,42 @@
                 </div>
                 
                 <div class="contact-form-container">
-                    <h3>发送消息</h3>
+                    <h3 data-i18n="contact.message">发送消息</h3>
                     <form class="contact-form" id="contactForm">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="contact-name">姓名 *</label>
-                                <input type="text" id="contact-name" required>
+                                <label for="contact-name" data-i18n="contact.form.name">姓名 *</label>
+                                <input type="text" id="contact-name" required data-i18n-placeholder="contact.form.name">
                             </div>
                             <div class="form-group">
-                                <label for="contact-email">邮箱 *</label>
-                                <input type="email" id="contact-email" required>
+                                <label for="contact-email" data-i18n="contact.form.email">邮箱 *</label>
+                                <input type="email" id="contact-email" required data-i18n-placeholder="contact.form.email">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="contact-phone">电话</label>
-                            <input type="tel" id="contact-phone">
+                            <label for="contact-phone" data-i18n="contact.form.phone">电话</label>
+                            <input type="tel" id="contact-phone" data-i18n-placeholder="contact.form.phone">
                         </div>
                         <div class="form-group">
-                            <label for="contact-subject">主题 *</label>
-                            <input type="text" id="contact-subject" required>
+                            <label for="contact-subject" data-i18n="contact.form.subject">主题 *</label>
+                            <input type="text" id="contact-subject" required data-i18n-placeholder="contact.form.subject">
                         </div>
                         <div class="form-group">
-                            <label for="contact-message">消息内容 *</label>
-                            <textarea id="contact-message" rows="5" required></textarea>
+                            <label for="contact-message" data-i18n="contact.form.message">消息内容 *</label>
+                            <textarea id="contact-message" rows="5" required data-i18n-placeholder="contact.form.message"></textarea>
                         </div>
-                        <button type="submit" class="submit-btn">发送消息</button>
+                        <button type="submit" class="submit-btn" data-i18n="contact.form.submit">发送消息</button>
                     </form>
                 </div>
             </div>
             
             <div class="map-section">
-                <h3>我们的位置</h3>
+                <h3 data-i18n="contact.location">我们的位置</h3>
                 <div class="map-placeholder">
                     <div class="map-content">
                         <div class="map-icon">🗺️</div>
-                        <p>北京市朝阳区商务中心区地图</p>
-                        <small>实际服务覆盖全球主要城市</small>
+                        <p data-i18n="contact.map.title">北京市朝阳区商务中心区地图</p>
+                        <small data-i18n="contact.map.subtitle">实际服务覆盖全球主要城市</small>
                     </div>
                 </div>
             </div>
@@ -382,72 +383,72 @@
         <div class="container">
             <!-- 步骤1：输入邮箱 -->
             <div class="forgot-password-step active" id="step-email">
-                <h2 class="page-title">找回密码</h2>
-                <p class="page-subtitle">请输入您注册时使用的邮箱地址</p>
+                <h2 class="page-title" data-i18n="forgot.title">找回密码</h2>
+                <p class="page-subtitle" data-i18n="forgot.subtitle">请输入您注册时使用的邮箱地址</p>
                 
                 <div class="forgot-password-form">
                     <div class="form-group">
-                        <label for="forgot-email">邮箱地址</label>
-                        <input type="email" id="forgot-email" placeholder="请输入注册邮箱">
+                        <label for="forgot-email" data-i18n="forgot.email">邮箱地址</label>
+                        <input type="email" id="forgot-email" data-i18n-placeholder="forgot.email.placeholder">
                     </div>
-                    <button class="next-btn" onclick="sendVerificationCode()">发送验证码</button>
+                    <button class="next-btn" onclick="sendVerificationCode()" data-i18n="forgot.send">发送验证码</button>
                     
                     <div class="back-to-login">
-                        <a href="#" onclick="goToPage('page-home'); showLogin()">返回登录</a>
+                        <a href="#" onclick="goToPage('page-home'); showLogin()" data-i18n="forgot.back.login">返回登录</a>
                     </div>
                 </div>
             </div>
             
             <!-- 步骤2：验证码验证 -->
             <div class="forgot-password-step" id="step-verify">
-                <h2 class="page-title">验证邮箱</h2>
-                <p class="page-subtitle">我们已向 <span id="verify-email-display"></span> 发送了验证码</p>
+                <h2 class="page-title" data-i18n="forgot.verify.title">验证邮箱</h2>
+                <p class="page-subtitle" id="verify-email-display-text" data-i18n="forgot.verify.subtitle">我们已向 <span id="verify-email-display"></span> 发送了验证码</p>
                 
                 <div class="forgot-password-form">
                     <div class="form-group">
-                        <label for="verification-code">验证码</label>
-                        <input type="text" id="verification-code" placeholder="请输入6位验证码" maxlength="6">
+                        <label for="verification-code" data-i18n="forgot.verify.code">验证码</label>
+                        <input type="text" id="verification-code" data-i18n-placeholder="forgot.verify.placeholder" maxlength="6">
                         <div class="code-actions">
                             <span class="countdown" id="countdown">05:00</span>
-                            <button type="button" class="resend-btn" id="resend-btn" onclick="resendCode()" disabled>重新发送</button>
+                            <button type="button" class="resend-btn" id="resend-btn" onclick="resendCode()" disabled data-i18n="forgot.verify.resend">重新发送</button>
                         </div>
                     </div>
-                    <button class="next-btn" onclick="verifyCode()">验证验证码</button>
+                    <button class="next-btn" onclick="verifyCode()" data-i18n="forgot.verify.verify">验证验证码</button>
                     
                     <div class="back-to-email">
-                        <a href="#" onclick="switchForgotPasswordStep('step-email')">修改邮箱地址</a>
+                        <a href="#" onclick="switchForgotPasswordStep('step-email')" data-i18n="forgot.verify.change">修改邮箱地址</a>
                     </div>
                 </div>
             </div>
             
-            <!-- 在 step-reset 步骤中添加隐藏字段 -->
+            <!-- 步骤3：重置密码 -->
             <div class="forgot-password-step" id="step-reset">
-                <h2 class="page-title">重置密码</h2>
-                <p class="page-subtitle">请设置您的新密码</p>
+                <h2 class="page-title" data-i18n="forgot.reset.title">重置密码</h2>
+                <p class="page-subtitle" data-i18n="forgot.reset.subtitle">请设置您的新密码</p>
                 
                 <div class="forgot-password-form">
-                    <!-- 添加隐藏字段存储重置令牌 -->
                     <input type="hidden" id="reset-token" value="">
                     
                     <div class="form-group">
-                        <label for="new-password">新密码</label>
-                        <input type="password" id="new-password" placeholder="请输入新密码（至少6位）">
+                        <label for="new-password" data-i18n="forgot.reset.new">新密码</label>
+                        <input type="password" id="new-password" data-i18n-placeholder="forgot.reset.new.placeholder">
                     </div>
                     <div class="form-group">
-                        <label for="confirm-new-password">确认新密码</label>
-                        <input type="password" id="confirm-new-password" placeholder="请再次输入新密码">
+                        <label for="confirm-new-password" data-i18n="forgot.reset.confirm">确认新密码</label>
+                        <input type="password" id="confirm-new-password" data-i18n-placeholder="forgot.reset.confirm.placeholder">
                     </div>
-                    <button class="next-btn" onclick="resetPassword()">重置密码</button>
+                    <button class="next-btn" onclick="resetPassword()" data-i18n="forgot.reset.submit">重置密码</button>
                 </div>
             </div>
-            
+
+
             <!-- 步骤4：完成 -->
             <div class="forgot-password-step" id="step-complete">
                 <div class="success-message">
                     <div class="success-icon">✓</div>
-                    <h2>密码重置成功！</h2>
-                    <p>您的密码已成功重置，请使用新密码登录</p>
-                    <button class="next-btn" onclick="goToPage('page-home'); showLogin()">立即登录</button>
+                    <h2 data-i18n="forgot.success.title">密码重置成功！</h2>
+                    <p data-i18n="forgot.success.message">您的密码已成功重置，请使用新密码登录</p>
+                    <button class="next-btn" onclick="goToPage('page-home'); showLogin()" data-i18n="forgot.success.login">立即登录</button>
                 </div>
             </div>
         </div>
@@ -456,63 +457,63 @@
     <!-- 登录模态框 -->
     <div class="login-modal" id="loginModal">
         <div class="login-container">
-            <!-- 添加关闭按钮 -->
             <div class="modal-close-btn" onclick="closeLoginModal()">×</div>
             
             <div class="login-tabs">
-                <div class="login-tab active" onclick="switchLoginTab('login')">登录</div>
-                <div class="login-tab" onclick="switchLoginTab('register')">注册</div>
+                <div class="login-tab active" onclick="switchLoginTab('login')" data-i18n="login.tab.login">登录</div>
+                <div class="login-tab" onclick="switchLoginTab('register')" data-i18n="login.tab.register">注册</div>
             </div>
             
             <div class="login-form active" id="loginForm">
                 <div class="form-group">
-                    <label for="login-account">账号</label>
-                    <input type="text" id="login-account" placeholder="邮箱/手机/用户名">
+                    <label for="login-account" data-i18n="login.account">账号</label>
+                    <input type="text" id="login-account" data-i18n-placeholder="login.account.placeholder">
                 </div>
                 <div class="form-group">
-                    <label for="login-password">密码</label>
-                    <input type="password" id="login-password" placeholder="密码">
+                    <label for="login-password" data-i18n="login.password">密码</label>
+                    <input type="password" id="login-password" data-i18n-placeholder="login.password.placeholder">
                 </div>
                 <div class="form-options">
                     <label>
-                        <input type="checkbox"> 保持会话
+                        <input type="checkbox"> <span data-i18n="login.remember">保持会话</span>
                     </label>
-                    <a href="#" class="forgot-password" onclick="closeLoginModal(); goToPage('page-forgot-password')">忘记密码?</a>
+                    <a href="#" class="forgot-password" onclick="closeLoginModal(); goToPage('page-forgot-password')" data-i18n="login.forgot">忘记密码?</a>
                 </div>
                 <div class="form-actions">
-                    <button class="login-submit" onclick="login()">登录</button>
-                    <button class="login-cancel" onclick="closeLoginModal()">取消</button>
+                    <button class="login-submit" onclick="login()" data-i18n="login.submit">登录</button>
+                    <button class="login-cancel" onclick="closeLoginModal()" data-i18n="login.cancel">取消</button>
                 </div>
                 <div class="register-link">
-                    还没有账号? <a href="#" onclick="switchLoginTab('register')">点击注册</a>
+                    <span data-i18n="login.register.link">还没有账号?</span> 
+                    <a href="#" onclick="switchLoginTab('register')" data-i18n="login.register.click">点击注册</a>
                 </div>
             </div>
             
             <div class="login-form" id="registerForm">
                 <div class="form-group">
-                    <label for="register-username">用户名</label>
-                    <input type="text" id="register-username" placeholder="请输入用户名（2-20个字符）" required>
+                    <label for="register-username" data-i18n="register.username">用户名</label>
+                    <input type="text" id="register-username" data-i18n-placeholder="register.username.placeholder" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="register-email">邮箱</label>
-                    <input type="email" id="register-email" placeholder="请输入邮箱">
+                    <label for="register-email" data-i18n="register.email">邮箱</label>
+                    <input type="email" id="register-email" data-i18n-placeholder="register.email.placeholder">
                 </div>
                 <div class="form-group">
-                    <label for="register-phone">手机号</label>
-                    <input type="tel" id="register-phone" placeholder="请输入手机号">
+                    <label for="register-phone" data-i18n="register.phone">手机号</label>
+                    <input type="tel" id="register-phone" data-i18n-placeholder="register.phone.placeholder">
                 </div>
                 <div class="form-group">
-                    <label for="register-password">密码</label>
-                    <input type="password" id="register-password" placeholder="请输入密码">
+                    <label for="register-password" data-i18n="register.password">密码</label>
+                    <input type="password" id="register-password" data-i18n-placeholder="register.password.placeholder">
                 </div>
                 <div class="form-group">
-                    <label for="register-confirm">确认密码</label>
-                    <input type="password" id="register-confirm" placeholder="请再次输入密码">
+                    <label for="register-confirm" data-i18n="register.confirm">确认密码</label>
+                    <input type="password" id="register-confirm" data-i18n-placeholder="register.confirm.placeholder">
                 </div>
                 <div class="form-actions">
-                    <button class="login-submit" onclick="register()">注册</button>
-                    <button class="login-cancel" onclick="closeLoginModal()">取消</button>
+                    <button class="login-submit" onclick="register()" data-i18n="register.submit">注册</button>
+                    <button class="login-cancel" onclick="closeLoginModal()" data-i18n="login.cancel">取消</button>
                 </div>
             </div>
         </div>
@@ -522,7 +523,7 @@
     <div id="paymentModal" class="modal">
         <div class="payment-modal-content">
             <div class="payment-modal-header">
-                <h3>选择支付方式</h3>
+                <h3 data-i18n="payment.title">选择支付方式</h3>
                 <span class="payment-close">&times;</span>
             </div>
             
@@ -530,19 +531,19 @@
                 <!-- 支付选择区域 -->
                 <div id="payment-selection">
                     <div class="payment-info">
-                        <p>订单号: <span id="payment-order-id"></span></p>
-                        <p>商品: <span id="payment-product-name"></span></p>
-                        <p class="payment-amount">支付金额: <span id="payment-amount"></span></p>
+                        <p><span data-i18n="payment.order.id">订单号</span>: <span id="payment-order-id"></span></p>
+                        <p><span data-i18n="payment.product">商品</span>: <span id="payment-product-name"></span></p>
+                        <p class="payment-amount"><span data-i18n="payment.amount">支付金额</span>: <span id="payment-amount"></span></p>
                     </div>
                     
                     <div class="payment-methods">
                         <div class="payment-method-item selected" data-method="alipay">
                             <i class="payment-icon alipay-icon"></i>
-                            <span>支付宝支付</span>
+                            <span data-i18n="payment.method.alipay">支付宝支付</span>
                         </div>
                         <div class="payment-method-item" data-method="wechat">
                             <i class="payment-icon wechat-icon"></i>
-                            <span>微信支付</span>
+                            <span data-i18n="payment.method.wechat">微信支付</span>
                         </div>
                     </div>
                 </div>
@@ -550,34 +551,36 @@
                 <!-- 微信二维码区域 -->
                 <div id="wechat-qrcode-section" style="display: none;">
                     <div class="qrcode-header">
-                        <button id="payment-back-btn" class="back-button">← 返回</button>
-                        <h4>微信扫码支付</h4>
+                        <button id="payment-back-btn" class="back-button" data-i18n="payment.back">← 返回</button>
+                        <h4 data-i18n="payment.wechat.title">微信扫码支付</h4>
                     </div>
                     <div class="qrcode-container">
                         <div id="wechat-qrcode"></div>
-                        <p>请使用微信扫描二维码完成支付</p>
+                        <p data-i18n="payment.wechat.desc">请使用微信扫描二维码完成支付</p>
                     </div>
                 </div>
                 
                 <!-- 支付成功区域 -->
                 <div id="payment-success-section" style="display: none;">
                     <div class="success-icon">✓</div>
-                    <h4>支付成功！</h4>
-                    <p>订单号: <span id="success-order-id"></span></p>
-                    <p>支付金额: <span id="success-amount"></span></p>
+                    <h4 data-i18n="payment.success">支付成功！</h4>
+                    <p><span data-i18n="payment.order.id">订单号</span>: <span id="success-order-id"></span></p>
+                    <p><span data-i18n="payment.amount">支付金额</span>: <span id="success-amount"></span></p>
                 </div>
             </div>
             
             <div class="payment-modal-footer">
-                <button class="payment-cancel">取消</button>
-                <button id="payment-submit-btn" class="payment-confirm">确认支付宝支付</button>
-                <button id="payment-success-btn" class="payment-success" style="display: none;">查看订单</button>
+                <button class="payment-cancel" data-i18n="payment.cancel">取消</button>
+                <button id="payment-submit-btn" class="payment-confirm" data-i18n="payment.confirm">确认支付宝支付</button>
+                <button id="payment-success-btn" class="payment-success" style="display: none;" data-i18n="payment.view.order">查看订单</button>
             </div>
         </div>
     </div>
 
 
 <script src="./js/config.js"></script>
+<script src="./js/i18n.js"></script>
+<script src="./js/i18n-manager.js"></script>
 <script src="./js/api.js"></script>
 <script src="./js/auth.js"></script>
 <script src="./js/payment.js"></script>

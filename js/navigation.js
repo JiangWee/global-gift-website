@@ -26,6 +26,10 @@ function goToPage(pageId) {
         } else if (pageId === 'page-detail') {
             setTimeout(enhanceOrderForm, 200);
         }
+        // 更新当前页面的国际化文本
+        setTimeout(() => {
+            i18n.updatePageText();
+        }, 100);
         
         // 滚动到顶部
         window.scrollTo(0, 0);
@@ -33,18 +37,19 @@ function goToPage(pageId) {
 }
 
 
-
 function setLanguage(lang) {
+    // 更新按钮状态
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     event.target.classList.add('active');
     
-    if (lang === 'en') {
-        alert('Language switched to English');
-    } else {
-        alert('已切换到中文');
-    }
+    // 使用国际化管理器设置语言
+    i18n.setLanguage(lang);
+    
+    // 显示语言切换提示
+    const message = lang === 'zh' ? '已切换到中文' : 'Language switched to English';
+    showMessage(message, 'success');
 }
 
 function selectCategory(category) {

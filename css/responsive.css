@@ -296,3 +296,21 @@
         font-size: 0.9rem;
     }
 }
+
+/* responsive.css - 添加RTL支持 */
+[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="rtl"] .navbar,
+[dir="rtl"] .nav-links,
+[dir="rtl"] .nav-right {
+    direction: rtl;
+}
+
+[dir="rtl"] .language-selector {
+    border-left: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    padding-left: 0;
+    padding-right: 1.5rem;
+}

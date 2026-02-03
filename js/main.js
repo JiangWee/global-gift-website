@@ -1,6 +1,8 @@
 // main.js - 主逻辑和初始化
 document.addEventListener('DOMContentLoaded', function() {
-
+    // 初始化国际化管理器
+    i18n.init();
+    
     // 检查用户登录状态
     checkAuthStatus().then(isLoggedIn => {
         console.log('用户登录状态:', isLoggedIn ? '已登录' : '未登录');
