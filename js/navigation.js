@@ -55,7 +55,7 @@ function selectCategory(category) {
 function viewGiftDetail(productId) {
     console.log('查看礼品详情 ID:', productId);
     
-    const product = productsData.find(p => p.ID === productId);
+    const product = productsData.find(p => p.id === productId);
     if (!product) {
         console.error('产品不存在 ID:', productId);
         alert('产品不存在');

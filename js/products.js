@@ -3,7 +3,7 @@
 // gift-shop-sync-production.up.railway.app
 
 const PRODUCTS_API = 'https://gift-shop-sync-production.up.railway.app/api/products';
-const IMAGE_BASE_URL = 'https://img.giftbuybuy.com';
+const IMAGE_BASE_URL = 'https://img.giftbuybuy.com/products';
 
 let productsData = [];
 let currentCategory = 'all';
@@ -76,15 +76,14 @@ function renderProducts(filteredProducts = null) {
 
     const isLoggedIn = !!apiService.token;
 
-
-    const imageUrl = `${IMAGE_BASE_URL}/${product.image_url}`;
-
     if (products.length === 0) {
         giftGrid.innerHTML = '<div class="no-products">暂无产品</div>';
         return;
     }
 
     giftGrid.innerHTML = products.map(product => {
+        const imageUrl = `${IMAGE_BASE_URL}/${product.image_url}`;
+        console.log('renderProducts imageUrl:', imageUrl);
         const onClickHandler = isLoggedIn
             ? `viewGiftDetail(${product.id})`
             : `showLogin()`;
@@ -217,7 +216,6 @@ function renderProductDetail(product) {
                     库存: ${product.stock}件
                     ${product.stock < 3 ? '<span class="stock-warning">(库存紧张)</span>' : ''}
                 </div>
-                <p>${product.display_desc}</p>
                 ${buyButtonHTML}
             </div>
         </div>
