@@ -163,6 +163,43 @@ const I18N_RESOURCES = {
         "payment.confirm": "确认支付宝支付",
         "payment.view.order": "查看订单",
 
+        stock: '库存',
+        buyNow: '立即购买',
+        outOfStock: '暂时缺货',
+        productDesc: '产品描述',
+        productSpecs: '规格参数',
+        shippingInfo: '配送信息',
+        productDetail: '产品详情',
+        fillOrder: '填写订单信息',
+        buyerInfo: '购买者信息',
+        recipientInfo: '收件人信息',
+        name: '姓名',
+        phone: '电话',
+        email: '邮箱',
+        city: '城市',
+        message: '留言内容',
+
+        lowStock: '库存紧张',
+
+        addressStreet: '街道地址',
+        city: '城市',
+        state: '州/省',
+        zip: '邮编',
+        country: '国家',
+
+        countryChina: '中国',
+        countryUSA: '美国',
+        countryUK: '英国',
+        countryGermany: '德国',
+        countryJapan: '日本',
+
+        giftCardInfo: '礼品卡信息',
+        giftMessage: '留言内容',
+        giftPlaceholder: '请输入您的祝福语（最多180字）',
+
+        buyNow: '立即购买',
+        outOfStock: '暂时缺货',
+
         // 页脚
         "footer.about": "关于我们",
         "footer.about.text": "Gift Buy Buy 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。",
@@ -333,6 +370,43 @@ const I18N_RESOURCES = {
         "payment.confirm": "Confirm Alipay Payment",
         "payment.view.order": "View Order",
 
+        stock: 'Stock',
+        buyNow: 'Buy Now',
+        outOfStock: 'Out of stock',
+        productDesc: 'Description',
+        productSpecs: 'Specifications',
+        shippingInfo: 'Shipping',
+        productDetail: 'Product Details',
+        fillOrder: 'Order Information',
+        buyerInfo: 'Buyer Information',
+        recipientInfo: 'Recipient Information',
+        name: 'Name',
+        phone: 'Phone',
+        email: 'Email',
+        city: 'City',
+        message: 'Message',
+
+        lowStock: 'Low stock',
+
+        addressStreet: 'Street Address',
+        city: 'City',
+        state: 'State / Province',
+        zip: 'ZIP Code',
+        country: 'Country',
+
+        countryChina: 'China',
+        countryUSA: 'United States',
+        countryUK: 'United Kingdom',
+        countryGermany: 'Germany',
+        countryJapan: 'Japan',
+
+        giftCardInfo: 'Gift Card Info',
+        giftMessage: 'Message',
+        giftPlaceholder: 'Enter your message (max 180 characters)',
+
+        buyNow: 'Buy Now',
+        outOfStock: 'Out of Stock',
+        
         // Footer
         "footer.about": "About Us",
         "footer.about.text": "Gift Buy Buy is a professional cross-border business gift service platform dedicated to providing customers with high-quality gift selection and global delivery services.",

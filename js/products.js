@@ -10,6 +10,7 @@ let currentCategory = 'all';
 let currentProduct = null;
 let currentProductId = null;
 
+
 // products.js
 console.log('🧩 products.js loaded');
 
@@ -104,6 +105,7 @@ function renderProducts(filteredProducts = null) {
     if (!giftGrid) return;
 
     const isLoggedIn = !!apiService.token;
+    const t = (key) => i18n.t(key);
 
     if (products.length === 0) {
         giftGrid.innerHTML = '<div class="no-products">暂无产品</div>';
@@ -124,11 +126,17 @@ function renderProducts(filteredProducts = null) {
                 <div class="gift-name">${product.name}</div>
                 <div class="gift-price">¥ ${product.price.toLocaleString()}</div>
                 <div class="gift-stock ${product.stock < 10 ? 'low-stock' : ''}">
-                    库存: ${product.stock}件
-                    ${product.stock < 5 ? '<span class="stock-warning">(库存紧张)</span>' : ''}
+                    ${t('stock')}: ${product.stock}
+                    ${product.stock < 5
+                        ? `<span class="stock-warning">(${t('lowStock')})</span>`
+                        : ''
+                        }
                 </div>
                 <div class="gift-desc">${product.display_desc || ''}</div>
-                ${product.stock === 0 ? '<div class="out-of-stock">暂时缺货</div>' : ''}
+                ${product.stock === 0
+                    ? `<span class="stock-warning">(${t('outOfStock')})</span>`
+                    : ''
+                    }
                 </div>
             </div>
         `;
@@ -171,6 +179,8 @@ function viewGiftDetail(productId) {
 
 // 渲染产品详情页
 function renderProductDetail(product) {
+    const t = (key) => i18n.t(key);
+
     currentProduct = product; // 存储当前产品
     console.log('📝 存储当前产品:', currentProduct);
     
@@ -227,10 +237,10 @@ function renderProductDetail(product) {
     // 修改购买按钮逻辑 - 根据登录状态显示不同的按钮
     const buyButtonHTML = isLoggedIn 
         ? `<button class="buy-btn" onclick="submitOrder(${product.id})" ${product.stock  === 0 ? 'disabled' : ''}>
-             ${product.stock === 0 ? '暂时缺货' : '立即购买'}
+             ${product.stock === 0 ? t('outOfStock') : t('buyNow')}
            </button>`
         : `<button class="buy-btn" onclick="showLogin()" ${product.stock  === 0 ? 'disabled' : ''}>
-             ${product.stock === 0 ? '暂时缺货' : '立即购买'}
+             ${product.stock === 0 ? t('outOfStock') : t('buyNow')}
            </button>`;
 
     // 在生成详情页HTML时使用新的按钮逻辑
@@ -242,8 +252,11 @@ function renderProductDetail(product) {
                 <div class="detail-price">¥ ${product.price.toLocaleString()}</div>
                 <p>${product.gift_detail_desc}</p>
                 <div class="stock-info ${product.stock < 5 ? 'low-stock' : ''}">
-                    库存: ${product.stock}件
-                    ${product.stock < 3 ? '<span class="stock-warning">(库存紧张)</span>' : ''}
+                    ${t('stock')}: ${product.stock}
+                    ${product.stock < 3
+                        ? `<span class="stock-warning">(${t('lowStock')})</span>`
+                        : ''
+                        }
                 </div>
                 ${buyButtonHTML}
             </div>
@@ -251,99 +264,96 @@ function renderProductDetail(product) {
         
         <div class="detail-tabs">
             <div class="tab-headers">
-                <div class="tab-header active" onclick="switchTab('description')">产品描述</div>
-                <div class="tab-header" onclick="switchTab('specs')">规格参数</div>
-                <div class="tab-header" onclick="switchTab('shipping')">配送信息</div>
+                <div class="tab-header active" onclick="switchTab('description')">${t('productDesc')}</div>
+                <div class="tab-header" onclick="switchTab('specs')">${t('productSpecs')}</div>
+                <div class="tab-header" onclick="switchTab('shipping')">${t('shippingInfo')}</div>
             </div>
             <div class="tab-content active" id="description">
-                <h3>产品详情</h3>
                 <p>${descriptionHtml}</p>
             </div>
             <div class="tab-content" id="specs">
-                <h3>产品规格</h3>
                 <p>${specsHtml}</p>
             </div>
             <div class="tab-content" id="shipping">
-                <h3>配送说明</h3>
                 <p>${shippingHtml}</p>
             </div>
         </div>
         
         <div class="checkout-form">
-            <h3>填写订单信息</h3>
+            <h3>${t('fillOrder')}</h3>
             <div class="form-section">
-                <h4 class="form-section-title">购买者信息</h4>
+                <h4 class="form-section-title">${t('buyerInfo')}</h4>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="buyer-name">姓名</label>
-                        <input type="text" id="buyer-name" placeholder="购买者姓名">
+                        <label for="buyer-name">${t('name')}</label>
+                        <input type="text" id="buyer-name" placeholder="${t('name')}">
                     </div>
                     <div class="form-group">
-                        <label for="buyer-phone">电话</label>
-                        <input type="tel" id="buyer-phone" placeholder="购买者电话">
+                        <label for="buyer-phone">${t('phone')}</label>
+                        <input type="tel" id="buyer-phone" placeholder="${t('phone')}">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="buyer-email">邮箱</label>
-                    <input type="email" id="buyer-email" placeholder="购买者邮箱">
+                    <label for="buyer-email">${t('email')}</label>
+                    <input type="email" id="buyer-email" placeholder="${t('email')}">
                 </div>
             </div>
             
             <div class="form-section">
-                <h4 class="form-section-title">收件人信息</h4>
+                <h4 class="form-section-title">${t('recipientInfo')}</h4>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="recipient-name">姓名</label>
-                        <input type="text" id="recipient-name" placeholder="收件人姓名">
+                        <label for="recipient-name">${t('name')}</label>
+                        <input type="text" id="recipient-name" placeholder="${t('name')}">
                     </div>
                     <div class="form-group">
-                        <label for="recipient-phone">电话</label>
-                        <input type="tel" id="recipient-phone" placeholder="收件人电话">
+                        <label for="recipient-phone">${t('phone')}</label>
+                        <input type="tel" id="recipient-phone" placeholder="${t('phone')}">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="recipient-street">街道地址</label>
-                    <input type="text" id="recipient-street" placeholder="街道地址">
+                    <label for="recipient-street">${t('addressStreet')}</label>
+                    <input type="text" id="recipient-street" placeholder="${t('addressStreet')}">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="recipient-city">城市</label>
-                        <input type="text" id="recipient-city" placeholder="城市">
+                        <label for="recipient-city">${t('city')}</label>
+                        <input type="text" id="recipient-city" placeholder="${t('city')}">
                     </div>
                     <div class="form-group">
-                        <label for="recipient-state">州/省</label>
-                        <input type="text" id="recipient-state" placeholder="州/省">
+                        <label for="recipient-state">${t('state')}</label>
+                        <input type="text" id="recipient-state" placeholder="${t('state')}">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="recipient-zip">邮编</label>
-                        <input type="text" id="recipient-zip" placeholder="邮编">
+                        <label for="recipient-zip">${t('zip')}</label>
+                        <input type="text" id="recipient-zip" placeholder="${t('zip')}">
                     </div>
                     <div class="form-group">
-                        <label for="recipient-country">国家</label>
+                        <label for="recipient-country">${t('country')}</label>
                         <select id="recipient-country">
-                            <option value="china">中国</option>
-                            <option value="usa">美国</option>
-                            <option value="uk">英国</option>
-                            <option value="germany">德国</option>
-                            <option value="japan">日本</option>
+                            <option value="china">${t('countryChina')}</option>
+                            <option value="usa">${t('countryUSA')}</option>
+                            <option value="uk">${t('countryUK')}</option>
+                            <option value="germany">${t('countryGermany')}</option>
+                            <option value="japan">${t('countryJapan')}</option>
                         </select>
                     </div>
                 </div>
             </div>
             
             <div class="form-section">
-                <h4 class="form-section-title">礼品卡信息</h4>
+                <h4 class="form-section-title">${t('giftCardInfo')}</h4>
                 <div class="form-group gift-card-text">
-                    <label for="gift-card-text">留言内容</label>
-                    <textarea id="gift-card-text" placeholder="请输入您的祝福语（最多180字）" rows="4" oninput="updateCharCount()"></textarea>
+                    <label for="gift-card-text">${t('giftMessage')}</label>
+                    <textarea id="gift-card-text" placeholder="${t('giftPlaceholder')}" rows="4" oninput="updateCharCount()"></textarea>
                     <div class="char-count">0/180</div>
                 </div>
             </div>
             
             <button class="final-buy-btn" ${product.stock === 0 ? 'disabled' : ''}>
-                ${product.stock === 0 ? '暂时缺货' : '立即购买'}
+                ${product.stock === 0 ? t('outOfStock') : t('buyNow')}
             </button>
         </div>
     `;

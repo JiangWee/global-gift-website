@@ -1,3 +1,4 @@
+// payment.js
 let currentPaymentOrder = null;
 let currentPaymentAmount = 0;
 let selectedPaymentMethod = 'alipay';

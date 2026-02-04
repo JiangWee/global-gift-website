@@ -1,4 +1,4 @@
-// i18n-manager.js - 国际化管理器（续）
+// i18n-manager.js - 国际化管理器
 class I18nManager {
     constructor() {
         this.currentLang = localStorage.getItem('preferredLanguage') || 'zh';

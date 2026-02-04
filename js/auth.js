@@ -1,3 +1,4 @@
+// auth.js - 更新用户状态显示功能
 async function checkAuthStatus() {
     const token = localStorage.getItem('authToken');
     const user = localStorage.getItem('userInfo');
@@ -26,7 +27,8 @@ async function checkAuthStatus() {
     return false;
 }
 
-// auth.js - 更新用户状态显示功能
+
+
 function updateNavbarForLoggedInUser(user) {
     const userStatusEl = document.getElementById('userStatus');
     if (!userStatusEl) return;
