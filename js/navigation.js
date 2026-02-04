@@ -1,5 +1,29 @@
 // navigation.js - 导航功能
-function goToPage(pageId) {
+
+console.log('[navigation.js] loaded');
+
+window.addEventListener('popstate', (event) => {
+    console.log('[popstate]', event.state, location.href);
+
+    let pageId = null;
+
+    if (event.state && event.state.pageId) {
+        pageId = event.state.pageId;
+    } else {
+        // 🔥 兜底：从 hash 里救一次
+        pageId = location.hash.replace('#', '');
+    }
+
+    if (pageId && document.getElementById(pageId)) {
+        goToPage(pageId, false);
+    }
+});
+
+
+
+
+function goToPage(pageId, push = true) {
+    console.log('[goToPage]', pageId, 'push =', push);
     // 隐藏所有页面
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
@@ -12,6 +36,10 @@ function goToPage(pageId) {
         targetPage.classList.add('active');
         targetPage.style.display = 'block';
         
+        if (push) {
+            history.pushState({ pageId }, '', '#' + pageId);
+        }
+
         // 特殊页面处理
         if (pageId === 'page-profile') {
             renderProfilePage();
@@ -81,3 +109,19 @@ function switchTab(tabId) {
     event.target.classList.add('active');
     document.getElementById(tabId).classList.add('active');
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const hash = location.hash.replace('#', '');
+
+    const pageId = (hash && document.getElementById(hash))
+        ? hash
+        : 'page-home';
+
+    console.log('[init] pageId =', pageId);
+
+    // 🔥 关键：干掉浏览器自带的 null state
+    history.replaceState({ pageId }, '', '#' + pageId);
+    goToPage(pageId, false);
+});
+
+

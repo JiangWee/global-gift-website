@@ -19,11 +19,11 @@
             
             <!-- 中间：导航链接 -->
             <div class="nav-links">
-                <a href="#" onclick="goToPage('page-home')" data-i18n="nav.home">首页</a>
-                <a href="#" onclick="goToPage('page-filters')" data-i18n="nav.filters">选购礼品</a>
-                <a href="#" onclick="goToPage('page-gifts')" data-i18n="nav.gifts">礼品目录</a>
-                <a href="#" onclick="goToPage('page-about')" data-i18n="nav.about">关于我们</a>
-                <a href="#" onclick="goToPage('page-contact')" data-i18n="nav.contact">联系我们</a>
+                <a href="javascript:void(0)" onclick="goToPage('page-home')" data-i18n="nav.home">首页</a>
+                <a href="javascript:void(0)" onclick="goToPage('page-filters')" data-i18n="nav.filters">选购礼品</a>
+                <a href="javascript:void(0)" onclick="goToPage('page-gifts')" data-i18n="nav.gifts">礼品目录</a>
+                <a href="javascript:void(0)" onclick="goToPage('page-about')" data-i18n="nav.about">关于我们</a>
+                <a href="javascript:void(0)" onclick="goToPage('page-contact')" data-i18n="nav.contact">联系我们</a>
             </div>
             
             <!-- 右侧：用户状态和语言切换 -->
@@ -53,8 +53,8 @@
                     <h1 class="hero-title" data-i18n="home.title">Gift Buy Buy</h1>
                     <p class="hero-main-subtitle" data-i18n="home.subtitle">高端商务礼品，连接全球情谊。专业跨国送礼解决方案，让心意无国界。</p>
                     <div class="cta-buttons">
-                        <a href="#" class="cta-btn cta-primary" onclick="goToPage('page-filters')" data-i18n="home.cta.start">开始选购</a>
-                        <a href="#" class="cta-btn cta-secondary" data-i18n="home.cta.learnmore">了解更多</a>
+                        <a href="javascript:void(0)" class="cta-btn cta-primary" onclick="goToPage('page-filters')" data-i18n="home.cta.start">开始选购</a>
+                        <a href="javascript:void(0)" class="cta-btn cta-secondary" data-i18n="home.cta.learnmore">了解更多</a>
                     </div>
                 </div>
             </div>
@@ -77,9 +77,9 @@
                 <div class="footer-section">
                     <h3 data-i18n="footer.follow">关注我们</h3>
                     <ul>
-                        <li><a href="#" data-i18n="footer.wechat">微信公众号</a></li>
-                        <li><a href="#" data-i18n="footer.instagram">Instagram</a></li>
-                        <li><a href="#" data-i18n="footer.linkedin">LinkedIn</a></li>
+                        <li><a href="javascript:void(0)" data-i18n="footer.wechat">微信公众号</a></li>
+                        <li><a href="javascript:void(0)" data-i18n="footer.instagram">Instagram</a></li>
+                        <li><a href="javascript:void(0)" data-i18n="footer.linkedin">LinkedIn</a></li>
                     </ul>
                 </div>
             </div>
@@ -318,15 +318,15 @@
                     <div class="contact-card">
                         <h3 data-i18n="contact.follow">关注我们</h3>
                         <div class="social-links">
-                            <a href="#" class="social-link">
+                            <a href="javascript:void(0)" class="social-link">
                                 <span class="social-icon">📱</span>
                                 <span>微信公众号: GiftBuyBuy</span>
                             </a>
-                            <a href="#" class="social-link">
+                            <a href="javascript:void(0)" class="social-link">
                                 <span class="social-icon">📷</span>
                                 <span>Instagram: @GiftBuyBuy</span>
                             </a>
-                            <a href="#" class="social-link">
+                            <a href="javascript:void(0)" class="social-link">
                                 <span class="social-icon">💼</span>
                                 <span>LinkedIn: Gift Buy Buy</span>
                             </a>
@@ -394,7 +394,7 @@
                     <button class="next-btn" onclick="sendVerificationCode()" data-i18n="forgot.send">发送验证码</button>
                     
                     <div class="back-to-login">
-                        <a href="#" onclick="goToPage('page-home'); showLogin()" data-i18n="forgot.back.login">返回登录</a>
+                        <a href="javascript:void(0)" onclick="goToPage('page-home'); showLogin()" data-i18n="forgot.back.login">返回登录</a>
                     </div>
                 </div>
             </div>
@@ -416,7 +416,7 @@
                     <button class="next-btn" onclick="verifyCode()" data-i18n="forgot.verify.verify">验证验证码</button>
                     
                     <div class="back-to-email">
-                        <a href="#" onclick="switchForgotPasswordStep('step-email')" data-i18n="forgot.verify.change">修改邮箱地址</a>
+                        <a href="javascript:void(0)" onclick="switchForgotPasswordStep('step-email')" data-i18n="forgot.verify.change">修改邮箱地址</a>
                     </div>
                 </div>
             </div>
@@ -477,7 +477,7 @@
                     <label>
                         <input type="checkbox"> <span data-i18n="login.remember">保持会话</span>
                     </label>
-                    <a href="#" class="forgot-password" onclick="closeLoginModal(); goToPage('page-forgot-password')" data-i18n="login.forgot">忘记密码?</a>
+                    <a href="javascript:void(0)" class="forgot-password" onclick="closeLoginModal(); goToPage('page-forgot-password')" data-i18n="login.forgot">忘记密码?</a>
                 </div>
                 <div class="form-actions">
                     <button class="login-submit" onclick="login()" data-i18n="login.submit">登录</button>
@@ -485,7 +485,7 @@
                 </div>
                 <div class="register-link">
                     <span data-i18n="login.register.link">还没有账号?</span> 
-                    <a href="#" onclick="switchLoginTab('register')" data-i18n="login.register.click">点击注册</a>
+                    <a href="javascript:void(0)" onclick="switchLoginTab('register')" data-i18n="login.register.click">点击注册</a>
                 </div>
             </div>
             
