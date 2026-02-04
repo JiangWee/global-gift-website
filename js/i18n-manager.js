@@ -3,6 +3,13 @@ class I18nManager {
     constructor() {
         this.currentLang = localStorage.getItem('preferredLanguage') || 'zh';
         this.resources = I18N_RESOURCES;
+        this.onLanguageChangeCallbacks = [];
+    }
+
+    onLanguageChange(callback) {
+        if (typeof callback === 'function') {
+            this.onLanguageChangeCallbacks.push(callback);
+        }
     }
 
     // 设置语言
@@ -10,9 +17,13 @@ class I18nManager {
         if (this.resources[lang]) {
             this.currentLang = lang;
             localStorage.setItem('preferredLanguage', lang);
+
             this.updatePageText();
             this.updateLanguageButtons();
             this.updateDirection(lang);
+
+            this.onLanguageChangeCallbacks.forEach(cb => cb(lang));
+            console.log('🔄 setLanguage after onLanguageChangeCallbacks');
         }
     }
 
@@ -270,7 +281,7 @@ class I18nManager {
             this.updateForgotPasswordText();
         }
     }
-    
+
     // 初始化
     init() {
         this.updateLanguageButtons();

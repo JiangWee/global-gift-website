@@ -8,30 +8,59 @@ const IMAGE_BASE_URL = 'https://img.giftbuybuy.com/products';
 let productsData = [];
 let currentCategory = 'all';
 let currentProduct = null;
+let currentProductId = null;
 
+// products.js
+console.log('🧩 products.js loaded');
+
+function showProductDetail(product) {
+    currentProductId = product.id;
+    renderProductDetail(product);
+}
+
+i18n.onLanguageChange(async () => {
+    console.log('🌍 language change → reload products');
+
+    await loadProducts(); // ⭐ 等新语言产品加载完
+
+    if (currentProductId) {
+        const product = productsData.find(p => p.id === currentProductId);
+        if (product) {
+            console.log('🔁 语言切换后重新渲染详情页:', product.name);
+            renderProductDetail(product);
+        }
+    }
+});
 
 async function loadProducts() {
     console.log('加载产品数据...');
     try {
         showLoading(true);
 
-        const response = await fetch(PRODUCTS_API);
+        const lang = i18n.getCurrentLanguage();
+
+        const response = await fetch(`${PRODUCTS_API}?lang=${lang}`);
         const result = await response.json();
 
         if (result.success) {
             productsData = result.data;
             renderProducts();
             console.log('产品数据加载成功，共', productsData.length, '个产品');
+
+            return productsData;   // ⭐⭐⭐ 关键：返回数据
         } else {
             throw new Error(result.message || '加载失败');
         }
     } catch (error) {
         console.error('加载产品数据失败:', error);
         loadBackupProducts();
+
+        return productsData || []; // ⭐ 出错也 return，防止外面 await 卡死
     } finally {
         showLoading(false);
     }
 }
+
 
 function loadBackupProducts() {
     productsData = [
@@ -949,3 +978,4 @@ function refreshPaymentButtons() {
     console.log('🔄 刷新支付按钮事件绑定');
     setTimeout(initPaymentButtonEvents, 100);
 }
+

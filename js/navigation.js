@@ -66,8 +66,7 @@ function viewGiftDetail(productId) {
         alert('产品不存在');
         return;
     }
-    
-    renderProductDetail(product);
+    showProductDetail(product);
     goToPage('page-detail');
 }
 
