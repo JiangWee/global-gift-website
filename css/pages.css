@@ -5,6 +5,13 @@
     padding-top: 80px; /* 为固定导航栏留出空间 */
 }
 
+.page .container {
+    padding-bottom: 80px;
+}
+
+
+
+
 .page.active {
     display: block; /* 只显示活动页面 */
 }

@@ -248,9 +248,9 @@
 }
 
 /* layout.css - 修改页脚样式 */
-
 /* 确保底部样式正确 */
 .footer {
+    margin-top: 0;
     background: #1a1a1a;
     color: white;
     padding: 40px 0 20px;
