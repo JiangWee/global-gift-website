@@ -386,14 +386,14 @@ function reBindDetailPageEvents(product) {
                 e.preventDefault();
                 console.log('🛒 点击购买按钮，当前产品:', currentProduct);
                 
-                if (!currentProduct || !currentProduct.ID) {
+                if (!currentProduct || !currentProduct.id) {
                     console.error('❌ 产品对象无效:', currentProduct);
                     showMessage('产品信息异常，请刷新页面重试', 'error');
                     return;
                 }
                 
                 // 验证库存
-                if (currentProduct.库存 === 0) {
+                if (currentProduct.stock === 0) {
                     showMessage('该产品暂时缺货', 'error');
                     return;
                 }
