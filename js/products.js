@@ -739,6 +739,8 @@ async function renderOrdersPage() {
                 buyerInfo = buyerInfo || {};
                 
                 // 图片处理 - 使用默认图片或根据产品ID查找
+                console.log('🎯 order.orderId:', order.orderId);
+                console.log('🎯 order.productId:', order.productId);
                 console.log('🎯 order.productImage:', order.productImage);
                 const productImage = order.productImage || getProductImage(order.productId);
                 const orderActions = order.status === 'unpaid' 
@@ -913,9 +915,14 @@ function trackOrder(orderId) {
     showMessage(`跟踪订单 ${orderId} 的物流功能开发中...`, 'info');
 }
 
+let paymentButtonBound = false;
 
-// 修复支付按钮事件绑定
 function initPaymentButtonEvents() {
+    if (paymentButtonBound) {
+        console.log('🔄 支付按钮事件已绑定，跳过重复绑定');
+        return;
+    }
+    
     console.log('🔄 初始化支付按钮事件');
     
     // 移除旧的事件监听器（避免重复绑定）
@@ -923,25 +930,30 @@ function initPaymentButtonEvents() {
     
     // 添加新的事件监听器
     document.addEventListener('click', handlePaymentButtonClick);
+    
+    paymentButtonBound = true;
 }
 
+// 在支付成功或页面切换时，重置绑定状态
+function resetPaymentButtonBinding() {
+    paymentButtonBound = false;
+}
+
+
 function handlePaymentButtonClick(e) {
-    if (e.target.classList.contains('pay-now-btn') || 
-        e.target.closest('.pay-now-btn')) {
+    // 检查是否点击了支付按钮或其子元素
+    const payButton = e.target.closest('.pay-now-btn');
+    
+    if (payButton) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation(); // 🔥 关键：阻止其他事件监听器
         
-        console.log('💰 支付按钮被点击');
-        
-        let payButton = e.target;
-        if (!payButton.classList.contains('pay-now-btn')) {
-            payButton = e.target.closest('.pay-now-btn');
-        }
+        console.log('💰 支付按钮被点击（全局事件）');
         
         const orderCard = payButton.closest('.order-card');
         if (!orderCard) {
             console.error('❌ 未找到订单卡片');
-            showMessage('订单信息异常，请刷新页面重试', 'error');
             return;
         }
         
@@ -952,7 +964,6 @@ function handlePaymentButtonClick(e) {
         
         if (!orderNumberElement || !priceElement || !productNameElement) {
             console.error('❌ 订单信息元素缺失');
-            showMessage('订单信息不完整，无法支付', 'error');
             return;
         }
         
@@ -965,12 +976,18 @@ function handlePaymentButtonClick(e) {
         
         if (!orderId || isNaN(price) || price <= 0) {
             console.error('❌ 订单信息格式错误');
-            showMessage('订单信息格式错误，请刷新页面', 'error');
             return;
         }
         
         // 显示支付模态框
-        showPaymentModal(orderId, price, productName);
+        if (typeof showPaymentModal === 'function') {
+            // 延迟一点确保不会重复触发
+            setTimeout(() => {
+                showPaymentModal(orderId, price, productName);
+            }, 50);
+        } else {
+            console.error('❌ showPaymentModal 函数未定义');
+        }
     }
 }
 

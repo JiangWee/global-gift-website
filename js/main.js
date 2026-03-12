@@ -58,6 +58,15 @@ document.addEventListener('DOMContentLoaded', function() {
         holidaySelect.addEventListener('change', updateFilters);
         deliveryDate.addEventListener('change', updateFilters);
     }
+
+    // ✅ 初始化支付模态框事件
+    setTimeout(() => {
+        if (document.getElementById('paymentModal')) {
+            initPaymentModalEvents();
+        }
+    }, 1000);
+    
+    checkPendingPaymentOnLoad();
 });
 
 function initializePage() {
@@ -140,5 +149,16 @@ function debugProductLoading() {
     console.log('手动触发产品加载...');
     loadProducts();
 }
+
+function updateAllFooters() {
+    document.querySelectorAll('.footer').forEach(footer => {
+        footer.outerHTML = generateFooter(i18n.getCurrentLanguage());
+    });
+}
+
+// 监听语言变化
+i18n.onLanguageChange(() => {
+    updateAllFooters();
+});
 
 // 在控制台运行 debugProductLoading() 来调试

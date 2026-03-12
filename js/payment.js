@@ -14,48 +14,138 @@ function closePaymentModal() {
     document.getElementById('paymentModal').style.display = 'none';
 }
 
-document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('pay-now-btn')) {
-        const orderId = e.target.dataset.orderId;
-        openPaymentModal(orderId);
+
+// 初始化支付方式选择
+function initPaymentMethodSelection() {
+    const paymentMethods = document.querySelectorAll('.payment-method-item');
+    
+    // 移除所有选中状态
+    paymentMethods.forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    // 设置默认选中支付宝
+    const alipayItem = document.querySelector('[data-method="alipay"]');
+    if (alipayItem) {
+        alipayItem.classList.add('selected');
     }
-});
+    
+    // 更新支付按钮文本
+    updatePaymentButtonText();
+}
 
 
-// 显示支付模态框
+let isModalShowing = false;
+
 function showPaymentModal(orderId, price, productName) {
+    if (isModalShowing) {
+        console.log('🔄 支付模态框已在显示中，跳过重复调用');
+        return;
+    }
+    
+    console.log('💰 显示支付模态框:', { orderId, price, productName });
+    
+    isModalShowing = true;
+    
     const modal = document.getElementById('paymentModal');
     const modalContent = modal.querySelector('.payment-modal-content');
 
     if (!modal || !modalContent) {
         console.error('❌ 支付模态框元素未找到');
+        isModalShowing = false;
         return;
     }
 
+    // 🔥 关键修复1：重置所有支付界面状态
+    resetPaymentModalState();
+    
+    // 🔥 关键修复2：确保只更新当前订单
+    currentPaymentOrder = orderId;
+    currentPaymentAmount = price;
+    selectedPaymentMethod = 'alipay'; // 默认选择支付宝
+    
     // 填充支付信息
     document.getElementById('payment-order-id').textContent = orderId;
     document.getElementById('payment-product-name').textContent = productName;
     document.getElementById('payment-amount').textContent = `¥ ${price.toLocaleString()}`;
-
-    // ✅ 关键 1：显示遮罩，用 flex
+    
+    // 初始化支付方式选择状态
+    initPaymentMethodSelection();
+    
+    // 显示模态框
     modal.style.display = 'flex';
-
-    // ✅ 关键 2：触发动画（必须延迟一帧）
     modalContent.classList.remove('show');
     requestAnimationFrame(() => {
         modalContent.classList.add('show');
     });
+    
+    console.log('✅ 支付模态框显示完成，当前订单:', currentPaymentOrder);
+}
+
+// 新增：重置支付模态框状态的函数
+function resetPaymentModalState() {
+    console.log('🔄 重置支付模态框状态');
+    
+    // 1. 重置全局变量
+    currentPaymentOrder = null;
+    currentPaymentAmount = 0;
+    selectedPaymentMethod = 'alipay';
+    
+    // 2. 停止可能的轮询
+    stopPaymentPolling();
+    
+    // 3. 重置界面显示状态
+    const paymentSelection = document.getElementById('payment-selection');
+    const wechatSection = document.getElementById('wechat-qrcode-section');
+    const successSection = document.getElementById('payment-success-section');
+    
+    if (paymentSelection) {
+        paymentSelection.style.display = 'block';
+    }
+    if (wechatSection) {
+        wechatSection.style.display = 'none';
+        // 清空微信二维码
+        const qrContainer = document.getElementById('wechat-qrcode');
+        if (qrContainer) qrContainer.innerHTML = '';
+    }
+    if (successSection) {
+        successSection.style.display = 'none';
+        // 清空成功界面的内容
+        document.getElementById('success-order-id').textContent = '';
+        document.getElementById('success-amount').textContent = '';
+    }
+    
+    // 4. 重置按钮状态
+    const payButton = document.getElementById('payment-submit-btn');
+    if (payButton) {
+        payButton.disabled = false;
+        payButton.innerHTML = '确认支付宝支付';
+    }
 }
 
 
-// 隐藏支付模态框
 function hidePaymentModal() {
-    const modalContent = document.querySelector('.payment-modal-content');
+    const modal = document.getElementById('paymentModal');
+    const modalContent = modal.querySelector('.payment-modal-content');
+    
+    if (!modal || !modalContent) return;
+    
     modalContent.classList.remove('show');
     
     setTimeout(() => {
-        document.getElementById('paymentModal').style.display = 'none';
+        modal.style.display = 'none';
+        
+        // 🔥 关键：隐藏后重置所有状态
+        resetPaymentModalState();
+        
+        // 停止轮询
         stopPaymentPolling();
+        
+        // 清理轮询信息
+        localStorage.removeItem('paymentPollInfo');
+        
+        // 重置显示状态
+        isModalShowing = false;
     }, 300);
 }
 
@@ -68,20 +158,35 @@ function resetPaymentMethodSelection() {
 
 // 选择支付方式
 function selectPaymentMethod(method) {
-    resetPaymentMethodSelection();
+    // 移除所有选中状态
+    document.querySelectorAll('.payment-method-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    // 设置选中状态
+    const selectedElement = document.querySelector(`[data-method="${method}"]`);
+    if (selectedElement) {
+        selectedElement.classList.add('selected');
+    }
+    
     selectedPaymentMethod = method;
     
-    const selectedElement = document.querySelector(`[data-method="${method}"]`);
-    selectedElement.classList.add('selected');
-    
     // 更新支付按钮文本
+    updatePaymentButtonText();
+}
+
+// 更新支付按钮文本
+function updatePaymentButtonText() {
     const payButton = document.getElementById('payment-submit-btn');
-    const methodText = method === 'alipay' ? '支付宝' : '微信支付';
+    if (!payButton) return;
+    
+    const methodText = selectedPaymentMethod === 'alipay' ? '支付宝' : '微信';
     payButton.textContent = `确认${methodText}支付`;
 }
 
 // 提交支付请求
 async function submitPayment() {
+    console.log('💰 提交支付请求，订单:', currentPaymentOrder, '方式:', selectedPaymentMethod);
     if (!currentPaymentOrder || !selectedPaymentMethod) {
         showNotification('支付信息不完整', 'error');
         return;
@@ -99,11 +204,11 @@ async function submitPayment() {
             paymentMethod: selectedPaymentMethod
         };
         
-        // 直接使用全局apiService实例
+        // ✅ 调用真实支付接口
         const response = await apiService.createPayment(paymentData);
         
         if (response.success) {
-            // 根据支付方式处理跳转或二维码显示
+            // 根据支付方式处理跳转
             if (selectedPaymentMethod === 'alipay') {
                 // 支付宝支付 - 跳转到支付页面
                 window.location.href = response.data.paymentUrl;
@@ -166,6 +271,15 @@ function backToPaymentSelection() {
 
 // 开始轮询支付状态
 function startPaymentPolling(orderId, paymentMethod) {
+
+    const pollInfo = {
+        orderId,
+        paymentMethod,
+        startTime: Date.now(),
+        pollCount: 0
+    };
+    localStorage.setItem('paymentPollInfo', JSON.stringify(pollInfo));
+
     let pollCount = 0;
     const maxPolls = 60; // 最多轮询5分钟（5秒一次）
     
@@ -208,6 +322,23 @@ function startPaymentPolling(orderId, paymentMethod) {
     }, 5000); // 每5秒轮询一次
 }
 
+// 页面加载时检查是否有未完成的支付轮询
+function checkPendingPaymentOnLoad() {
+    const pollInfo = localStorage.getItem('paymentPollInfo');
+    if (pollInfo) {
+        const { orderId, paymentMethod, startTime } = JSON.parse(pollInfo);
+        
+        // 如果开始时间在30分钟内，继续轮询
+        if (Date.now() - startTime < 30 * 60 * 1000) {
+            console.log('🔄 恢复支付轮询:', orderId);
+            startPaymentPolling(orderId, paymentMethod);
+        } else {
+            // 超时，清理
+            localStorage.removeItem('paymentPollInfo');
+        }
+    }
+}
+
 // 停止轮询支付状态
 function stopPaymentPolling() {
     if (paymentPollingInterval) {
@@ -218,20 +349,31 @@ function stopPaymentPolling() {
 
 // 处理支付成功
 function handlePaymentSuccess() {
+    console.log('🎉 处理支付成功，订单:', currentPaymentOrder, '金额:', currentPaymentAmount);
+    
     // 显示成功状态
     document.getElementById('payment-selection').style.display = 'none';
     document.getElementById('wechat-qrcode-section').style.display = 'none';
-    document.getElementById('payment-success-section').style.display = 'block';
     
-    // 更新成功信息
-    document.getElementById('success-order-id').textContent = currentPaymentOrder;
-    document.getElementById('success-amount').textContent = `¥ ${currentPaymentAmount.toFixed(2)}`;
+    const successSection = document.getElementById('payment-success-section');
+    if (successSection) {
+        successSection.style.display = 'block';
+        
+        // 🔥 确保显示正确的订单信息
+        document.getElementById('success-order-id').textContent = currentPaymentOrder || '';
+        document.getElementById('success-amount').textContent = `¥ ${(currentPaymentAmount || 0).toFixed(2)}`;
+    }
     
-    // 3秒后自动关闭并跳转
     setTimeout(() => {
         hidePaymentModal();
-        // 跳转到订单详情或首页
-        window.location.href = `/orders/${currentPaymentOrder}`;
+        
+        // 跳转到订单页面
+        goToPage('page-orders');
+        
+        // 保存最后支付的订单
+        if (currentPaymentOrder) {
+            localStorage.setItem('lastPaidOrder', currentPaymentOrder);
+        }
     }, 3000);
 }
 
@@ -260,28 +402,79 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// 事件监听器初始化
+// payment.js - 修改 initPaymentModalEvents
+let paymentModalEventsInitialized = false;
+
 function initPaymentModalEvents() {
-    const modal = document.getElementById('paymentModal');
-    const modalContent = modal.querySelector('.payment-modal-content');
-
-    // 关闭 ×
-    modal.querySelector('.payment-close').onclick = closePaymentModal;
-    modal.querySelector('.payment-cancel').onclick = closePaymentModal;
-
-    // 点击遮罩关闭（点内容不关）
-    modal.addEventListener('click', e => {
-        if (e.target === modal) {
-            closePaymentModal();
-        }
-    });
-
-    function closePaymentModal() {
-        modalContent.classList.remove('show');
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 300); // 等动画结束
+    if (paymentModalEventsInitialized) {
+        console.log('🔄 支付模态框事件已初始化，跳过');
+        return;
     }
+    
+    console.log('🔧 初始化支付模态框事件');
+    
+    const modal = document.getElementById('paymentModal');
+    if (!modal) return;
+    
+    // 🔥 关键修复：先移除所有事件监听器
+    const newModal = modal.cloneNode(true);
+    modal.parentNode.replaceChild(newModal, modal);
+    
+    // 重新获取引用
+    const freshModal = document.getElementById('paymentModal');
+    
+    // 重新绑定事件
+    const closeBtn = freshModal.querySelector('.payment-close');
+    const cancelBtn = freshModal.querySelector('.payment-cancel');
+    const submitBtn = document.getElementById('payment-submit-btn');
+    const backBtn = document.getElementById('payment-back-btn');
+    const successBtn = document.getElementById('payment-success-btn');
+    
+    if (closeBtn) {
+        closeBtn.onclick = hidePaymentModal;
+    }
+    if (cancelBtn) {
+        cancelBtn.onclick = hidePaymentModal;
+    }
+    
+    // 点击遮罩关闭
+    freshModal.onclick = function(e) {
+        if (e.target === freshModal) {
+            hidePaymentModal();
+        }
+    };
+    
+    // 支付方式选择事件
+    document.querySelectorAll('.payment-method-item').forEach(item => {
+        item.onclick = function() {
+            const method = this.getAttribute('data-method');
+            selectPaymentMethod(method);
+        };
+    });
+    
+    // 支付提交按钮
+    if (submitBtn) {
+        submitBtn.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            submitPayment();
+        };
+    }
+    
+    // 返回按钮
+    if (backBtn) {
+        backBtn.onclick = backToPaymentSelection;
+    }
+    
+    // 成功按钮
+    if (successBtn) {
+        successBtn.onclick = function() {
+            hidePaymentModal();
+            goToPage('page-orders');
+        };
+    }
+    
+    paymentModalEventsInitialized = true;
 }
 
 
@@ -343,65 +536,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// 处理支付
-async function processPayment() {
-    const agreeTerms = document.getElementById('agreeTerms').checked;
-    
-    if (!agreeTerms) {
-        showMessage('请同意支付服务协议', 'error');
-        return;
-    }
-    
-    if (!currentPaymentOrder || !currentPaymentAmount) {
-        showMessage('支付信息不完整', 'error');
-        return;
-    }
-    
-    // 禁用支付按钮
-    const submitBtn = document.getElementById('paymentSubmitBtn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = `支付中...`;
-    
-    try {
-        // 模拟支付过程
-        await simulatePaymentProcess();
-        
-        // 显示支付成功
-        document.getElementById('paymentSuccess').style.display = 'flex';
-        
-        // 更新订单状态
-        await updateOrderStatus(currentPaymentOrder, 'pending');
-        
-        showMessage('支付成功！订单状态已更新', 'success');
-        
-    } catch (error) {
-        console.error('支付失败:', error);
-        showMessage('支付失败，请重试', 'error');
-        
-        // 恢复支付按钮
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `确认支付 ¥<span id="payment-submit-amount">${currentPaymentAmount.toLocaleString()}</span>`;
-    }
-}
-
-// 模拟支付过程
-function simulatePaymentProcess() {
-    return new Promise((resolve, reject) => {
-        // 模拟网络延迟
-        setTimeout(() => {
-            // 模拟支付成功（90%成功率）
-            if (Math.random() > 0.1) {
-                resolve({
-                    success: true,
-                    transactionId: 'TX' + Date.now(),
-                    method: selectedPaymentMethod
-                });
-            } else {
-                reject(new Error('支付处理失败'));
-            }
-        }, 2000);
-    });
-}
 
 // 更新订单状态
 async function updateOrderStatus(orderId, newStatus) {
@@ -452,27 +586,132 @@ document.addEventListener('click', function(event) {
     }
 });
 
-function closePaymentModal() {
-    const modal = document.getElementById('paymentModal');
-    if (modal) {
-        // 添加关闭动画
-        const modalContent = modal.querySelector('.payment-modal-content');
-        if (modalContent) {
-            modalContent.classList.remove('show');
+async function handlePaymentResultPage(params = {}) {
+    console.log('🔍 进入支付结果处理页面，接收到的参数:', params);
+    
+    const container = document.getElementById('payment-result-container');
+    if (!container) {
+        console.error('❌ 找不到支付结果容器');
+        return;
+    }
+    
+    // 优先从传入的参数中获取 orderId
+    let orderId = params.orderId;
+    
+    // 如果参数中没有，再尝试从当前浏览器地址栏的哈希中解析
+    if (!orderId && window.location.hash.includes('?')) {
+        const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
+        orderId = hashParams.get('orderId');
+    }
+    
+    // // 1. 从URL中获取订单号
+    // const urlParams = new URLSearchParams(window.location.hash.substring(window.location.hash.indexOf('?') + 1));
+    // const orderId = urlParams.get('orderId');
+    
+    if (!orderId) {
+        container.innerHTML = `
+            <div class="payment-result-message error">
+                <h3>⚠️ 无效的请求</h3>
+                <p>未找到订单号，请从订单中心重新发起支付查询。</p>
+                <button class="btn-primary" onclick="goToPage('page-orders')">查看我的订单</button>
+            </div>
+        `;
+        return;
+    }
+    
+    // 2. 显示加载状态
+    container.innerHTML = `
+        <div class="payment-result-loading">
+            <div class="spinner"></div>
+            <p>正在查询订单 ${orderId} 的支付状态，请稍候...</p>
+        </div>
+    `;
+    
+    try {
+        // 3. 调用后端API查询支付状态
+        const response = await apiService.queryPaymentStatus(orderId, 'alipay'); // 默认alipay，可根据需要调整
+        
+        console.log('📄 支付状态查询结果:', response);
+        
+        if (response.success && response.data && response.data.status === 'paid') {
+            // 支付成功
+            container.innerHTML = `
+                <div class="payment-result-message success">
+                    <div class="success-icon">✅</div>
+                    <h3>🎉 支付成功！</h3>
+                    <p>订单 <strong>${orderId}</strong> 已支付完成。</p>
+                    ${response.data.tradeNo ? `<p>支付宝交易号：${response.data.tradeNo}</p>` : ''}
+                    ${response.data.amount ? `<p>支付金额：¥ ${response.data.amount.toFixed(2)}</p>` : ''}
+                    <div class="action-buttons">
+                        <button class="btn-primary" onclick="goToPage('page-orders')">查看订单详情</button>
+                        <button class="btn-secondary" onclick="goToPage('page-gifts')">继续选购</button>
+                    </div>
+                    <p class="hint">页面将在 <span id="countdown">5</span> 秒后自动跳转到订单中心...</p>
+                </div>
+            `;
+            
+            // 倒计时自动跳转
+            let count = 5;
+            const countdownEl = document.getElementById('countdown');
+            const countdownInterval = setInterval(() => {
+                count--;
+                if (countdownEl) countdownEl.textContent = count;
+                if (count <= 0) {
+                    clearInterval(countdownInterval);
+                    goToPage('page-orders');
+                }
+            }, 1000);
+            
+        } else {
+            // 支付未完成或其他状态
+            const message = response.message || '支付状态未确认';
+            const status = response.data?.status || 'unknown';
+            
+            container.innerHTML = `
+                <div class="payment-result-message ${status === 'pending' ? 'warning' : 'error'}">
+                    <h3>${status === 'pending' ? '⏳ 支付处理中' : '⚠️ 支付未完成'}</h3>
+                    <p>订单 ${orderId} 状态：${message}</p>
+                    <p>如果已完成支付，请稍等片刻再刷新此页面，或前往订单中心查看最新状态。</p>
+                    <div class="action-buttons">
+                        <button class="btn-primary" onclick="checkPaymentAgain('${orderId}')">重新查询</button>
+                        <button class="btn-secondary" onclick="goToPage('page-orders')">返回订单中心</button>
+                    </div>
+                </div>
+            `;
         }
         
-        // 延迟隐藏以便动画完成
-        setTimeout(() => {
-            modal.style.display = 'none';
-            // 停止支付轮询
-            stopPaymentPolling();
-        }, 300);
+    } catch (error) {
+        console.error('❌ 查询支付状态失败:', error);
+        container.innerHTML = `
+            <div class="payment-result-message error">
+                <h3>❌ 查询失败</h3>
+                <p>网络异常或服务器错误，无法获取订单状态。</p>
+                <p>错误信息：${error.message}</p>
+                <div class="action-buttons">
+                    <!-- 将重试调用改为带参数的 handlePaymentResultPage(params) -->
+                    <button class="btn-primary" onclick="handlePaymentResultPage(${JSON.stringify(params)})">重试</button>
+                    <button class="btn-secondary" onclick="goToPage('page-home')">返回首页</button>
+                </div>
+            </div>
+        `;
     }
+}
+
+// 辅助函数：重新查询
+async function checkPaymentAgain(orderId) {
+    const container = document.getElementById('payment-result-container');
+    if (!container) return;
+    
+    container.innerHTML = `<div class="spinner"></div><p>重新查询中...</p>`;
+    
+    // 延迟一秒后重新查询，避免频繁请求
+    setTimeout(async () => {
+        await handlePaymentResultPage();
+    }, 1000);
 }
 
 // 将函数暴露到全局
 window.closePaymentModal = closePaymentModal;
-window.processPayment = processPayment;
 window.selectPaymentMethod = selectPaymentMethod;
 window.hidePaymentModal = hidePaymentModal;
 window.submitPayment = submitPayment;
