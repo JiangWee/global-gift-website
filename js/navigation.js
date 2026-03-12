@@ -5,8 +5,9 @@ console.log('[navigation.js] loaded');
 // navigation.js - 导航功能
 console.log('[navigation.js] loaded');
 
+// navigation.js - 修改 popstate 事件处理器
 window.addEventListener('popstate', (event) => {
-    console.log('[popstate]', event.state, location.href);
+    console.log('[popstate] 事件状态:', event.state, '当前URL:', location.href, '当前哈希:', location.hash);
     
     let pageId = null;
     let params = {};
@@ -32,17 +33,31 @@ window.addEventListener('popstate', (event) => {
         }
     }
 
+    // 只有当能够解析出有效页面ID时才进行跳转
     if (pageId && document.getElementById(pageId)) {
-        // ✅ 正确传递三个参数
+        console.log('[popstate] 跳转到解析出的页面:', pageId, '参数:', params);
         goToPage(pageId, params, false);
+    } else if (!pageId) {
+        // 如果无法解析出页面ID，检查当前是否有活动页面
+        const activePage = document.querySelector('.page.active');
+        if (!activePage) {
+            // 没有活动页面，才跳转到首页
+            console.log('[popstate] 无活动页面，跳转到首页');
+            goToPage('page-home', {}, false);
+        } else {
+            // 有活动页面，保持当前页面
+            console.log('[popstate] 保持当前活动页面:', activePage.id);
+        }
     } else {
-        // 默认显示首页
+        console.error('[popstate] 页面不存在:', pageId);
+        // 页面不存在，跳转到首页
         goToPage('page-home', {}, false);
     }
 });
 
+
 function goToPage(pageId, params = {}, push = true) {
-    console.log('🔄 跳转到页面:', pageId, '参数:', params, 'push:', push);
+    console.log('🔄 跳转到页面:', pageId, '参数:', params, 'push:', push, '当前时间:', Date.now());
     
     // 参数类型保护
     if (typeof params === 'boolean') {
@@ -82,6 +97,7 @@ function goToPage(pageId, params = {}, push = true) {
                 const queryString = new URLSearchParams(params).toString();
                 hash += `?${queryString}`;
             }
+            console.log('📝 pushState 哈希:', hash);
             history.pushState({ pageId, params }, '', hash);
         }
 
