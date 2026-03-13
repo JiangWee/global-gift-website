@@ -251,7 +251,39 @@ class ApiService {
         });
     }
     
+        // 获取推荐支付方式
+    async getRecommendedPayment() {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/payment/recommend`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...this.getAuthHeaders()
+                }
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('获取推荐支付方式失败:', error);
+            return { success: false, message: '网络错误' };
+        }
+    }
     
+    // 获取Stripe配置
+    async getStripeConfig() {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/payment/stripe/config`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...this.getAuthHeaders()
+                }
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('获取Stripe配置失败:', error);
+            return { success: false, message: '网络错误' };
+        }
+    }
 }
 
 const apiService = new ApiService();
