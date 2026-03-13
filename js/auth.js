@@ -86,12 +86,28 @@ function updateNavbarForLoggedOutUser() {
     const userStatusEl = document.getElementById('userStatus');
     if (!userStatusEl) return;
     
+    // 获取当前语言的翻译
+    const loginText = typeof i18n !== 'undefined' && i18n.t ? i18n.t('login') : '登录';
+    const registerText = typeof i18n !== 'undefined' && i18n.t ? i18n.t('register') : '注册';
+    
     userStatusEl.innerHTML = `
         <div class="login-register-buttons">
-            <button class="nav-btn login-nav-btn" onclick="showLogin()">登录</button>
-            <button class="nav-btn register-nav-btn" onclick="goToPage('page-register')">注册</button>
+            <button class="nav-btn login-nav-btn" onclick="showLogin()">${loginText}</button>
+            <button class="nav-btn register-nav-btn" onclick="goToRegisterWithParam()">${registerText}</button>
         </div>
     `;
+}
+
+function goToRegisterWithParam() {
+    const activePage = document.querySelector('.page.active');
+    if (activePage) {
+        const currentPageId = activePage.id;
+        // 跳转到当前页面，并添加 show=register 参数
+        goToPage(currentPageId, { show: 'register' });
+    } else {
+        // 默认跳转到首页并显示注册
+        goToPage('page-home', { show: 'register' });
+    }
 }
 
 // 切换用户下拉菜单
@@ -129,6 +145,19 @@ function updateUserInfo(userData) {
 
 // 显示注册表单
 function showRegister() {
-    showLogin();
+    // 显示登录模态框
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) {
+        loginModal.style.display = 'flex';
+    }
+    
+    // 切换到注册标签页
     switchLoginTab('register');
+    
+    // 确保模态框文本正确更新
+    setTimeout(() => {
+        if (typeof i18n !== 'undefined' && i18n.updateModalText) {
+            i18n.updateModalText();
+        }
+    }, 100);
 }

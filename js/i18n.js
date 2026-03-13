@@ -9,7 +9,9 @@ const I18N_RESOURCES = {
         "nav.contact": "联系我们",
         "nav.login": "登录",
         "nav.register": "注册",
-        
+        "login": "登录",
+        "register": "注册",
+
         // 首页
         "home.title": "Gift Buy Buy",
         "home.subtitle": "高端商务礼品，连接全球情谊。专业跨国送礼解决方案，让心意无国界。",
@@ -216,6 +218,8 @@ const I18N_RESOURCES = {
         "nav.contact": "Contact",
         "nav.login": "Login",
         "nav.register": "Register",
+        "login": "Login",
+        "register": "Register",
         
         // Homepage
         "home.title": "Gift Buy Buy",

@@ -1,7 +1,7 @@
 // i18n-manager.js - 国际化管理器
 class I18nManager {
     constructor() {
-        this.currentLang = localStorage.getItem('preferredLanguage') || 'zh';
+        this.currentLang = localStorage.getItem('preferredLanguage') || 'en';
         this.resources = I18N_RESOURCES;
         this.onLanguageChangeCallbacks = [];
     }

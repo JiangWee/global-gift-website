@@ -71,6 +71,19 @@ function goToPage(pageId, params = {}, push = true) {
         params = {};
     }
     
+    // 🆕 新增：检查是否有 show=register 参数
+    if (params.show === 'register') {
+        console.log('🔍 检测到注册参数，显示注册模态框');
+        // 延迟执行以确保页面切换完成
+        setTimeout(() => {
+            showRegister();
+        }, 100);
+        
+        // 从参数中移除 show 字段，避免重复触发
+        const { show, ...restParams } = params;
+        params = restParams;
+    }
+    
     // 隐藏所有页面
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
@@ -191,6 +204,7 @@ function switchTab(tabId) {
     document.getElementById(tabId).classList.add('active');
 }
 
+
 // navigation.js - 修改 DOMContentLoaded 部分
 document.addEventListener('DOMContentLoaded', () => {
     // 增强的哈希解析函数
@@ -221,16 +235,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return { pageId, params };
     }
     
-    // 解析当前URL的哈希
-    const { pageId, params } = parseHashForPageId(location.hash);
-    
-    console.log('[init] 解析哈希:', { hash: location.hash, pageId, params });
-    
-    // ✅ 关键修复：保存正确的状态
-    history.replaceState({ pageId, params }, '', '#' + (location.hash.substring(1) || 'page-home'));
-    
-    // 跳转到解析出的页面，并传递参数
+    // 页面加载时检查当前哈希
+    const { pageId, params } = parseHashForPageId(window.location.hash);
     goToPage(pageId, params, false);
+    
+    // 监听哈希变化
+    window.addEventListener('hashchange', () => {
+        const { pageId, params } = parseHashForPageId(window.location.hash);
+        goToPage(pageId, params, false);
+    });
 });
 
 
