@@ -251,10 +251,18 @@ class ApiService {
         });
     }
     
-        // 获取推荐支付方式
+    // 获取推荐支付方式
     async getRecommendedPayment() {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/payment/recommend`, {
+            // 首先获取用户IP
+            const userIpResponse = await fetch('https://api.ipify.org?format=json');
+            const ipData = await userIpResponse.json();
+            const userIp = ipData.ip;
+            
+            console.log('🌍 用户IP:', userIp);
+            
+            // 将IP作为参数传递给后端
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/payment/recommend?ip=${userIp}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -264,7 +272,15 @@ class ApiService {
             return await response.json();
         } catch (error) {
             console.error('获取推荐支付方式失败:', error);
-            return { success: false, message: '网络错误' };
+            // 失败时返回默认值
+            return { 
+                success: true, 
+                data: {
+                    defaultMethod: 'alipay',
+                    availableMethods: ['alipay', 'wechat'],
+                    location: { countryCode: 'CN', country: 'China', isChina: true }
+                }
+            };
         }
     }
     
