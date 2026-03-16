@@ -396,7 +396,9 @@ async function initStripe() {
 async function loadStripeKey() {
     try {
         // 从后端获取Stripe publishable key
-        const response = await fetch('/api/payment/stripe/config');
+        const baseUrl = API_CONFIG.BASE_URL || 'https://gift-shop-backend-production.up.railway.app';
+        const response = await fetch(`${baseUrl}/api/payment/stripe/config`);
+
         const data = await response.json();
         
         if (data.success && data.publishableKey) {
