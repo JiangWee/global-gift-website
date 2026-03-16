@@ -205,45 +205,57 @@ function switchTab(tabId) {
 }
 
 
-// navigation.js - 修改 DOMContentLoaded 部分
-document.addEventListener('DOMContentLoaded', () => {
-    // 增强的哈希解析函数
-    function parseHashForPageId(fullHash) {
-        if (!fullHash || fullHash === '#') {
-            return { pageId: 'page-home', params: {} };
-        }
-        
-        const hashWithoutPrefix = fullHash.replace('#', '');
-        const [pageIdPart, queryString] = hashWithoutPrefix.split('?');
-        
-        let pageId = pageIdPart;
-        if (!pageId || !document.getElementById(pageId)) {
-            if (pageIdPart === 'payment-result') {
-                pageId = 'page-payment-result';
-            } else {
-                return { pageId: 'page-home', params: {} };
+window.addEventListener('popstate', (event) => {
+    console.log('[popstate] 事件状态:', event.state, '当前URL:', location.href, '当前哈希:', location.hash);
+    
+    let pageId = null;
+    let params = {};
+
+    if (event.state) {
+        // 从 state 中获取页面ID和参数
+        pageId = event.state.pageId;
+        params = event.state.params || {};
+    } else {
+        // 兜底：从 hash 解析
+        const hash = location.hash.replace('#', '');
+        if (hash) {
+            const [pageIdPart, queryString] = hash.split('?');
+            pageId = pageIdPart;
+            
+            // 解析查询参数
+            if (queryString) {
+                const urlParams = new URLSearchParams(queryString);
+                for (const [key, value] of urlParams) {
+                    params[key] = value;
+                }
             }
         }
-        
-        const params = {};
-        if (queryString) {
-            const urlParams = new URLSearchParams(queryString);
-            for (const [key, value] of urlParams) {
-                params[key] = value;
-            }
+    }
+
+    // 情况1: 能解析出有效页面ID，且该页面存在
+    if (pageId && document.getElementById(pageId)) {
+        console.log('[popstate] 跳转到解析出的页面:', pageId, '参数:', params);
+        goToPage(pageId, params, false);
+        return; // 处理完成，退出
+    } 
+    
+    // 情况2: 无法解析出页面ID
+    if (!pageId) {
+        const activePage = document.querySelector('.page.active');
+        if (!activePage) {
+            // 没有活动页面，跳转到首页
+            console.log('[popstate] 无活动页面，跳转到首页');
+            goToPage('page-home', {}, false);
+        } else {
+            // 有活动页面，保持当前状态，什么都不做
+            console.log('[popstate] 保持当前活动页面:', activePage.id);
         }
-        return { pageId, params };
+        return; // 处理完成，无论是否跳转，都退出函数
     }
     
-    // 页面加载时检查当前哈希
-    const { pageId, params } = parseHashForPageId(window.location.hash);
-    goToPage(pageId, params, false);
-    
-    // 监听哈希变化
-    window.addEventListener('hashchange', () => {
-        const { pageId, params } = parseHashForPageId(window.location.hash);
-        goToPage(pageId, params, false);
-    });
+    // 情况3: 解析出了页面ID，但该页面元素不存在
+    console.error('[popstate] 页面不存在:', pageId);
+    goToPage('page-home', {}, false);
 });
 
 
