@@ -240,7 +240,44 @@ function renderProductDetail(product) {
         console.error('详情页容器未找到');
         return;
     }
+        // 🔥 新增：汇率提示
+    let exchangeRateNote = '';
+    const exchangeRate = i18n.currentCurrency.exchangeRate;
+    const currencyCode = i18n.currentCurrency.code;
+    const symbol = i18n.currentCurrency.symbol;
     
+    if (i18n.currentLang === 'en') {
+        exchangeRateNote = `
+            <div class="exchange-rate-banner">
+                <div class="banner-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="banner-content">
+                    <div class="banner-title">Currency Information</div>
+                    <div class="banner-text">
+                        Prices are displayed in <strong>${currencyCode} (${symbol})</strong>.
+                        Exchange rate: <strong>1 CNY ≈ ${exchangeRate.toFixed(2)} ${currencyCode}</strong>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (i18n.currentLang === 'zh') {
+        exchangeRateNote = `
+            <div class="exchange-rate-banner">
+                <div class="banner-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="banner-content">
+                    <div class="banner-title">货币信息</div>
+                    <div class="banner-text">
+                        价格以 <strong>${currencyCode} (${symbol})</strong> 显示。
+                        汇率：<strong>1 人民币 ≈ ${exchangeRate.toFixed(2)} ${currencyCode}</strong>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     // 检查用户登录状态
     const isLoggedIn = !!apiService.token;
     
@@ -414,6 +451,9 @@ function renderProductDetail(product) {
     
     // 重新绑定事件
     reBindDetailPageEvents(product);
+
+        // 🔥 修改：在容器开头添加汇率提示
+    container.innerHTML = exchangeRateNote + container.innerHTML;
 }
 
 // 修改 reBindDetailPageEvents 函数
@@ -521,13 +561,18 @@ async function submitOrder(product) {
         return;
     }
     
+    // 获取当前汇率
+    const currentCurrency = i18n.currentCurrency;
+    const exchangeRate = currentCurrency.exchangeRate;
+
     // 构建订单数据
     const orderData = {
         product_id: productInfo.id,
         product_name: productInfo.name,
-        price: productInfo.price,
-        currency: i18n.getCurrentCurrencyCode(), // 🔥 新增：传递当前货币代码
-        display_price: i18n.formatPrice(productInfo.price), // 🔥 新增：前端显示价格
+        price: product.price, // 人民币原价
+        currency: currentCurrency.code, // 当前货币代码
+        exchange_rate: exchangeRate, // 使用的汇率
+        display_price: parseFloat(i18n.formatPrice(product.price).replace(/[^\d.]/g, '')), // 提取数字
         quantity: 1,
         status_front: 'unpaid', // 新增：设置初始状态为未支付
         buyer_info: {

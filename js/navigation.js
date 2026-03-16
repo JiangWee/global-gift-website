@@ -172,14 +172,15 @@ function setLanguage(lang) {
     // 🔥 修改：显示包含货币信息的提示
     const currencySymbol = i18n.currentCurrency.symbol;
     const currencyCode = i18n.currentCurrency.code;
+    const exchangeRate = i18n.currentCurrency.exchangeRate;
     
     const message = lang === 'zh' 
-        ? `已切换到中文，货币：${currencySymbol} (${currencyCode})`
-        : `Language switched to English, Currency: ${currencySymbol} (${currencyCode})`;
+        ? `已切换到中文，货币：${currencySymbol} (${currencyCode})，汇率：1 CNY ≈ ${exchangeRate.toFixed(2)} ${currencyCode}`
+        : `Language switched to English, Currency: ${currencySymbol} (${currencyCode}), Exchange rate: 1 CNY ≈ ${exchangeRate.toFixed(2)} ${currencyCode}`;
 
     showMessage(message, 'success');
 
-        // 重新加载产品以更新价格显示
+    // 重新加载产品以更新价格显示
     setTimeout(() => {
         if (document.querySelector('.page.active')?.id === 'page-gifts') {
             renderProducts();
@@ -187,8 +188,13 @@ function setLanguage(lang) {
         if (document.querySelector('.page.active')?.id === 'page-orders') {
             renderOrdersPage();
         }
+        if (document.querySelector('.page.active')?.id === 'page-detail') {
+            if (currentProduct) {
+                renderProductDetail(currentProduct);
+            }
+        }
     }, 300);
-    
+
 }
 
 function selectCategory(category) {

@@ -127,7 +127,8 @@ async function getRecommendedPaymentMethod() {
         console.error('❌ 获取支付方式失败:', error);
         // 失败时使用默认设置
         selectedPaymentMethod = '';
-        availablePaymentMethods = ['alipay', 'wechat', 'stripe'];
+        // availablePaymentMethods = ['alipay', 'wechat', 'stripe'];
+        availablePaymentMethods = ['alipay', 'stripe'];
         updatePaymentMethodsUI();
         return null;
     }
@@ -307,6 +308,12 @@ function updatePaymentButtonText() {
 async function submitPayment() {
     console.log('💰 提交支付请求，订单:', currentPaymentOrder, '方式:', selectedPaymentMethod);
     
+    // 检查金额是否满足Stripe最低要求
+    if (selectedPaymentMethod === 'stripe' && currentPaymentAmount < 0.5) {
+        showNotification('支付金额不能低于0.5元（等值外币）', 'error');
+        return;
+    }
+
     // 检查用户是否选择了支付方式
     if (!selectedPaymentMethod) {
         showNotification('请先选择支付方式', 'error');

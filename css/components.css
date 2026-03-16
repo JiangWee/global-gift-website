@@ -848,25 +848,7 @@
     margin-right: 2px;
 }
 
-
-/* 基础汇率提示样式 */
-.exchange-rate-note {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 20px;
-    padding: 10px 15px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #d4af37;
-    line-height: 1.5;
-}
-
-.exchange-rate-note i {
-    color: #d4af37;
-    margin-right: 8px;
-}
-
-/* 增强版汇率横幅样式 */
+/* 汇率提示样式 */
 .exchange-rate-banner {
     display: flex;
     align-items: flex-start;
