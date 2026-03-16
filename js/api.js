@@ -263,7 +263,8 @@ class ApiService {
                     // 不再设置默认方式，让用户手动选择
                     defaultMethod: null,
                     // 显示所有可用的支付方式
-                    availableMethods: ['alipay', 'wechat', 'stripe'],
+                    // availableMethods: ['alipay', 'wechat', 'stripe'],
+                    availableMethods: ['alipay', 'stripe'],
                     location: {
                         detectionMethod: 'manual-selection',
                         message: '用户手动选择支付方式'

@@ -3,7 +3,8 @@ let currentPaymentOrder = null;
 let currentPaymentAmount = 0;
 let selectedPaymentMethod = 'alipay';
 let paymentPollingInterval = null;
-let availablePaymentMethods = ['alipay', 'wechat']; // 初始支持的方式
+// let availablePaymentMethods = ['alipay', 'wechat']; // 初始支持的方式
+let availablePaymentMethods = ['alipay']; // 原来是 ['alipay', 'wechat']
 let stripe = null; // Stripe实例
 
 
@@ -70,7 +71,8 @@ async function showPaymentModal(orderId, price, productName) {
         console.error('获取支付方式失败:', error);
         // 失败时显示所有支付方式
         selectedPaymentMethod = '';
-        availablePaymentMethods = ['alipay', 'wechat', 'stripe'];
+        // availablePaymentMethods = ['alipay', 'wechat', 'stripe'];
+        availablePaymentMethods = ['alipay']; // 移除 'wechat'
         updatePaymentMethodsUI();
     }
     
@@ -164,8 +166,9 @@ function resetPaymentModalState() {
     currentPaymentOrder = null;
     currentPaymentAmount = 0;
     selectedPaymentMethod = ''; // 清空选中
-    availablePaymentMethods = ['alipay', 'wechat', 'stripe'];
-    
+    // availablePaymentMethods = ['alipay', 'wechat', 'stripe'];
+    availablePaymentMethods = ['alipay', 'stripe'];
+
     // 2. 停止可能的轮询
     stopPaymentPolling();
     
