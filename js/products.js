@@ -1073,11 +1073,25 @@ function handlePaymentButtonClick(e) {
         }
         
         const orderId = orderNumberElement.textContent.replace('订单号: ', '').trim();
-        const priceText = priceElement.textContent.replace('¥ ', '').replace(/,/g, '');
-        const price = parseFloat(priceText);
         const productName = productNameElement.textContent.trim();
         
-        console.log('📦 支付信息:', { orderId, price, productName });
+        // 🔥 修复：改进价格文本提取逻辑
+        const priceText = priceElement.textContent.trim();
+        
+        // 移除所有货币符号、空格和千分位分隔符
+        const numericPriceText = priceText
+            .replace(/[^\d.,]/g, '')  // 移除非数字、点和逗号
+            .replace(/,/g, '');       // 移除千分位分隔符
+            
+        const price = parseFloat(numericPriceText);
+        
+        console.log('📦 支付信息:', { 
+            orderId, 
+            price, 
+            productName,
+            originalText: priceText,
+            cleanedText: numericPriceText
+        });
         
         if (!orderId || isNaN(price) || price <= 0) {
             console.error('❌ 订单信息格式错误');
@@ -1086,7 +1100,6 @@ function handlePaymentButtonClick(e) {
         
         // 显示支付模态框
         if (typeof showPaymentModal === 'function') {
-            // 延迟一点确保不会重复触发
             setTimeout(() => {
                 showPaymentModal(orderId, price, productName);
             }, 50);
