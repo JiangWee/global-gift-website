@@ -254,7 +254,7 @@ class ApiService {
         // 获取推荐支付方式
     async getRecommendedPayment() {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/payment/recommend`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/payment/recommend`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
