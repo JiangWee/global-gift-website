@@ -79,7 +79,9 @@ async function showPaymentModal(orderId, price, productName) {
     // 填充支付信息
     document.getElementById('payment-order-id').textContent = orderId;
     document.getElementById('payment-product-name').textContent = productName;
-    document.getElementById('payment-amount').textContent = `¥ ${price.toLocaleString()}`;
+    // 🔥 修改：使用 i18n.formatPrice 格式化金额
+    const formattedAmount = i18n.formatPrice(price);
+    document.getElementById('payment-amount').textContent = formattedAmount;
     
     // 初始化支付方式选择状态（不选中任何选项）
     initPaymentMethodSelection();

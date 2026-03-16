@@ -4,6 +4,30 @@ class I18nManager {
         this.currentLang = localStorage.getItem('preferredLanguage') || 'zh';
         this.resources = I18N_RESOURCES;
         this.onLanguageChangeCallbacks = [];
+        
+        // 🔥 新增：货币配置
+        this.currencyConfig = {
+            'zh': {
+                code: 'CNY',
+                symbol: '¥',
+                exchangeRate: 1, // 基准为人民币
+                decimalPlaces: 2,
+                thousandsSeparator: ',',
+                decimalSeparator: '.',
+                position: 'before' // 符号位置: before/after
+            },
+            'en': {
+                code: 'USD',
+                symbol: '$',
+                exchangeRate: 0.14, // 假设 1 CNY = 0.14 USD，请根据实际汇率调整
+                decimalPlaces: 2,
+                thousandsSeparator: ',',
+                decimalSeparator: '.',
+                position: 'before'
+            }
+        };
+        
+        this.currentCurrency = this.currencyConfig[this.currentLang];
     }
 
     onLanguageChange(callback) {
@@ -17,16 +41,61 @@ class I18nManager {
         if (this.resources[lang]) {
             this.currentLang = lang;
             localStorage.setItem('preferredLanguage', lang);
-
+            
+            // 🔥 新增：更新货币设置
+            this.currentCurrency = this.currencyConfig[lang];
+            
             this.updatePageText();
             this.updateLanguageButtons();
             this.updateDirection(lang);
-
+            
+            // 🔥 新增：触发货币更新回调
             this.onLanguageChangeCallbacks.forEach(cb => cb(lang));
-            console.log('🔄 setLanguage after onLanguageChangeCallbacks');
+            console.log('🔄 语言和货币已切换至:', lang, this.currentCurrency.code);
         }
     }
 
+        // 🔥 新增：格式化货币金额
+    formatPrice(priceInCny) {
+        const currency = this.currentCurrency;
+        const convertedPrice = priceInCny * currency.exchangeRate;
+        
+        // 格式化为字符串
+        let formatted = convertedPrice.toFixed(currency.decimalPlaces);
+        
+        // 千位分隔符
+        if (currency.thousandsSeparator) {
+            const parts = formatted.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, currency.thousandsSeparator);
+            formatted = parts.join(currency.decimalSeparator);
+        }
+        
+        // 添加货币符号
+        if (currency.position === 'before') {
+            return `${currency.symbol} ${formatted}`;
+        } else {
+            return `${formatted} ${currency.symbol}`;
+        }
+    }
+    
+    // 🔥 新增：获取原始金额（用于后端传递）
+    getOriginalAmount(displayPrice) {
+        const currency = this.currentCurrency;
+        // 移除货币符号和千位分隔符
+        let numericString = displayPrice
+            .replace(new RegExp(`[${currency.symbol}\\s]`, 'g'), '')
+            .replace(new RegExp(currency.thousandsSeparator, 'g'), '');
+        
+        const amount = parseFloat(numericString);
+        // 转换回人民币（后端基准）
+        return amount / currency.exchangeRate;
+    }
+    
+    // 🔥 新增：获取当前货币代码
+    getCurrentCurrencyCode() {
+        return this.currentCurrency.code;
+    }
+    
     // 获取翻译文本
     t(key, params = {}) {
         let text = this.resources[this.currentLang][key] || 

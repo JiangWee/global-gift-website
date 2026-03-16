@@ -169,9 +169,26 @@ function setLanguage(lang) {
     // 使用国际化管理器设置语言
     i18n.setLanguage(lang);
     
-    // 显示语言切换提示
-    const message = lang === 'zh' ? '已切换到中文' : 'Language switched to English';
+    // 🔥 修改：显示包含货币信息的提示
+    const currencySymbol = i18n.currentCurrency.symbol;
+    const currencyCode = i18n.currentCurrency.code;
+    
+    const message = lang === 'zh' 
+        ? `已切换到中文，货币：${currencySymbol} (${currencyCode})`
+        : `Language switched to English, Currency: ${currencySymbol} (${currencyCode})`;
+
     showMessage(message, 'success');
+
+        // 重新加载产品以更新价格显示
+    setTimeout(() => {
+        if (document.querySelector('.page.active')?.id === 'page-gifts') {
+            renderProducts();
+        }
+        if (document.querySelector('.page.active')?.id === 'page-orders') {
+            renderOrdersPage();
+        }
+    }, 300);
+    
 }
 
 function selectCategory(category) {

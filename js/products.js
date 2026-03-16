@@ -112,19 +112,67 @@ function renderProducts(filteredProducts = null) {
         return;
     }
 
-    giftGrid.innerHTML = products.map(product => {
+    // 🔥 新增：创建汇率提示
+    let exchangeRateNote = '';
+    
+    // 只有中文和英文需要显示汇率提示
+    const exchangeRate = i18n.currentCurrency.exchangeRate;
+    const currencyCode = i18n.currentCurrency.code;
+    const symbol = i18n.currentCurrency.symbol;
+    
+    if (i18n.currentLang === 'en') {
+        exchangeRateNote = `
+            <div class="exchange-rate-banner">
+                <div class="banner-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="banner-content">
+                    <div class="banner-title">Currency Information</div>
+                    <div class="banner-text">
+                        All prices are displayed in <strong>${currencyCode} (${symbol})</strong>.
+                        Exchange rate: <strong>1 CNY ≈ ${exchangeRate.toFixed(2)} ${currencyCode}</strong>
+                    </div>
+                    <div class="banner-subtext">
+                        Actual charges will be based on the exchange rate at the time of payment.
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (i18n.currentLang === 'zh') {
+        exchangeRateNote = `
+            <div class="exchange-rate-banner">
+                <div class="banner-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="banner-content">
+                    <div class="banner-title">货币信息</div>
+                    <div class="banner-text">
+                        所有价格以 <strong>${currencyCode} (${symbol})</strong> 显示。
+                        汇率：<strong>1 人民币 ≈ ${exchangeRate.toFixed(2)} ${currencyCode}</strong>
+                    </div>
+                    <div class="banner-subtext">
+                        实际扣款金额将以支付时的汇率为准。
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // 生成商品卡片
+    const productsHTML = products.map(product => {
         const imageUrl = `${IMAGE_BASE_URL}/${product.image_url}`;
-        console.log('renderProducts imageUrl:', imageUrl);
         const onClickHandler = isLoggedIn
             ? `viewGiftDetail(${product.id})`
             : `showLogin()`;
 
+        const formattedPrice = i18n.formatPrice(product.price);
+        
         return `
             <div class="gift-card" onclick="${onClickHandler}">
                 <div class="gift-img" style="background-image: url('${imageUrl}');"></div>
                 <div class="gift-info">
                 <div class="gift-name">${product.name}</div>
-                <div class="gift-price">¥ ${product.price.toLocaleString()}</div>
+                <div class="gift-price">${formattedPrice}</div>
                 <div class="gift-stock ${product.stock < 10 ? 'low-stock' : ''}">
                     ${t('stock')}: ${product.stock}
                     ${product.stock < 5
@@ -141,6 +189,9 @@ function renderProducts(filteredProducts = null) {
             </div>
         `;
     }).join('');
+
+    // 将汇率提示和商品卡片组合
+    giftGrid.innerHTML = exchangeRateNote + productsHTML;
 }
 
 function checkLoginForPurchase() {
@@ -194,6 +245,9 @@ function renderProductDetail(product) {
     const isLoggedIn = !!apiService.token;
     
     const imageUrl = `${IMAGE_BASE_URL}/${product.image_url}`;
+
+    // 🔥 修改：使用 i18n.formatPrice 格式化价格
+    const formattedPrice = i18n.formatPrice(product.price);
 
     console.log('🎨 渲染产品详情:', product.name);
     console.log('🔍 产品属性检查 - ID:', product.id, '名称:', product.name, '价格:', product.price);
@@ -249,7 +303,7 @@ function renderProductDetail(product) {
             <div class="gift-image-large" style="background-image: url('${imageUrl}');"></div>
             <div class="gift-detail-info">
                 <h2 class="detail-name">${product.name}</h2>
-                <div class="detail-price">¥ ${product.price.toLocaleString()}</div>
+                <div class="detail-price">${formattedPrice}</div> <!-- 🔥 修改这里 -->
                 <p>${product.gift_detail_desc}</p>
                 <div class="stock-info ${product.stock < 5 ? 'low-stock' : ''}">
                     ${t('stock')}: ${product.stock}
@@ -472,6 +526,8 @@ async function submitOrder(product) {
         product_id: productInfo.id,
         product_name: productInfo.name,
         price: productInfo.price,
+        currency: i18n.getCurrentCurrencyCode(), // 🔥 新增：传递当前货币代码
+        display_price: i18n.formatPrice(productInfo.price), // 🔥 新增：前端显示价格
         quantity: 1,
         status_front: 'unpaid', // 新增：设置初始状态为未支付
         buyer_info: {
@@ -751,6 +807,10 @@ async function renderOrdersPage() {
                         </div>
                     `
                     : `...`;
+
+                // 🔥 修改：格式化价格显示
+                const formattedPrice = i18n.formatPrice(price);
+                const formattedTotal = i18n.formatPrice(price * quantity);
                 return `
                     <div class="order-card">
                         <div class="order-header">
@@ -773,12 +833,12 @@ async function renderOrdersPage() {
                                 </div>
                             </div>
                             <div class="order-price">
-                                <div class="order-product-price">¥ ${price.toLocaleString()}</div>
+                                <div class="order-product-price">${formattedPrice}</div> <!-- 🔥 修改这里 -->
                                 <div class="order-quantity">数量: ${quantity}</div>
                             </div>
                         </div>
                         <div class="order-footer">
-                            <div class="order-total">实付: ¥ ${(price * quantity).toLocaleString()}</div>
+                            <div class="order-total">实付: ${formattedTotal}</div> <!-- 🔥 修改这里 -->
                             ${orderActions}
                         </div>
                     </div>
