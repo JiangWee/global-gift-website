@@ -26,18 +26,8 @@ function initPaymentMethodSelection() {
         item.classList.remove('selected');
     });
     
-    // 设置默认选中（根据推荐结果）
-    const defaultItem = document.querySelector(`[data-method="${selectedPaymentMethod}"]`);
-    if (defaultItem && availablePaymentMethods.includes(selectedPaymentMethod)) {
-        defaultItem.classList.add('selected');
-    } else {
-        // 如果默认方式不可用，使用第一个可用方式
-        const firstAvailable = document.querySelector(`[data-method="${availablePaymentMethods[0]}"]`);
-        if (firstAvailable) {
-            firstAvailable.classList.add('selected');
-            selectedPaymentMethod = availablePaymentMethods[0];
-        }
-    }
+    // 不再自动选中任何支付方式
+    // 让用户手动选择
     
     // 更新支付按钮文本
     updatePaymentButtonText();
@@ -66,20 +56,22 @@ async function showPaymentModal(orderId, price, productName) {
         return;
     }
 
-    // 🔥 关键修复1：重置所有支付界面状态
+    // 重置所有支付界面状态
     resetPaymentModalState();
     
-    // 🔥 关键修复2：确保只更新当前订单
+    // 确保只更新当前订单
     currentPaymentOrder = orderId;
     currentPaymentAmount = price;
     
     try {
-        // 🔥 新增：获取推荐的支付方式
+        // 获取支付方式列表（但不设置默认选择）
         await getRecommendedPaymentMethod();
     } catch (error) {
-        console.error('获取推荐支付方式失败，使用默认支付宝:', error);
-        selectedPaymentMethod = 'alipay';
-        availablePaymentMethods = ['alipay', 'wechat'];
+        console.error('获取支付方式失败:', error);
+        // 失败时显示所有支付方式
+        selectedPaymentMethod = '';
+        availablePaymentMethods = ['alipay', 'wechat', 'stripe'];
+        updatePaymentMethodsUI();
     }
     
     // 填充支付信息
@@ -87,7 +79,7 @@ async function showPaymentModal(orderId, price, productName) {
     document.getElementById('payment-product-name').textContent = productName;
     document.getElementById('payment-amount').textContent = `¥ ${price.toLocaleString()}`;
     
-    // 初始化支付方式选择状态
+    // 初始化支付方式选择状态（不选中任何选项）
     initPaymentMethodSelection();
     
     // 显示模态框
@@ -97,42 +89,41 @@ async function showPaymentModal(orderId, price, productName) {
         modalContent.classList.add('show');
     });
     
-    console.log('✅ 支付模态框显示完成，当前订单:', currentPaymentOrder, '推荐支付方式:', selectedPaymentMethod);
+    console.log('✅ 支付模态框显示完成，当前订单:', currentPaymentOrder, '等待用户选择支付方式');
 }
 
 // 🔥 新增：获取推荐支付方式的函数
 async function getRecommendedPaymentMethod() {
     try {
-        console.log('🌍 获取推荐支付方式...');
+        console.log('🌍 获取支付方式列表...');
         const response = await apiService.getRecommendedPayment();
         
         if (response.success && response.data) {
             const recommendation = response.data;
             
-            // 设置默认支付方式
-            selectedPaymentMethod = recommendation.defaultMethod;
+            // 不设置默认支付方式
+            selectedPaymentMethod = ''; // 清空默认选择
             
-            // 设置可用的支付方式
+            // 设置所有支付方式都可用
             availablePaymentMethods = recommendation.availableMethods;
             
-            console.log('✅ 推荐支付方式获取成功:', {
-                defaultMethod: selectedPaymentMethod,
+            console.log('✅ 支付方式列表获取成功:', {
                 availableMethods: availablePaymentMethods,
-                location: recommendation.location
+                defaultMethod: '无（用户手动选择）'
             });
             
-            // 更新UI显示可用的支付方式
+            // 更新UI显示所有支付方式
             updatePaymentMethodsUI();
             
             return recommendation;
         } else {
-            throw new Error('获取推荐支付方式失败');
+            throw new Error('获取支付方式失败');
         }
     } catch (error) {
-        console.error('❌ 获取推荐支付方式失败:', error);
+        console.error('❌ 获取支付方式失败:', error);
         // 失败时使用默认设置
-        selectedPaymentMethod = 'alipay';
-        availablePaymentMethods = ['alipay', 'wechat'];
+        selectedPaymentMethod = '';
+        availablePaymentMethods = ['alipay', 'wechat', 'stripe'];
         updatePaymentMethodsUI();
         return null;
     }
@@ -146,38 +137,23 @@ function updatePaymentMethodsUI() {
         const method = item.getAttribute('data-method');
         
         if (availablePaymentMethods.includes(method)) {
-            // 可用支付方式：显示并启用
+            // 支付方式可用：显示并启用
             item.style.display = 'flex';
             item.style.opacity = '1';
             item.style.pointerEvents = 'auto';
             
-            // 添加可用提示
+            // 移除不可用提示
             const existingTip = item.querySelector('.method-tip');
             if (existingTip) existingTip.remove();
             
         } else {
-            // 不可用支付方式：显示但禁用
-            item.style.display = 'flex';
-            item.style.opacity = '0.5';
-            item.style.pointerEvents = 'none';
-            
-            // 添加不可用提示
-            if (!item.querySelector('.method-tip')) {
-                const tip = document.createElement('span');
-                tip.className = 'method-tip';
-                tip.textContent = '当前地区不可用';
-                tip.style.cssText = `
-                    font-size: 12px;
-                    color: #999;
-                    margin-left: 8px;
-                `;
-                item.appendChild(tip);
-            }
+            // 理论上不会进入这里，因为所有方式都可用
+            item.style.display = 'none';
         }
     });
     
-    // 设置默认选中
-    initPaymentMethodSelection();
+    // 不再设置默认选中
+    // initPaymentMethodSelection(); // 注释掉这行
 }
 
 // 修改后的 resetPaymentModalState 函数
@@ -187,8 +163,8 @@ function resetPaymentModalState() {
     // 1. 重置全局变量
     currentPaymentOrder = null;
     currentPaymentAmount = 0;
-    selectedPaymentMethod = 'alipay';
-    availablePaymentMethods = ['alipay', 'wechat'];
+    selectedPaymentMethod = ''; // 清空选中
+    availablePaymentMethods = ['alipay', 'wechat', 'stripe'];
     
     // 2. 停止可能的轮询
     stopPaymentPolling();
@@ -204,31 +180,34 @@ function resetPaymentModalState() {
     }
     if (wechatSection) {
         wechatSection.style.display = 'none';
-        // 清空微信二维码
         const qrContainer = document.getElementById('wechat-qrcode');
         if (qrContainer) qrContainer.innerHTML = '';
     }
     if (stripeSection) {
         stripeSection.style.display = 'none';
-        // 清空Stripe元素
         const element = document.getElementById('stripe-payment-element');
         if (element) element.innerHTML = '';
     }
     if (successSection) {
         successSection.style.display = 'none';
-        // 清空成功界面的内容
         document.getElementById('success-order-id').textContent = '';
         document.getElementById('success-amount').textContent = '';
     }
     
-    // 4. 重置按钮状态
+    // 4. 重置支付方式选择状态
+    document.querySelectorAll('.payment-method-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    // 5. 重置按钮状态
     const payButton = document.getElementById('payment-submit-btn');
     if (payButton) {
-        payButton.disabled = false;
-        payButton.innerHTML = '确认支付宝支付';
+        payButton.disabled = true;
+        payButton.textContent = '请选择支付方式';
+        payButton.style.opacity = '0.6';
+        payButton.style.cursor = 'not-allowed';
     }
 }
-
 
 function hidePaymentModal() {
     const modal = document.getElementById('paymentModal');
@@ -266,7 +245,7 @@ function resetPaymentMethodSelection() {
 function selectPaymentMethod(method) {
     // 检查支付方式是否可用
     if (!availablePaymentMethods.includes(method)) {
-        showNotification(`当前地区不支持${method === 'alipay' ? '支付宝' : method === 'wechat' ? '微信支付' : 'Stripe'}`, 'warning');
+        showNotification(`当前不支持${method === 'alipay' ? '支付宝' : method === 'wechat' ? '微信支付' : 'Stripe'}`, 'warning');
         return;
     }
     
@@ -292,33 +271,51 @@ function updatePaymentButtonText() {
     const payButton = document.getElementById('payment-submit-btn');
     if (!payButton) return;
     
-    let methodText = '支付';
-    switch(selectedPaymentMethod) {
-        case 'alipay':
-            methodText = '支付宝';
-            break;
-        case 'wechat':
-            methodText = '微信';
-            break;
-        case 'stripe':
-            methodText = '银行卡';
-            break;
+    if (!selectedPaymentMethod) {
+        // 如果用户还没有选择支付方式
+        payButton.textContent = '请选择支付方式';
+        payButton.disabled = true;
+        payButton.style.opacity = '0.6';
+        payButton.style.cursor = 'not-allowed';
+    } else {
+        let methodText = '支付';
+        switch(selectedPaymentMethod) {
+            case 'alipay':
+                methodText = '支付宝';
+                break;
+            case 'wechat':
+                methodText = '微信';
+                break;
+            case 'stripe':
+                methodText = '银行卡';
+                break;
+        }
+        
+        payButton.textContent = `确认${methodText}支付`;
+        payButton.disabled = false;
+        payButton.style.opacity = '1';
+        payButton.style.cursor = 'pointer';
     }
-    
-    payButton.textContent = `确认${methodText}支付`;
 }
 
 // 提交支付请求
 async function submitPayment() {
     console.log('💰 提交支付请求，订单:', currentPaymentOrder, '方式:', selectedPaymentMethod);
-    if (!currentPaymentOrder || !selectedPaymentMethod) {
+    
+    // 检查用户是否选择了支付方式
+    if (!selectedPaymentMethod) {
+        showNotification('请先选择支付方式', 'error');
+        return;
+    }
+    
+    if (!currentPaymentOrder) {
         showNotification('支付信息不完整', 'error');
         return;
     }
     
     // 检查支付方式是否可用
     if (!availablePaymentMethods.includes(selectedPaymentMethod)) {
-        showNotification(`当前地区不支持${selectedPaymentMethod === 'alipay' ? '支付宝' : selectedPaymentMethod === 'wechat' ? '微信支付' : 'Stripe'}`, 'warning');
+        showNotification(`当前不支持${selectedPaymentMethod === 'alipay' ? '支付宝' : selectedPaymentMethod === 'wechat' ? '微信支付' : 'Stripe'}`, 'warning');
         return;
     }
     
@@ -334,27 +331,21 @@ async function submitPayment() {
             paymentMethod: selectedPaymentMethod
         };
         
-        // ✅ 调用真实支付接口
+        // 调用支付接口
         const response = await apiService.createPayment(paymentData);
         
         if (response.success) {
             // 根据支付方式处理跳转
             if (selectedPaymentMethod === 'alipay') {
-                // 支付宝支付 - 跳转到支付页面
                 window.location.href = response.data.paymentUrl;
-                
             } else if (selectedPaymentMethod === 'wechat') {
-                // 微信支付 - 显示二维码
                 showWechatQrCode(response.data.codeUrl);
-                
             } else if (selectedPaymentMethod === 'stripe') {
-                // 🔥 新增：Stripe支付
                 await handleStripePayment(response.data.clientSecret, response.data.paymentIntentId);
             }
             
-            // 开始轮询支付状态（Stripe也需要轮询）
+            // 开始轮询支付状态
             startPaymentPolling(currentPaymentOrder, selectedPaymentMethod, response.data.paymentIntentId);
-            
         } else {
             showNotification(response.message || '支付创建失败', 'error');
         }

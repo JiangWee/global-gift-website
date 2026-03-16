@@ -254,31 +254,35 @@ class ApiService {
     // 获取推荐支付方式
     async getRecommendedPayment() {
         try {
-            // 首先获取用户IP
-            const userIpResponse = await fetch('https://api.ipify.org?format=json');
-            const ipData = await userIpResponse.json();
-            const userIp = ipData.ip;
+            // 不再调用IP查询接口，直接返回所有支付方式
+            console.log('🌍 返回所有可用支付方式（手动选择模式）');
             
-            console.log('🌍 用户IP:', userIp);
-            
-            // 将IP作为参数传递给后端
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/payment/recommend?ip=${userIp}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...this.getAuthHeaders()
-                }
-            });
-            return await response.json();
-        } catch (error) {
-            console.error('获取推荐支付方式失败:', error);
-            // 失败时返回默认值
-            return { 
-                success: true, 
+            return {
+                success: true,
                 data: {
-                    defaultMethod: 'alipay',
-                    availableMethods: ['alipay', 'wechat'],
-                    location: { countryCode: 'CN', country: 'China', isChina: true }
+                    // 不再设置默认方式，让用户手动选择
+                    defaultMethod: null,
+                    // 显示所有可用的支付方式
+                    availableMethods: ['alipay', 'wechat', 'stripe'],
+                    location: {
+                        detectionMethod: 'manual-selection',
+                        message: '用户手动选择支付方式'
+                    }
+                }
+            };
+            
+        } catch (error) {
+            console.error('获取支付方式失败:', error);
+            // 即使失败也返回所有支付方式
+            return {
+                success: true,
+                data: {
+                    defaultMethod: null,
+                    availableMethods: ['alipay', 'wechat', 'stripe'],
+                    location: { 
+                        detectionMethod: 'fallback',
+                        message: '使用备用方案'
+                    }
                 }
             };
         }
