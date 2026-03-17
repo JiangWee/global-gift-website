@@ -235,8 +235,28 @@ class ApiService {
         });
     }
 
-    async queryPaymentStatus(orderId, paymentMethod) {
-        return this.request(`/api/payment/status?orderId=${orderId}&paymentMethod=${paymentMethod}`);
+    async queryPaymentStatus(orderId, paymentMethod, paymentIntentId = null) {
+        try {
+            let url = `${this.baseURL}/api/payment/status?orderId=${orderId}&paymentMethod=${paymentMethod}`;
+            
+            // 添加 paymentIntentId
+            if (paymentIntentId) {
+                url += `&paymentIntentId=${paymentIntentId}`;
+            }
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...this.getAuthHeaders()
+                }
+            });
+            
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error('查询支付状态失败:', error);
+            throw error;
+        }
     }
 
     async getPaymentResult(orderId) {

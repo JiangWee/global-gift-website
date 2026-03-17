@@ -30,6 +30,86 @@ class I18nManager {
         this.currentCurrency = this.currencyConfig[this.currentLang];
     }
 
+    formatOrderPrice(order) {
+        // 优先使用订单创建时的 display_price
+        if (order.displayPrice) {
+            return this.formatFixedPrice(order.displayPrice, order.currency);
+        }
+        
+        // 备用：根据订单创建时的汇率计算
+        if (order.currency === 'USD' && order.exchangeRate) {
+            const usdPrice = order.price * order.exchangeRate;
+            return this.formatFixedPrice(usdPrice, 'USD');
+        }
+        
+        // 默认显示人民币
+        return this.formatFixedPrice(order.price, 'CNY');
+    }
+
+    formatFixedPrice(amount, currency) {
+        // 1. 尝试通过货币代码直接获取配置
+        let config = this.getCurrencyConfigByCode(currency);
+        
+        if (!config) {
+            console.warn(`⚠️ 未找到货币 ${currency} 的配置，使用当前货币配置`);
+            // 2. 如果找不到，使用当前货币配置
+            config = this.currentCurrency;
+        }
+        
+        if (!config) {
+            console.error(`❌ 无法获取货币配置，使用默认配置`);
+            // 3. 终极fallback
+            config = {
+                decimalPlaces: 2,
+                symbol: currency === 'USD' ? '$' : '¥',
+                position: 'before'
+            };
+        }
+        
+        const formatted = amount.toFixed(config.decimalPlaces);
+        
+        if (config.position === 'before') {
+            return `${config.symbol} ${formatted}`;
+        } else {
+            return `${formatted} ${config.symbol}`;
+        }
+    }
+
+    getCurrencyConfigByCode(currencyCode) {
+        // 检查所有货币配置，找到匹配的
+        for (const lang in this.currencyConfig) {
+            const config = this.currencyConfig[lang];
+            if (config.code === currencyCode) {
+                return config;
+            }
+        }
+        
+        // 如果没有找到，创建一个默认配置
+        if (currencyCode === 'USD') {
+            return {
+                code: 'USD',
+                symbol: '$',
+                exchangeRate: 0.14,
+                decimalPlaces: 2,
+                thousandsSeparator: ',',
+                decimalSeparator: '.',
+                position: 'before'
+            };
+        } else if (currencyCode === 'CNY') {
+            return {
+                code: 'CNY',
+                symbol: '¥',
+                exchangeRate: 1.0,
+                decimalPlaces: 2,
+                thousandsSeparator: ',',
+                decimalSeparator: '.',
+                position: 'before'
+            };
+        }
+        
+        return null;
+    }
+
     onLanguageChange(callback) {
         if (typeof callback === 'function') {
             this.onLanguageChangeCallbacks.push(callback);
@@ -95,7 +175,7 @@ class I18nManager {
     getCurrentCurrencyCode() {
         return this.currentCurrency.code;
     }
-    
+
     // 获取翻译文本
     t(key, params = {}) {
         let text = this.resources[this.currentLang][key] || 

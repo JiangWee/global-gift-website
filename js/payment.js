@@ -7,6 +7,10 @@ let paymentPollingInterval = null;
 let availablePaymentMethods = ['alipay']; // 原来是 ['alipay', 'wechat']
 let stripe = null; // Stripe实例
 
+let isProcessingPayment = false;
+let currentPaymentIntentId = null; // 添加这个，用于跟踪当前支付的Intent ID
+let stripeElements = null;
+let stripePaymentElement = null;
 
 function openPaymentModal(orderId) {
     console.log('打开支付弹窗，订单ID：', orderId);
@@ -37,13 +41,19 @@ function initPaymentMethodSelection() {
 
 let isModalShowing = false;
 
-// 修改后的 showPaymentModal 函数
 async function showPaymentModal(orderId, price, productName) {
+    console.log('🔄 显示支付模态框，先强制重置所有支付状态');
+    
+    // 🔥 强制重置所有支付状态
+    forceResetPaymentState();
+    
     if (isModalShowing) {
-        console.log('🔄 支付模态框已在显示中，跳过重复调用');
-        return;
+        console.log('🔄 支付模态框已在显示中，更新内容...');
     }
     
+    console.log('🔍 显示支付模态框前，检查按钮状态');
+    debugButtonState('stripe-confirm-btn');
+
     console.log('💰 显示支付模态框:', { orderId, price, productName });
     
     isModalShowing = true;
@@ -57,30 +67,32 @@ async function showPaymentModal(orderId, price, productName) {
         return;
     }
 
-    // 重置所有支付界面状态
+    // 🔥 每次显示都重置状态
     resetPaymentModalState();
     
-    // 确保只更新当前订单
+    // 🔥 确保只更新当前订单
     currentPaymentOrder = orderId;
     currentPaymentAmount = price;
     
     try {
-        // 获取支付方式列表（但不设置默认选择）
         await getRecommendedPaymentMethod();
     } catch (error) {
         console.error('获取支付方式失败:', error);
-        // 失败时显示所有支付方式
-        selectedPaymentMethod = '';
-        // availablePaymentMethods = ['alipay', 'wechat', 'stripe'];
-        availablePaymentMethods = ['alipay']; // 移除 'wechat'
+        availablePaymentMethods = ['alipay'];
         updatePaymentMethodsUI();
     }
-    
+
     // 填充支付信息
     document.getElementById('payment-order-id').textContent = orderId;
     document.getElementById('payment-product-name').textContent = productName;
-    // 🔥 修改：使用 i18n.formatPrice 格式化金额
-    const formattedAmount = i18n.formatPrice(price);
+    
+    // 🔥 修复支付金额显示
+    let formattedAmount = '';
+    if (i18n.currentCurrency.code === 'USD') {
+        formattedAmount = `$${price.toFixed(2)}`;
+    } else {
+        formattedAmount = `¥${price.toFixed(2)}`;
+    }
 
     console.log('💰 支付金额显示:', { 
         original: price, 
@@ -90,7 +102,7 @@ async function showPaymentModal(orderId, price, productName) {
 
     document.getElementById('payment-amount').textContent = formattedAmount;
     
-    // 初始化支付方式选择状态（不选中任何选项）
+    // 初始化支付方式选择状态
     initPaymentMethodSelection();
     
     // 显示模态框
@@ -100,8 +112,70 @@ async function showPaymentModal(orderId, price, productName) {
         modalContent.classList.add('show');
     });
     
-    console.log('✅ 支付模态框显示完成，当前订单:', currentPaymentOrder, '等待用户选择支付方式');
+    console.log('✅ 支付模态框显示完成，当前订单:', currentPaymentOrder);
 }
+
+function forceResetPaymentState() {
+    console.log('🔄 强制重置支付状态');
+    
+    // 1. 停止所有轮询
+    stopPaymentPolling();
+    
+    // 2. 重置处理标志
+    if (typeof paymentState !== 'undefined' && paymentState.isProcessing) {
+        paymentState.isProcessing = false;
+    }
+    
+    // 3. 重置全局变量
+    isProcessingPayment = false;
+    currentPaymentOrder = null;
+    currentPaymentAmount = 0;
+    selectedPaymentMethod = '';
+    
+    // 4. 🔥 关键修复：彻底重置Stripe确认按钮
+    const confirmButton = document.getElementById('stripe-confirm-btn');
+    if (confirmButton) {
+        console.log('🔧 重置Stripe确认按钮状态');
+        
+        // 方法A：使用setTimeout确保DOM已更新
+        setTimeout(() => {
+            // 重置按钮HTML到初始状态
+            confirmButton.innerHTML = '确认银行卡支付';
+            confirmButton.disabled = false;
+            
+            // 移除所有事件监听器（通过克隆替换）
+            const newButton = confirmButton.cloneNode(true);
+            confirmButton.parentNode.replaceChild(newButton, confirmButton);
+            
+            console.log('✅ Stripe确认按钮已完全重置');
+        }, 0);
+    }
+    
+    // 5. 清理Stripe Elements
+    const stripeElementContainer = document.getElementById('stripe-payment-element');
+    if (stripeElementContainer) {
+        stripeElementContainer.innerHTML = '';
+    }
+    
+    // 6. 恢复界面状态
+    document.getElementById('payment-selection').style.display = 'block';
+    document.getElementById('wechat-qrcode-section').style.display = 'none';
+    
+    const stripeSection = document.getElementById('stripe-payment-section');
+    if (stripeSection) {
+        stripeSection.style.display = 'none';
+    }
+    
+    // 7. 恢复主支付按钮状态
+    const payButton = document.getElementById('payment-submit-btn');
+    if (payButton) {
+        payButton.disabled = false;
+        payButton.textContent = '请选择支付方式';
+    }
+    
+    console.log('✅ 支付状态强制重置完成');
+}
+
 
 // 🔥 新增：获取推荐支付方式的函数
 async function getRecommendedPaymentMethod() {
@@ -178,10 +252,16 @@ function resetPaymentModalState() {
     selectedPaymentMethod = ''; // 清空选中
     // availablePaymentMethods = ['alipay', 'wechat', 'stripe'];
     availablePaymentMethods = ['alipay', 'stripe'];
+    stripe = null;
+    stripeElements = null;
+    stripePaymentElement = null;
+    currentPaymentIntentId = null;
 
     // 2. 停止可能的轮询
     stopPaymentPolling();
     
+    resetPaymentProcessingFlag();
+
     // 3. 重置界面显示状态
     const paymentSelection = document.getElementById('payment-selection');
     const wechatSection = document.getElementById('wechat-qrcode-section');
@@ -223,6 +303,8 @@ function resetPaymentModalState() {
 }
 
 function hidePaymentModal() {
+    console.log('❌ 关闭支付模态框');
+    
     const modal = document.getElementById('paymentModal');
     const modalContent = modal.querySelector('.payment-modal-content');
     
@@ -233,17 +315,13 @@ function hidePaymentModal() {
     setTimeout(() => {
         modal.style.display = 'none';
         
-        // 🔥 关键：隐藏后重置所有状态
         resetPaymentModalState();
-        
-        // 停止轮询
         stopPaymentPolling();
-        
-        // 清理轮询信息
         localStorage.removeItem('paymentPollInfo');
         
-        // 重置显示状态
         isModalShowing = false;
+        // 🔥 关闭模态框时重置处理标志
+        resetPaymentProcessingFlag();
     }, 300);
 }
 
@@ -332,6 +410,13 @@ async function submitPayment() {
         return;
     }
     
+    // 🔥 新增：防止重复提交
+    if (isProcessingPayment) {
+        console.log('⏳ 支付已在处理中，跳过重复提交');
+        return;
+    }
+    isProcessingPayment = true;
+
     // 检查支付方式是否可用
     if (!availablePaymentMethods.includes(selectedPaymentMethod)) {
         showNotification(`当前不支持${selectedPaymentMethod === 'alipay' ? '支付宝' : selectedPaymentMethod === 'wechat' ? '微信支付' : 'Stripe'}`, 'warning');
@@ -354,23 +439,32 @@ async function submitPayment() {
         const response = await apiService.createPayment(paymentData);
         
         if (response.success) {
+            const paymentIntentId = response.data.paymentIntentId;
+
             // 根据支付方式处理跳转
             if (selectedPaymentMethod === 'alipay') {
                 window.location.href = response.data.paymentUrl;
             } else if (selectedPaymentMethod === 'wechat') {
                 showWechatQrCode(response.data.codeUrl);
             } else if (selectedPaymentMethod === 'stripe') {
-                await handleStripePayment(response.data.clientSecret, response.data.paymentIntentId);
+                await handleStripePayment(response.data.clientSecret, 
+                    paymentIntentId);
             }
             
-            // 开始轮询支付状态
-            startPaymentPolling(currentPaymentOrder, selectedPaymentMethod, response.data.paymentIntentId);
+            // 🔥 传递 paymentIntentId
+            startPaymentPolling(
+                currentPaymentOrder, 
+                selectedPaymentMethod, 
+                paymentIntentId
+            );
         } else {
             showNotification(response.message || '支付创建失败', 'error');
         }
     } catch (error) {
         console.error('支付请求错误:', error);
         showNotification('网络错误，请重试', 'error');
+        // 🔥 支付失败，重置标志
+        resetPaymentProcessingFlag();
     } finally {
         // 恢复按钮状态
         payButton.textContent = originalText;
@@ -378,71 +472,155 @@ async function submitPayment() {
     }
 }
 
+// 添加重置支付处理标志的函数
+function resetPaymentProcessingFlag() {
+    console.log('🔄 重置支付处理标志');
+    isProcessingPayment = false;
+    currentPaymentIntentId = null;
+}
+
 // 🔥 新增：初始化Stripe
-async function initStripe() {
-    try {
-        // 动态加载Stripe.js
+function initStripe() {
+    return new Promise((resolve, reject) => {
+        // 1. 如果已经初始化，直接返回
+        if (stripe) {
+            console.log('✅ Stripe 已初始化，直接使用');
+            resolve(stripe);
+            return;
+        }
+        
+        // 2. 如果 Stripe.js 未加载，先加载
         if (typeof Stripe === 'undefined') {
+            console.log('📦 开始加载 Stripe.js...');
+            
             const script = document.createElement('script');
             script.src = 'https://js.stripe.com/v3/';
+            
             script.onload = () => {
-                console.log('✅ Stripe.js 加载成功');
-                // 从后端获取 publishable key
-                loadStripeKey();
+                console.log('✅ Stripe.js 加载成功，开始获取密钥');
+                
+                loadStripeKey()
+                    .then(() => {
+                        console.log('✅ Stripe 初始化完成');
+                        resolve(stripe);
+                    })
+                    .catch(error => {
+                        console.error('❌ 加载Stripe密钥失败:', error);
+                        reject(error);
+                    });
             };
+            
+            script.onerror = (error) => {
+                console.error('❌ 加载 Stripe.js 失败:', error);
+                reject(new Error('加载 Stripe.js 失败'));
+            };
+            
             document.head.appendChild(script);
         } else {
-            loadStripeKey();
+            // 3. 如果 Stripe.js 已加载，直接获取密钥
+            console.log('🔄 Stripe.js 已加载，直接获取密钥');
+            loadStripeKey()
+                .then(() => {
+                    console.log('✅ Stripe 初始化完成');
+                    resolve(stripe);
+                })
+                .catch(error => {
+                    console.error('❌ 加载Stripe密钥失败:', error);
+                    reject(error);
+                });
         }
-    } catch (error) {
-        console.error('初始化Stripe失败:', error);
-    }
+    });
 }
 
 // 加载Stripe密钥
 async function loadStripeKey() {
-    try {
-        // 从后端获取Stripe publishable key
+    return new Promise((resolve, reject) => {
         const baseUrl = API_CONFIG.BASE_URL || 'https://gift-shop-backend-production.up.railway.app';
-        const response = await fetch(`${baseUrl}/api/payment/stripe/config`);
-
-        const data = await response.json();
         
-        if (data.success && data.publishableKey) {
-            stripe = Stripe(data.publishableKey);
-            console.log('✅ Stripe实例初始化成功');
-        } else {
-            console.error('获取Stripe密钥失败');
-        }
-    } catch (error) {
-        console.error('加载Stripe密钥失败:', error);
-    }
+        console.log('🔑 从后端获取 Stripe 密钥:', `${baseUrl}/api/payment/stripe/config`);
+        
+        fetch(`${baseUrl}/api/payment/stripe/config`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('🔑 获取到 Stripe 配置:', { 
+                    success: data.success, 
+                    hasKey: !!data.publishableKey 
+                });
+                
+                if (data.success && data.publishableKey) {
+                    stripe = Stripe(data.publishableKey);
+                    console.log('✅ Stripe实例初始化成功');
+                    resolve(stripe);
+                } else {
+                    console.error('获取Stripe密钥失败，后端返回:', data);
+                    reject(new Error('获取Stripe密钥失败'));
+                }
+            })
+            .catch(error => {
+                console.error('加载Stripe密钥失败:', error);
+                reject(error);
+            });
+    });
 }
 
-// 🔥 新增：处理Stripe支付
+
+// 添加调试函数
+function debugButtonState(buttonId) {
+    const button = document.getElementById(buttonId);
+    if (!button) {
+        console.log(`❌ 按钮 ${buttonId} 未找到`);
+        return;
+    }
+    
+    console.log(`🔍 按钮 ${buttonId} 状态:`, {
+        innerHTML: button.innerHTML,
+        textContent: button.textContent,
+        disabled: button.disabled,
+        className: button.className,
+        outerHTML: button.outerHTML.substring(0, 200) + '...'
+    });
+}
+
 async function handleStripePayment(clientSecret, paymentIntentId) {
+    console.log('💳 处理Stripe支付:', { clientSecret, paymentIntentId });
+    
+    // 🔥 修复1：确保stripe实例已初始化
     if (!stripe) {
-        await initStripe();
-        if (!stripe) {
+        try {
+            console.log('🔄 Stripe未初始化，开始初始化...');
+            await initStripe();
+            
+            if (!stripe) {
+                throw new Error('Stripe初始化后仍然为null');
+            }
+        } catch (error) {
+            console.error('❌ Stripe初始化失败:', error);
             showNotification('支付服务初始化失败，请刷新页面重试', 'error');
             return;
         }
     }
-
-    console.log('💳 处理Stripe支付:', { clientSecret, paymentIntentId });
-
+    
     // 显示Stripe支付界面
     document.getElementById('payment-selection').style.display = 'none';
     document.getElementById('wechat-qrcode-section').style.display = 'none';
-
+    
     const stripeSection = document.getElementById('stripe-payment-section');
     if (stripeSection) {
         stripeSection.style.display = 'block';
-
-        // 🔥 关键修复：创建Elements时必须传递clientSecret
+        
+        // 🔥 修复2：清除旧的Stripe元素
+        const elementContainer = document.getElementById('stripe-payment-element');
+        if (elementContainer) {
+            elementContainer.innerHTML = '';
+        }
+        
         const options = {
             clientSecret: clientSecret,
-            // 可选：配置支持的支付方式
             appearance: {
                 theme: 'stripe',
                 variables: {
@@ -452,53 +630,81 @@ async function handleStripePayment(clientSecret, paymentIntentId) {
             }
         };
         
+        // 创建新的Stripe Elements实例
         const elements = stripe.elements(options);
         const paymentElement = elements.create('payment');
         paymentElement.mount('#stripe-payment-element');
-
-        // 确认支付按钮
+        
+        // 🔥 修复3：重置确认按钮状态
         const confirmButton = document.getElementById('stripe-confirm-btn');
         if (confirmButton) {
+            // 确保按钮是初始状态
+            confirmButton.innerHTML = '确认银行卡支付';
+            confirmButton.disabled = false;
+            
+            console.log('🔧 Stripe确认按钮初始化完成');
+            
+            // 添加调试信息
             confirmButton.onclick = async () => {
+                console.log('🔄 Stripe支付按钮被点击，开始验证...');
+                
+                // 立即显示加载状态
                 confirmButton.innerHTML = '<i class="loading-spinner"></i> 处理中...';
                 confirmButton.disabled = true;
+                
+                try {
+                    // 1. 验证表单
+                    const { error: submitError } = await elements.submit();
+                    
+                    if (submitError) {
+                        console.error('❌ 表单验证失败:', submitError);
+                        showNotification(`支付信息错误: ${submitError.message}`, 'error');
+                        // 🔥 验证失败时重置按钮
+                        confirmButton.innerHTML = '确认银行卡支付';
+                        confirmButton.disabled = false;
+                        return;
+                    }
+                    
+                    console.log('✅ 表单验证通过，开始支付确认');
+                    
+                    // 2. 确认支付
+                    const { error } = await stripe.confirmPayment({
+                        elements: elements,
+                        clientSecret: clientSecret,
+                        confirmParams: {
+                            return_url: `${window.location.origin}/payment/success?orderId=${currentPaymentOrder}&paymentMethod=stripe`,
+                        },
+                        redirect: 'if_required'
+                    });
 
-                const { error } = await stripe.confirmPayment({
-                    elements,
-                    clientSecret,
-                    confirmParams: {
-                        return_url: `${window.location.origin}/payment/success?orderId=${currentPaymentOrder}&paymentMethod=stripe`,
-                    },
-                });
-
-                if (error) {
-                    console.error('Stripe支付失败:', error);
-                    showNotification(`支付失败: ${error.message}`, 'error');
-                    confirmButton.innerHTML = '重新尝试支付';
+                    if (error) {
+                        console.error('❌ Stripe支付失败:', error);
+                        showNotification(`支付失败: ${error.message}`, 'error');
+                        // 🔥 支付失败时重置按钮
+                        confirmButton.innerHTML = '重新尝试支付';
+                        confirmButton.disabled = false;
+                    } else {
+                        console.log('✅ 支付确认请求已发送');
+                        showNotification('支付处理中，请稍候...', 'info');
+                        // 🔥 注意：这里不重置按钮，保持"处理中..."状态
+                    }
+                } catch (error) {
+                    console.error('❌ 支付流程异常:', error);
+                    showNotification('支付流程异常，请重试', 'error');
+                    // 🔥 异常时重置按钮
+                    confirmButton.innerHTML = '确认银行卡支付';
                     confirmButton.disabled = false;
-                } else {
-                    showNotification('支付处理中，请稍候...', 'info');
                 }
             };
         }
-
-        // 返回按钮
+        
+        // 设置返回按钮
         const backButton = document.getElementById('stripe-back-btn');
         if (backButton) {
-            backButton.onclick = backToPaymentSelection;
-        }
-    } else {
-        // 如果不存在Stripe支付界面，使用重定向方式
-        const { error } = await stripe.confirmPayment({
-            clientSecret,
-            confirmParams: {
-                return_url: `${window.location.origin}/payment/success?orderId=${currentPaymentOrder}&paymentMethod=stripe`,
-            },
-        });
-
-        if (error) {
-            console.error('Stripe支付失败:', error);
-            showNotification(`支付失败: ${error.message}`, 'error');
+            backButton.onclick = () => {
+                console.log('↩️ 返回支付选择');
+                backToPaymentSelection();
+            };
         }
     }
 }
@@ -535,43 +741,52 @@ function showWechatQrCode(qrCodeUrl) {
 
 // 返回支付方式选择
 function backToPaymentSelection() {
+    console.log('↩️ 返回支付方式选择');
+    
     document.getElementById('payment-selection').style.display = 'block';
     document.getElementById('wechat-qrcode-section').style.display = 'none';
     
-    // 🔥 新增：隐藏Stripe支付界面
     const stripeSection = document.getElementById('stripe-payment-section');
     if (stripeSection) {
         stripeSection.style.display = 'none';
-        // 清空Stripe元素
         const element = document.getElementById('stripe-payment-element');
         if (element) element.innerHTML = '';
     }
     
     stopPaymentPolling();
+    // 🔥 返回时重置标志
+    resetPaymentProcessingFlag();
 }
 
 // 开始轮询支付状态
 function startPaymentPolling(orderId, paymentMethod, paymentIntentId = null) {
+    console.log('🔁 开始支付状态轮询:', { orderId, paymentMethod, paymentIntentId });
+    
+    // 停止可能存在的旧轮询
+    stopPaymentPolling();
+    
     const pollInfo = {
         orderId,
         paymentMethod,
-        paymentIntentId, // 🔥 新增：用于Stripe查询
+        paymentIntentId,
         startTime: Date.now(),
         pollCount: 0
     };
     localStorage.setItem('paymentPollInfo', JSON.stringify(pollInfo));
 
     let pollCount = 0;
-    const maxPolls = 60; // 最多轮询5分钟（5秒一次）
+    const maxPolls = 60;
     
     paymentPollingInterval = setInterval(async () => {
         pollCount++;
         
         if (pollCount > maxPolls) {
+            console.log('⏰ 支付轮询超时');
             stopPaymentPolling();
             showNotification('支付超时，请检查支付状态', 'warning');
+            // 🔥 超时，重置标志
+            resetPaymentProcessingFlag();
             
-            // 对于Stripe，返回到支付选择界面
             if (paymentMethod === 'stripe') {
                 backToPaymentSelection();
             }
@@ -579,36 +794,51 @@ function startPaymentPolling(orderId, paymentMethod, paymentIntentId = null) {
         }
         
         try {
-            // 🔥 修改：传递paymentIntentId参数
-            const response = await apiService.queryPaymentStatus(orderId, paymentMethod, paymentIntentId);
+            const response = await apiService.queryPaymentStatus(
+                orderId, 
+                paymentMethod, 
+                paymentIntentId
+            );
             
             if (response.success) {
                 const status = response.data.status;
+                console.log(`🔄 支付状态: ${status} (轮询 ${pollCount}/${maxPolls})`);
                 
                 switch (status) {
                     case 'paid':
+                    case 'succeeded':
                         stopPaymentPolling();
                         handlePaymentSuccess();
+                        // 🔥 支付成功，重置标志
+                        resetPaymentProcessingFlag();
                         break;
                     case 'cancelled':
+                    case 'canceled':
                         stopPaymentPolling();
                         showNotification('支付已取消', 'info');
                         backToPaymentSelection();
+                        // 🔥 支付取消，重置标志
+                        resetPaymentProcessingFlag();
                         break;
                     case 'failed':
                         stopPaymentPolling();
                         showNotification('支付失败', 'error');
                         backToPaymentSelection();
+                        // 🔥 支付失败，重置标志
+                        resetPaymentProcessingFlag();
                         break;
-                    // pending 状态继续轮询
+                    // 其他状态继续轮询
                 }
+            } else {
+                console.log('❌ 支付状态查询失败:', response.message);
             }
         } catch (error) {
             console.error('轮询支付状态错误:', error);
+            // 🔥 轮询异常，重置标志
+            resetPaymentProcessingFlag();
         }
-    }, 5000); // 每5秒轮询一次
+    }, 5000);
 }
-
 // 页面加载时检查是否有未完成的支付轮询
 function checkPendingPaymentOnLoad() {
     const pollInfo = localStorage.getItem('paymentPollInfo');

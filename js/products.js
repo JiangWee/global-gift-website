@@ -564,15 +564,18 @@ async function submitOrder(product) {
     // 获取当前汇率
     const currentCurrency = i18n.currentCurrency;
     const exchangeRate = currentCurrency.exchangeRate;
+    
+    // 计算显示价格
+    const displayPrice = product.price * exchangeRate;
 
     // 构建订单数据
     const orderData = {
         product_id: productInfo.id,
         product_name: productInfo.name,
-        price: product.price, // 人民币原价
-        currency: currentCurrency.code, // 当前货币代码
-        exchange_rate: exchangeRate, // 使用的汇率
-        display_price: parseFloat(i18n.formatPrice(product.price).replace(/[^\d.]/g, '')), // 提取数字
+        price: product.price,                // 人民币原价
+        currency: currentCurrency.code,      // 创建时币种
+        exchange_rate: exchangeRate,         // 创建时汇率
+        display_price: displayPrice,         // 创建时显示价格
         quantity: 1,
         status_front: 'unpaid', // 新增：设置初始状态为未支付
         buyer_info: {
@@ -809,6 +812,7 @@ async function renderOrdersPage() {
         console.log('📦 处理后的订单数据:', orders); // 调试日志
         if (orders && orders.length > 0) {
             container.innerHTML = orders.map(order => {
+
                 // 统一字段名称处理
                 const orderId = order.orderId || order.id;
                 const productName = order.productName || order.product_name;
@@ -853,11 +857,17 @@ async function renderOrdersPage() {
                     `
                     : `...`;
 
-                // 🔥 修改：格式化价格显示
-                const formattedPrice = i18n.formatPrice(price);
-                const formattedTotal = i18n.formatPrice(price * quantity);
-                return `
-                    <div class="order-card">
+                const priceText = i18n.formatOrderPrice(order);
+                const totalPrice = order.displayPrice || order.price;
+                const totalText = i18n.formatFixedPrice(totalPrice * order.quantity, order.currency);
+
+                return ` 
+                    <div class="order-card" 
+                        data-order-id="${order.orderId || ''}"
+                        data-currency="${order.currency || 'CNY'}"
+                        data-exchange-rate="${order.exchangeRate || 1}"
+                        data-display-price="${order.displayPrice || order.price}"
+                        data-original-price="${order.price || 0}">
                         <div class="order-header">
                             <div class="order-info">
                                 <div class="order-number">订单号: ${orderId}</div>
@@ -878,12 +888,12 @@ async function renderOrdersPage() {
                                 </div>
                             </div>
                             <div class="order-price">
-                                <div class="order-product-price">${formattedPrice}</div> <!-- 🔥 修改这里 -->
+                                <div class="order-product-price">${priceText}</div> <!-- 🔥 修改这里 -->
                                 <div class="order-quantity">数量: ${quantity}</div>
                             </div>
                         </div>
                         <div class="order-footer">
-                            <div class="order-total">实付: ${formattedTotal}</div> <!-- 🔥 修改这里 -->
+                            <div class="order-total">实付: ${totalText}</div> <!-- 🔥 修改这里 -->
                             ${orderActions}
                         </div>
                     </div>
@@ -1046,15 +1056,21 @@ function resetPaymentButtonBinding() {
 
 
 function handlePaymentButtonClick(e) {
-    // 检查是否点击了支付按钮或其子元素
     const payButton = e.target.closest('.pay-now-btn');
     
     if (payButton) {
         e.preventDefault();
         e.stopPropagation();
-        e.stopImmediatePropagation(); // 🔥 关键：阻止其他事件监听器
+        e.stopImmediatePropagation();
         
         console.log('💰 支付按钮被点击（全局事件）');
+        
+        // 🔥 添加防重复点击延迟
+        if (payButton.dataset.lastClick && Date.now() - payButton.dataset.lastClick < 1000) {
+            console.log('⏳ 点击过于频繁，忽略');
+            return;
+        }
+        payButton.dataset.lastClick = Date.now();
         
         const orderCard = payButton.closest('.order-card');
         if (!orderCard) {
@@ -1062,53 +1078,26 @@ function handlePaymentButtonClick(e) {
             return;
         }
         
-        // 获取订单信息
-        const orderNumberElement = orderCard.querySelector('.order-number');
-        const priceElement = orderCard.querySelector('.order-product-price');
-        const productNameElement = orderCard.querySelector('.order-product-name');
+        const orderId = orderCard.dataset.orderId;
+        const displayPrice = parseFloat(orderCard.dataset.displayPrice);
+        const productName = orderCard.querySelector('.order-product-name')?.textContent || '';
         
-        if (!orderNumberElement || !priceElement || !productNameElement) {
-            console.error('❌ 订单信息元素缺失');
-            return;
-        }
-        
-        const orderId = orderNumberElement.textContent.replace('订单号: ', '').trim();
-        const productName = productNameElement.textContent.trim();
-        
-        // 🔥 修复：改进价格文本提取逻辑
-        const priceText = priceElement.textContent.trim();
-
-        // 使用正则表达式匹配数字和点（包括美元符号和小数点）
-        const priceMatch = priceText.match(/(\d+\.?\d*)/);
-        let price = 0;
-
-        if (priceMatch) {
-            price = parseFloat(priceMatch[1]);
-        } else {
-            // 备用方案：移除所有非数字字符（除了点和逗号）
-            const numericPriceText = priceText
-                .replace(/[^\d.,]/g, '')
-                .replace(/,/g, '');
-            price = parseFloat(numericPriceText);
-        }
-
-        console.log('📦 支付信息解析结果:', { 
+        console.log('💰 支付订单（固定价格）:', { 
             orderId, 
-            price, 
-            productName,
-            originalText: priceText,
-            isNaN: isNaN(price)
+            displayPrice, 
+            productName 
         });
-        
-        if (!orderId || isNaN(price) || price <= 0) {
+
+        if (!orderId || isNaN(displayPrice) || displayPrice <= 0) {
             console.error('❌ 订单信息格式错误');
+            showNotification('订单信息异常，请刷新页面重试', 'error');
             return;
         }
         
-        // 显示支付模态框
+        // 🔥 在调用showPaymentModal前重置状态
         if (typeof showPaymentModal === 'function') {
             setTimeout(() => {
-                showPaymentModal(orderId, price, productName);
+                showPaymentModal(orderId, displayPrice, productName);
             }, 50);
         } else {
             console.error('❌ showPaymentModal 函数未定义');
