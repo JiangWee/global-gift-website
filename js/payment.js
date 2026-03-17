@@ -81,6 +81,13 @@ async function showPaymentModal(orderId, price, productName) {
     document.getElementById('payment-product-name').textContent = productName;
     // 🔥 修改：使用 i18n.formatPrice 格式化金额
     const formattedAmount = i18n.formatPrice(price);
+
+    console.log('💰 支付金额显示:', { 
+        original: price, 
+        formatted: formattedAmount,
+        currency: i18n.currentCurrency.code 
+    });
+
     document.getElementById('payment-amount').textContent = formattedAmount;
     
     // 初始化支付方式选择状态（不选中任何选项）
@@ -415,36 +422,47 @@ async function loadStripeKey() {
 // 🔥 新增：处理Stripe支付
 async function handleStripePayment(clientSecret, paymentIntentId) {
     if (!stripe) {
-        // 尝试初始化Stripe
         await initStripe();
         if (!stripe) {
             showNotification('支付服务初始化失败，请刷新页面重试', 'error');
             return;
         }
     }
-    
-    console.log('💳 处理Stripe支付:', clientSecret);
-    
+
+    console.log('💳 处理Stripe支付:', { clientSecret, paymentIntentId });
+
     // 显示Stripe支付界面
     document.getElementById('payment-selection').style.display = 'none';
     document.getElementById('wechat-qrcode-section').style.display = 'none';
-    
+
     const stripeSection = document.getElementById('stripe-payment-section');
     if (stripeSection) {
         stripeSection.style.display = 'block';
+
+        // 🔥 关键修复：创建Elements时必须传递clientSecret
+        const options = {
+            clientSecret: clientSecret,
+            // 可选：配置支持的支付方式
+            appearance: {
+                theme: 'stripe',
+                variables: {
+                    colorPrimary: '#635bff',
+                    colorBackground: '#ffffff',
+                }
+            }
+        };
         
-        // 创建支付元素容器
-        const elements = stripe.elements();
+        const elements = stripe.elements(options);
         const paymentElement = elements.create('payment');
         paymentElement.mount('#stripe-payment-element');
-        
+
         // 确认支付按钮
         const confirmButton = document.getElementById('stripe-confirm-btn');
         if (confirmButton) {
             confirmButton.onclick = async () => {
                 confirmButton.innerHTML = '<i class="loading-spinner"></i> 处理中...';
                 confirmButton.disabled = true;
-                
+
                 const { error } = await stripe.confirmPayment({
                     elements,
                     clientSecret,
@@ -452,7 +470,7 @@ async function handleStripePayment(clientSecret, paymentIntentId) {
                         return_url: `${window.location.origin}/payment/success?orderId=${currentPaymentOrder}&paymentMethod=stripe`,
                     },
                 });
-                
+
                 if (error) {
                     console.error('Stripe支付失败:', error);
                     showNotification(`支付失败: ${error.message}`, 'error');
@@ -463,7 +481,7 @@ async function handleStripePayment(clientSecret, paymentIntentId) {
                 }
             };
         }
-        
+
         // 返回按钮
         const backButton = document.getElementById('stripe-back-btn');
         if (backButton) {
@@ -477,7 +495,7 @@ async function handleStripePayment(clientSecret, paymentIntentId) {
                 return_url: `${window.location.origin}/payment/success?orderId=${currentPaymentOrder}&paymentMethod=stripe`,
             },
         });
-        
+
         if (error) {
             console.error('Stripe支付失败:', error);
             showNotification(`支付失败: ${error.message}`, 'error');

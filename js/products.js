@@ -1077,20 +1077,27 @@ function handlePaymentButtonClick(e) {
         
         // 🔥 修复：改进价格文本提取逻辑
         const priceText = priceElement.textContent.trim();
-        
-        // 移除所有货币符号、空格和千分位分隔符
-        const numericPriceText = priceText
-            .replace(/[^\d.,]/g, '')  // 移除非数字、点和逗号
-            .replace(/,/g, '');       // 移除千分位分隔符
-            
-        const price = parseFloat(numericPriceText);
-        
-        console.log('📦 支付信息:', { 
+
+        // 使用正则表达式匹配数字和点（包括美元符号和小数点）
+        const priceMatch = priceText.match(/(\d+\.?\d*)/);
+        let price = 0;
+
+        if (priceMatch) {
+            price = parseFloat(priceMatch[1]);
+        } else {
+            // 备用方案：移除所有非数字字符（除了点和逗号）
+            const numericPriceText = priceText
+                .replace(/[^\d.,]/g, '')
+                .replace(/,/g, '');
+            price = parseFloat(numericPriceText);
+        }
+
+        console.log('📦 支付信息解析结果:', { 
             orderId, 
             price, 
             productName,
             originalText: priceText,
-            cleanedText: numericPriceText
+            isNaN: isNaN(price)
         });
         
         if (!orderId || isNaN(price) || price <= 0) {
