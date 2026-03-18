@@ -38,11 +38,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const recipientStreet = document.getElementById('recipient-street').value;
             
             if (!buyerName || !buyerPhone || !recipientName || !recipientStreet) {
-                alert('请填写完整的必填信息');
+                alert(i18n.t('checkout.required'));
                 return;
             }
-            
-            alert('订单提交成功！我们将尽快处理您的订单。');
+
+            alert(i18n.t('checkout.success'));
             // document.querySelector('.checkout-form').reset();
             // updateCharCount();
         });
@@ -65,8 +65,13 @@ document.addEventListener('DOMContentLoaded', function() {
             initPaymentModalEvents();
         }
     }, 1000);
-    
+
     checkPendingPaymentOnLoad();
+
+    // ✅ 初始化页脚
+    setTimeout(() => {
+        injectFooters();
+    }, 500);
 });
 
 function initializePage() {
@@ -76,7 +81,7 @@ function initializePage() {
     loadingEl.innerHTML = `
         <div class="loading-spinner">
             <div class="spinner"></div>
-            <div>加载中...</div>
+            <div>${i18n.t('loading')}</div>
         </div>
     `;
     loadingEl.style.cssText = `
@@ -152,7 +157,7 @@ function debugProductLoading() {
 
 function updateAllFooters() {
     document.querySelectorAll('.footer').forEach(footer => {
-        footer.outerHTML = generateFooter(i18n.getCurrentLanguage());
+        footer.outerHTML = generateFooter();
     });
 }
 
@@ -160,5 +165,12 @@ function updateAllFooters() {
 i18n.onLanguageChange(() => {
     updateAllFooters();
 });
+
+// 更新所有页脚
+function updateAllFooters() {
+    document.querySelectorAll('.footer').forEach(footer => {
+        footer.outerHTML = generateFooter();
+    });
+}
 
 // 在控制台运行 debugProductLoading() 来调试

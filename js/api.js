@@ -118,9 +118,9 @@ class ApiService {
         
         // 重置 API token
         this.token = null;
-        
+
         // 显示友好的提示
-        showMessage('登录已过期，请重新登录', 'warning');
+        showMessage(i18n.t('login.expired') || '登录已过期，请重新登录', 'warning');
         
         // 延迟执行，避免阻塞当前操作
         setTimeout(() => {

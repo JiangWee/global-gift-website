@@ -396,18 +396,56 @@ class I18nManager {
     updateDynamicContent() {
         // 更新导航栏用户状态
         this.updateNavbarText();
-        
+
         // 更新产品相关文本
         this.updateProductsText();
-        
+
         // 更新订单相关文本
         this.updateOrdersText();
-        
+
         // 更新模态框文本
         this.updateModalText();
-        
+
         // 更新忘记密码页面文本
         this.updateForgotPasswordText();
+
+        // 🔥 新增：更新产品列表和订单列表的动态内容
+        this.updateDynamicLists();
+    }
+
+    // 🔥 新增：更新动态列表内容
+    updateDynamicLists() {
+        // 重新渲染产品列表（如果在产品页面）
+        if (document.getElementById('page-gifts')?.classList.contains('active')) {
+            console.log('🔄 语言切换：重新渲染产品列表');
+            if (typeof renderProducts === 'function') {
+                renderProducts();
+            }
+        }
+
+        // 重新渲染订单列表（如果在订单页面）
+        if (document.getElementById('page-orders')?.classList.contains('active')) {
+            console.log('🔄 语言切换：重新渲染订单列表');
+            if (typeof renderOrdersPage === 'function') {
+                renderOrdersPage();
+            }
+        }
+
+        // 重新渲染产品详情（如果在详情页）
+        if (document.getElementById('page-detail')?.classList.contains('active')) {
+            console.log('🔄 语言切换：重新渲染产品详情');
+            if (typeof currentProduct !== 'undefined' && typeof renderProductDetail === 'function') {
+                renderProductDetail(currentProduct);
+            }
+        }
+
+        // 重新渲染个人中心（如果在个人中心页）
+        if (document.getElementById('page-profile')?.classList.contains('active')) {
+            console.log('🔄 语言切换：重新渲染个人中心');
+            if (typeof renderProfilePage === 'function') {
+                renderProfilePage();
+            }
+        }
     }
 
     // 更新模态框文本（增强版）

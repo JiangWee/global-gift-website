@@ -1,30 +1,25 @@
 // footer.js - 通用页脚组件
-function generateFooter(lang = 'zh') {
-    const isChinese = lang === 'zh';
-    
+function generateFooter() {
     return `
         <footer class="footer">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>${isChinese ? '关于我们' : 'About Us'}</h3>
-                    <p>${isChinese ? 
-                        'Gift Buy Buy 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。' : 
-                        'Gift Buy Buy is a professional cross-border business gift service platform dedicated to providing high-quality gift selection and global delivery services.'}
-                    </p>
+                    <h3>${i18n.t('footer.about.title')}</h3>
+                    <p>${i18n.t('footer.about.text')}</p>
                 </div>
                 <div class="footer-section">
-                    <h3>${isChinese ? '联系我们' : 'Contact Us'}</h3>
-                    <p>${isChinese ? '电话' : 'Phone'}: +86 188 2390 0470</p>
-                    <p>${isChinese ? '微信' : 'WeChat'}: GiftBuyBuy</p>
-                    <p>${isChinese ? '邮箱' : 'Email'}: service@GiftBuyBuy.com</p>
-                    <p>${isChinese ? '地址' : 'Address'}: 深圳市福田区园岭街道鹏盛社区八卦岭工业区8栋451B</p>
+                    <h3>${i18n.t('footer.contact.title')}</h3>
+                    <p>${i18n.t('contact.phone')}: +86 188 2390 0470</p>
+                    <p>${i18n.t('contact.wechat')}: ${i18n.t('footer.contact.wechat')}</p>
+                    <p>${i18n.t('contact.email')}: ${i18n.t('footer.contact.email')}</p>
+                    <p>${i18n.t('contact.address')}: ${i18n.t('footer.contact.address')}</p>
                 </div>
                 <div class="footer-section">
-                    <h3>${isChinese ? '关注我们' : 'Follow Us'}</h3>
+                    <h3>${i18n.t('footer.follow.title')}</h3>
                     <ul>
-                        <li><a href="javascript:void(0)">${isChinese ? '微信公众号' : 'WeChat Public Account'}</a></li>
-                        <li><a href="javascript:void(0)">${isChinese ? 'Instagram' : 'Instagram'}</a></li>
-                        <li><a href="javascript:void(0)">${isChinese ? 'LinkedIn' : 'LinkedIn'}</a></li>
+                        <li><a href="javascript:void(0)">${i18n.t('footer.follow.wechat')}</a></li>
+                        <li><a href="javascript:void(0)">${i18n.t('footer.follow.instagram')}</a></li>
+                        <li><a href="javascript:void(0)">${i18n.t('footer.follow.linkedin')}</a></li>
                     </ul>
                 </div>
             </div>
@@ -52,8 +47,8 @@ function injectFooters() {
             // 检查是否已有页脚
             const existingFooter = page.querySelector('.footer');
             if (!existingFooter) {
-                const container = page.querySelector('.container') || page;
-                container.insertAdjacentHTML('beforeend', generateFooter(i18n.getCurrentLanguage()));
+                // 将页脚插入到页面最底部（在.container之后）
+                page.insertAdjacentHTML('beforeend', generateFooter());
             }
         }
     });

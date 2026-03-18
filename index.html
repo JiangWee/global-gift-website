@@ -279,14 +279,14 @@
                                 <div class="contact-icon">📍</div>
                                 <div class="contact-text">
                                     <strong data-i18n="contact.address">地址</strong>
-                                    <p>深圳市福田区园岭街道鹏盛社区八卦岭工业区8栋451B</p>
+                                    <p data-i18n="contact.address.value">深圳市福田区园岭街道鹏盛社区八卦岭工业区8栋451B</p>
                                 </div>
                             </div>
                             <div class="contact-item">
                                 <div class="contact-icon">🕒</div>
                                 <div class="contact-text">
                                     <strong data-i18n="contact.hours">工作时间</strong>
-                                    <p>周一至周五 9:00-18:00</p>
+                                    <p data-i18n="contact.hours.value">周一至周五 9:00-18:00</p>
                                 </div>
                             </div>
                         </div>
@@ -297,7 +297,7 @@
                         <div class="social-links">
                             <a href="javascript:void(0)" class="social-link">
                                 <span class="social-icon">📱</span>
-                                <span>微信公众号: GiftBuyBuy</span>
+                                <span data-i18n="contact.wechat.account">微信公众号: GiftBuyBuy</span>
                             </a>
                             <a href="javascript:void(0)" class="social-link">
                                 <span class="social-icon">📷</span>
@@ -547,18 +547,18 @@
                 
                 <div id="stripe-payment-section" style="display: none;">
                     <div class="stripe-payment-container">
-                        <h3>💳 银行卡支付</h3>
-                        <p>请输入您的银行卡信息完成支付</p>
-                        
+                        <h3>💳 <span data-i18n="stripe.card">银行卡支付</span></h3>
+                        <p data-i18n="stripe.hint">请输入您的银行卡信息完成支付</p>
+
                         <!-- Stripe Elements 容器 -->
                         <div id="stripe-payment-element" class="stripe-element"></div>
-                        
+
                         <div class="stripe-actions">
-                            <button id="stripe-back-btn" class="btn-secondary">返回</button>
-                            <button id="stripe-confirm-btn" class="btn-primary">确认支付</button>
+                            <button id="stripe-back-btn" class="btn-secondary" data-i18n="payment.card.back">返回</button>
+                            <button id="stripe-confirm-btn" class="btn-primary" data-i18n="payment.card.pay">确认支付</button>
                         </div>
-                        
-                        <p class="hint">支付安全由Stripe保障，我们不会存储您的银行卡信息</p>
+
+                        <p class="hint" data-i18n="stripe.secure">支付安全由Stripe保障，我们不会存储您的银行卡信息</p>
                     </div>
                 </div>
 
@@ -583,7 +583,7 @@
         <div class="container">
             <div id="payment-result-container">
                 <!-- 这里的内容将由JavaScript根据支付结果动态生成 -->
-                <div class="loading-spinner">正在查询支付结果...</div>
+                <div class="loading-spinner" data-i18n="loading.payment">正在查询支付结果...</div>
             </div>
         </div>
 

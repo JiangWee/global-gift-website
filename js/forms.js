@@ -41,9 +41,9 @@ function switchLoginTab(tab) {
 async function login() {
     const identifier = document.getElementById('login-account').value;
     const password = document.getElementById('login-password').value;
-    
+
     if (!identifier || !password) {
-        showMessage('请输入账号和密码', 'error');
+        showMessage(i18n.t('login.required'), 'error');
         return;
     }
     
@@ -68,22 +68,22 @@ async function login() {
                 console.warn('accessToken不存在，使用token字段');
                 apiService.setToken(result.data.token);
             }
-            
-            showMessage('登录成功！', 'success');
+
+            showMessage(i18n.t('login.success'), 'success');
             closeLoginModal();
             
             // 保存用户信息并更新导航栏
             if (result.data.user) {
                 console.log('保存用户信息:', result.data.user);
                 updateUserInfo(result.data.user);
-            } 
+            }
         } else {
             // 特殊处理用户不存在的提示
-            showMessage(result.message || '登录失败', 'error');
+            showMessage(result.message || i18n.t('login.failed'), 'error');
         }
     } catch (error) {
         console.error('登录请求错误:', error);
-        showMessage(error.message || '登录失败，请检查网络连接', 'error');
+        showMessage(error.message || i18n.t('login.network'), 'error');
     } finally {
         showLoading(false);
     }
@@ -95,25 +95,25 @@ async function register() {
     const phone = document.getElementById('register-phone').value;
     const password = document.getElementById('register-password').value;
     const confirm = document.getElementById('register-confirm').value;
-    
+
     if (!username || !email || !phone || !password || !confirm) {
-        showMessage('请填写所有必填字段', 'error');
+        showMessage(i18n.t('register.required'), 'error');
         return;
     }
-    
+
     if (password !== confirm) {
-        showMessage('两次输入的密码不一致', 'error');
+        showMessage(i18n.t('register.mismatch'), 'error');
         return;
     }
-    
+
     if (password.length < 6) {
-        showMessage('密码长度至少6位', 'error');
+        showMessage(i18n.t('register.length'), 'error');
         return;
     }
-    
+
     // 用户名验证
     if (username.length < 2 || username.length > 20) {
-        showMessage('用户名长度2-20个字符', 'error');
+        showMessage(i18n.t('register.username.length'), 'error');
         return;
     }
     
@@ -123,9 +123,9 @@ async function register() {
         const result = await apiService.register({ username, email, phone, password, confirm });
         
         if (result.success) {
-            showMessage('注册成功！请登录', 'success');
+            showMessage(i18n.t('register.success'), 'success');
             switchLoginTab('login');
-            
+
             // 注册成功后自动填充登录表单
             document.getElementById('login-account').value = username;
         } else {
@@ -133,11 +133,11 @@ async function register() {
             if (result.message.includes('用户名') || result.message.includes('邮箱') || result.message.includes('手机号')) {
                 showMessage(result.message, 'error');
             } else {
-                showMessage(result.message || '注册失败', 'error');
+                showMessage(result.message || i18n.t('register.failed'), 'error');
             }
         }
     } catch (error) {
-        showMessage('注册请求失败，请检查网络连接', 'error');
+        showMessage(i18n.t('register.network'), 'error');
     } finally {
         showLoading(false);
     }
@@ -231,15 +231,15 @@ function handleContactSubmit() {
     const email = document.getElementById('contact-email').value;
     const subject = document.getElementById('contact-subject').value;
     const message = document.getElementById('contact-message').value;
-    
+
     if (!name || !email || !subject || !message) {
-        showMessage('请填写所有必填字段', 'error');
+        showMessage(i18n.t('contact.required'), 'error');
         return;
     }
-    
+
     // 模拟发送消息（实际项目中应该调用API）
-    showMessage('消息发送成功！我们会尽快回复您。', 'success');
-    
+    showMessage(i18n.t('contact.success'), 'success');
+
     // 清空表单
     document.getElementById('contactForm').reset();
 }
@@ -271,7 +271,7 @@ function switchForgotPasswordStep(stepId) {
         const resendBtn = document.getElementById('resend-btn');
         if (resendBtn) {
             resendBtn.disabled = false;
-            resendBtn.textContent = '重新发送';
+            resendBtn.textContent = i18n.t('forgot.verify.resend');
         }
     } else if (stepId === 'step-email') {
         // 重置到第一步时清理数据并恢复按钮状态
@@ -486,12 +486,12 @@ async function verifyCode() {
             console.warn('⚠️ resetToken格式可能不是标准JWT');
         }
         
-        showMessage('验证成功', 'success');
+        showMessage(i18n.t('forgot.code.sent'), 'success');
         switchForgotPasswordStep('step-reset');
-        
+
     } catch (error) {
         console.error('验证验证码失败:', error);
-        showMessage('验证失败，请检查网络连接', 'error');
+        showMessage(i18n.t('forgot.network.error'), 'error');
     } finally {
         showLoading(false);
     }
@@ -508,7 +508,7 @@ async function resetPassword() {
     console.log('新密码长度:', newPassword ? newPassword.length : 0);
     
     if (!resetToken) {
-        showMessage('重置令牌无效，请重新验证', 'error');
+        showMessage(i18n.t('forgot.token.resetfailed'), 'error');
         return;
     }
     
@@ -550,7 +550,7 @@ async function resetPassword() {
             currentEmail = '';
             stopCountdown();
         } else {
-            showMessage(result.message || '密码重置失败', 'error');
+            showMessage(result.message || i18n.t('forgot.send.failed'), 'error');
             resetBtn.disabled = false;
             resetBtn.textContent = originalText;
         }
@@ -567,7 +567,7 @@ async function resetPassword() {
             // 显示具体的错误消息
             showMessage(error.message, 'error');
         } else {
-            showMessage('网络连接失败，请检查网络设置', 'error');
+            showMessage(i18n.t('forgot.network.error'), 'error');
         }
         // 无论何种错误，最终都恢复按钮状态
         resetBtn.disabled = false;

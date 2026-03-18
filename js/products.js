@@ -85,12 +85,12 @@ function loadBackupProducts() {
 
 function showLoading(show) {
     let loadingEl = document.getElementById('loading-indicator');
-    
+
     if (show) {
         if (!loadingEl) {
             loadingEl = document.createElement('div');
             loadingEl.id = 'loading-indicator';
-            loadingEl.innerHTML = '<div class="loading-spinner">加载中...</div>';
+            loadingEl.innerHTML = `<div class="loading-spinner">${i18n.t('loading')}</div>`;
             document.body.appendChild(loadingEl);
         }
         loadingEl.style.display = 'flex';
@@ -196,7 +196,7 @@ function renderProducts(filteredProducts = null) {
 
 function checkLoginForPurchase() {
     if (!apiService.token) {
-        showMessage('请先登录后再进行购买', 'warning');
+        showMessage(i18n.t('login.required'), 'warning');
         showLogin();
         return false;
     }
@@ -214,10 +214,10 @@ function viewGiftDetail(productId) {
     
     const product = productsData.find(p => p.id == productId);
     console.log('🎯 查找到的产品对象:', product);
-    
+
     if (!product) {
         console.error('❌ 未找到产品，ID:', productId);
-        showMessage('产品不存在', 'error');
+        showMessage(i18n.t('product.notexist'), 'error');
         return;
     }
     
@@ -482,13 +482,13 @@ function reBindDetailPageEvents(product) {
                 
                 if (!currentProduct || !currentProduct.id) {
                     console.error('❌ 产品对象无效:', currentProduct);
-                    showMessage('产品信息异常，请刷新页面重试', 'error');
+                    showMessage(i18n.t('product.invalid'), 'error');
                     return;
                 }
-                
+
                 // 验证库存
                 if (currentProduct.stock === 0) {
-                    showMessage('该产品暂时缺货', 'error');
+                    showMessage(i18n.t('product.nostock'), 'error');
                     return;
                 }
                 
@@ -529,15 +529,15 @@ async function submitOrder(product) {
     
     if (!product || typeof product !== 'object') {
         console.error('❌ 产品信息缺失或格式错误:', product);
-        showMessage('产品信息异常，请重新选择产品', 'error');
+        showMessage(i18n.t('product.invalid'), 'error');
         return;
     }
-    
+
     // 使用安全的产品信息获取函数
     const productInfo = getProductInfo(product);
     if (!productInfo || !productInfo.id) {
         console.error('❌ 无法获取产品信息:', productInfo);
-        showMessage('无法获取产品信息，请重试', 'error');
+        showMessage(i18n.t('product.infoerror'), 'error');
         return;
     }
     
@@ -550,13 +550,13 @@ async function submitOrder(product) {
     const recipientStreet = document.getElementById('recipient-street')?.value;
     
     if (!buyerName || !buyerPhone || !recipientName || !recipientStreet) {
-        showMessage('请填写完整的必填信息', 'error');
+        showMessage(i18n.t('order.required'), 'error');
         return;
     }
-    
+
     // 检查登录状态
     if (!apiService.token) {
-        showMessage('请先登录', 'error');
+        showMessage(i18n.t('login.required'), 'error');
         showLogin();
         return;
     }
@@ -600,7 +600,7 @@ async function submitOrder(product) {
     
         // 验证必要字段
     if (!orderData.product_id || !orderData.product_name || orderData.price <= 0) {
-        showMessage('产品信息不完整，请重新选择产品', 'error');
+        showMessage(i18n.t('order.incomplete'), 'error');
         return;
     }
 
@@ -612,16 +612,16 @@ async function submitOrder(product) {
         console.log('📥📥 订单创建响应:', result);
         
         if (result.success) {
-            showMessage(`订单提交成功！订单号: ${result.data.orderId}`, 'success');
-            
+            showMessage(i18n.t('order.submit.success', { orderId: result.data.orderId }), 'success');
+
             // ✅ 移除了表单重置代码，保留用户填写的信息
             console.log('✅ 订单提交成功，表单信息已保留');
-            
+
             // 跳转到订单确认页面
             setTimeout(() => {
                 console.log('🔄 跳转到订单页面...');
                 goToPage('page-orders');
-                
+
                 // 延迟刷新订单列表
                 setTimeout(() => {
                     try {
@@ -632,14 +632,14 @@ async function submitOrder(product) {
                 }, 500);
             }, 2000);
         } else {
-            showMessage(result.message || '订单提交失败', 'error');
+            showMessage(result.message || i18n.t('order.submit.failed'), 'error');
         }
     } catch (error) {
         console.error('❌❌ 订单提交错误详情:', error);
-        
+
         // 更详细的错误处理
         if (error.isNetworkError) {
-            showMessage('网络连接失败，请检查网络设置', 'error');
+            showMessage(i18n.t('order.network'), 'error');
         } else if (error.validationErrors) {
             // 显示具体的验证错误
             error.validationErrors.forEach(err => {
@@ -648,7 +648,7 @@ async function submitOrder(product) {
         } else if (error.message) {
             showMessage(error.message, 'error');
         } else {
-            showMessage('订单提交失败，请稍后重试', 'error');
+            showMessage(i18n.t('order.submit.failed'), 'error');
         }
     } finally {
         showLoading(false);
@@ -669,7 +669,7 @@ function enhanceOrderForm() {
     const clearButton = document.createElement('button');
     clearButton.type = 'button';
     clearButton.className = 'clear-form-btn';
-    clearButton.innerHTML = '🗑️ 清空表单';
+    clearButton.innerHTML = i18n.t('cart.clear');
     clearButton.style.cssText = `
         background: #f56565;
         color: white;
@@ -682,10 +682,10 @@ function enhanceOrderForm() {
     `;
     
     clearButton.onclick = function() {
-        if (confirm('确定要清空所有表单信息吗？这将删除所有已填写的内容。')) {
+        if (confirm(i18n.t('cart.clear.confirm'))) {
             checkoutForm.reset();
             updateCharCount();
-            showMessage('表单已清空', 'info');
+            showMessage(i18n.t('cart.cleared'), 'info');
         }
     };
     
@@ -735,36 +735,38 @@ function renderProfilePage() {
     // 从localStorage获取用户信息
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
     
+    const t = (key) => i18n.t(key);
+
     container.innerHTML = `
         <div class="profile-header">
-            <h3 class="profile-title">个人信息</h3>
-            <button class="edit-profile-btn" onclick="editProfile()">修改信息</button>
+            <h3 class="profile-title">${t('profile.title')}</h3>
+            <button class="edit-profile-btn" onclick="editProfile()">${t('profile.edit')}</button>
         </div>
         <div class="profile-info">
             <div class="profile-field">
-                <span class="field-label">用户名</span>
-                <span class="field-value">${userInfo.username || '未设置'}</span>
+                <span class="field-label">${t('prompt.username')}</span>
+                <span class="field-value">${userInfo.username || t('prompt.notset')}</span>
                 <div class="field-actions">
-                    <button class="edit-field-btn" onclick="editField('username')">修改</button>
+                    <button class="edit-field-btn" onclick="editField('username')">${t('prompt.edit')}</button>
                 </div>
             </div>
             <div class="profile-field">
-                <span class="field-label">邮箱</span>
-                <span class="field-value">${userInfo.email || '未设置'}</span>
+                <span class="field-label">${t('prompt.email')}</span>
+                <span class="field-value">${userInfo.email || t('prompt.notset')}</span>
                 <div class="field-actions">
-                    <button class="edit-field-btn" onclick="editField('email')">修改</button>
+                    <button class="edit-field-btn" onclick="editField('email')">${t('prompt.edit')}</button>
                 </div>
             </div>
             <div class="profile-field">
-                <span class="field-label">手机号</span>
-                <span class="field-value">${userInfo.phone || '未设置'}</span>
+                <span class="field-label">${t('prompt.phone')}</span>
+                <span class="field-value">${userInfo.phone || t('prompt.notset')}</span>
                 <div class="field-actions">
-                    <button class="edit-field-btn" onclick="editField('phone')">修改</button>
+                    <button class="edit-field-btn" onclick="editField('phone')">${t('prompt.edit')}</button>
                 </div>
             </div>
             <div class="profile-field">
-                <span class="field-label">注册时间</span>
-                <span class="field-value">${userInfo.createdAt ? new Date(userInfo.createdAt).toLocaleDateString() : '未知'}</span>
+                <span class="field-label">${t('prompt.registration')}</span>
+                <span class="field-value">${userInfo.createdAt ? new Date(userInfo.createdAt).toLocaleDateString() : t('prompt.unknown')}</span>
                 <div class="field-actions">
                     <span style="color: #6c757d; font-size: 0.9rem;">不可修改</span>
                 </div>
@@ -780,11 +782,12 @@ async function renderOrdersPage() {
 
     // 检查登录状态
     if (!apiService.token) {
+        const t = (key) => i18n.t(key);
         container.innerHTML = `
             <div class="no-orders">
                 <div class="no-orders-icon">🔐</div>
-                <div class="no-orders-message">请先登录查看订单</div>
-                <button class="browse-products-btn" onclick="showLogin()">立即登录</button>
+                <div class="no-orders-message">${t('order.nologin')}</div>
+                <button class="browse-products-btn" onclick="showLogin()">${t('login.submit')}</button>
             </div>
         `;
         return;
@@ -810,6 +813,9 @@ async function renderOrdersPage() {
         }
 
         console.log('📦 处理后的订单数据:', orders); // 调试日志
+
+        const t = (key, params = {}) => i18n.t(key, params);
+
         if (orders && orders.length > 0) {
             container.innerHTML = orders.map(order => {
 
@@ -848,11 +854,11 @@ async function renderOrdersPage() {
                 console.log('🎯 order.productId:', order.productId);
                 console.log('🎯 order.productImage:', order.productImage);
                 const productImage = order.productImage || getProductImage(order.productId);
-                const orderActions = order.status === 'unpaid' 
+                const orderActions = order.status === 'unpaid'
                     ? `
                         <div class="order-actions">
-                            <button class="pay-now-btn">立即支付</button>
-                            <button class="view-order-btn" onclick="viewOrderDetail('${orderId}')">查看详情</button>
+                            <button class="pay-now-btn">${t('order.actions.pay')}</button>
+                            <button class="view-order-btn" onclick="viewOrderDetail('${orderId}')">${t('order.actions.detail')}</button>
                         </div>
                     `
                     : `...`;
@@ -861,8 +867,8 @@ async function renderOrdersPage() {
                 const totalPrice = order.displayPrice || order.price;
                 const totalText = i18n.formatFixedPrice(totalPrice * order.quantity, order.currency);
 
-                return ` 
-                    <div class="order-card" 
+                return `
+                    <div class="order-card"
                         data-order-id="${order.orderId || ''}"
                         data-currency="${order.currency || 'CNY'}"
                         data-exchange-rate="${order.exchangeRate || 1}"
@@ -870,11 +876,11 @@ async function renderOrdersPage() {
                         data-original-price="${order.price || 0}">
                         <div class="order-header">
                             <div class="order-info">
-                                <div class="order-number">订单号: ${orderId}</div>
-                                <div class="order-date">下单时间: ${new Date(createdAt).toLocaleString()}</div>
+                                <div class="order-number">${t('order.id', { id: orderId })}</div>
+                                <div class="order-date">${t('order.date', { date: new Date(createdAt).toLocaleString() })}</div>
                             </div>
                             <div class="order-status ${getStatusClass(status)}">
-                                ${getStatusText(status)}
+                                ${t('status.' + status)}
                             </div>
                         </div>
                         <div class="order-content">
@@ -882,39 +888,41 @@ async function renderOrdersPage() {
                             <div class="order-product-info">
                                 <div class="order-product-name">${productName}</div>
                                 <div class="order-product-specs">
-                                    <div>收件人: ${recipientInfo.name || '未设置'}</div>
-                                    <div>电话: ${recipientInfo.phone || '未设置'}</div>
-                                    <div>地址: ${(recipientInfo.street || '') + (recipientInfo.city ? ', ' + recipientInfo.city : '')}</div>
+                                    <div>${t('order.recipient', { name: recipientInfo.name || t('prompt.notset') })}</div>
+                                    <div>${t('order.phone', { phone: recipientInfo.phone || t('prompt.notset') })}</div>
+                                    <div>${t('order.address', { address: (recipientInfo.street || '') + (recipientInfo.city ? ', ' + recipientInfo.city : '') })}</div>
                                 </div>
                             </div>
                             <div class="order-price">
-                                <div class="order-product-price">${priceText}</div> <!-- 🔥 修改这里 -->
-                                <div class="order-quantity">数量: ${quantity}</div>
+                                <div class="order-product-price">${priceText}</div>
+                                <div class="order-quantity">${t('order.quantity', { quantity })}</div>
                             </div>
                         </div>
                         <div class="order-footer">
-                            <div class="order-total">实付: ${totalText}</div> <!-- 🔥 修改这里 -->
+                            <div class="order-total">${t('order.paid', { amount: totalText })}</div>
                             ${orderActions}
                         </div>
                     </div>
                 `;
             }).join('');
         } else {
+            const t = (key) => i18n.t(key);
             container.innerHTML = `
                 <div class="no-orders">
                     <div class="no-orders-icon">📦</div>
-                    <div class="no-orders-message">您还没有任何订单</div>
-                    <button class="browse-products-btn" onclick="goToPage('page-gifts')">去选购</button>
+                    <div class="no-orders-message">${t('order.empty')}</div>
+                    <button class="browse-products-btn" onclick="goToPage('page-gifts')">${t('order.shop')}</button>
                 </div>
             `;
         }
     } catch (error) {
         console.error('获取订单失败:', error);
+        const t = (key) => i18n.t(key);
         container.innerHTML = `
             <div class="no-orders">
                 <div class="no-orders-icon">❌</div>
-                <div class="no-orders-message">获取订单失败: ${error.message}</div>
-                <button class="browse-products-btn" onclick="location.reload()">重新加载</button>
+                <div class="no-orders-message">${t('order.load.failed', { error: error.message })}</div>
+                <button class="browse-products-btn" onclick="location.reload()">${t('order.reload')}</button>
             </div>
         `;
     } finally {
@@ -958,42 +966,27 @@ function getStatusClass(status) {
 
 // 获取订单状态文本
 function getStatusText(status) {
-    const statusTextMap = {
-        'unpaid': '未支付',
-        'pending': '待处理',
-        'shipped': '已发货',
-        'delivered': '已送达',
-        'cancelled': '已取消'
-    };
-    return statusTextMap[status] || '待处理';
+    return i18n.t('status.' + status);
 }
 
 // 编辑个人信息
 function editProfile() {
-    showMessage('个人信息编辑功能开发中...', 'info');
+    showMessage(i18n.t('profile.inprogress'), 'info');
 }
 
 // 编辑特定字段
 function editField(field) {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
     const currentValue = userInfo[field] || '';
-    
-    const newValue = prompt(`请输入新的${getFieldLabel(field)}:`, currentValue);
+
+    const t = (key, params = {}) => i18n.t(key, params);
+    const label = t(`prompt.${field}`);
+    const newValue = prompt(`${t('prompt.edit')} ${label}:`, currentValue);
     if (newValue !== null && newValue !== currentValue) {
-        showMessage(`${getFieldLabel(field)}修改成功！`, 'success');
+        showMessage(t('profile.success', { field: label }), 'success');
         // 这里应该调用API更新用户信息
         // updateUserInfo({ [field]: newValue });
     }
-}
-
-// 获取字段标签
-function getFieldLabel(field) {
-    const labels = {
-        'username': '用户名',
-        'email': '邮箱',
-        'phone': '手机号'
-    };
-    return labels[field] || field;
 }
 
 // 在 products.js 文件末尾添加
@@ -1013,7 +1006,7 @@ document.addEventListener('click', function(e) {
             showPaymentModal(orderId, price, productName);
         } else {
             console.error('showPaymentModal 函数未定义');
-            showMessage('支付功能暂不可用，请稍后重试', 'error');
+            showMessage(i18n.t('order.payment.unavailable'), 'error');
         }
     }
 });
@@ -1022,12 +1015,12 @@ document.addEventListener('click', function(e) {
 
 // 查看订单详情
 function viewOrderDetail(orderId) {
-    showMessage(`查看订单 ${orderId} 的详情功能开发中...`, 'info');
+    showMessage(i18n.t('order.detail.inprogress', { orderId }), 'info');
 }
 
 // 跟踪物流
 function trackOrder(orderId) {
-    showMessage(`跟踪订单 ${orderId} 的物流功能开发中...`, 'info');
+    showMessage(i18n.t('order.track.inprogress', { orderId }), 'info');
 }
 
 let paymentButtonBound = false;
@@ -1090,7 +1083,7 @@ function handlePaymentButtonClick(e) {
 
         if (!orderId || isNaN(displayPrice) || displayPrice <= 0) {
             console.error('❌ 订单信息格式错误');
-            showNotification('订单信息异常，请刷新页面重试', 'error');
+            showNotification(i18n.t('notification.order'), 'error');
             return;
         }
         

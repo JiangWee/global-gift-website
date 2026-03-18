@@ -74,7 +74,23 @@ const I18N_RESOURCES = {
         "contact.email": "邮箱",
         "contact.address": "地址",
         "contact.hours": "工作时间",
+        "contact.hours.value": "周一至周五 9:00-18:00",
         "contact.follow": "关注我们",
+        "contact.wechat": "微信",
+        "contact.address.value": "深圳市福田区园岭街道鹏盛社区八卦岭工业区8栋451B",
+        "contact.wechat.account": "微信公众号: GiftBuyBuy",
+
+        // Footer页脚
+        "footer.about.title": "关于我们",
+        "footer.about.text": "Gift Buy Buy 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。",
+        "footer.contact.title": "联系我们",
+        "footer.contact.wechat": "GiftBuyBuy",
+        "footer.contact.email": "service@GiftBuyBuy.com",
+        "footer.contact.address": "深圳市福田区园岭街道鹏盛社区八卦岭工业区8栋451B",
+        "footer.follow.title": "关注我们",
+        "footer.follow.wechat": "微信公众号",
+        "footer.follow.instagram": "Instagram",
+        "footer.follow.linkedin": "LinkedIn",
         "contact.message": "发送消息",
         "contact.form.name": "姓名 *",
         "contact.form.email": "邮箱 *",
@@ -162,7 +178,7 @@ const I18N_RESOURCES = {
         "payment.back": "返回",
         "payment.success": "支付成功！",
         "payment.cancel": "取消",
-        "payment.confirm": "确认支付宝支付",
+        "payment.confirm": "确认",
         "payment.view.order": "查看订单",
 
         stock: '库存',
@@ -207,7 +223,132 @@ const I18N_RESOURCES = {
         "footer.about.text": "Gift Buy Buy 是一家专业的跨国商务礼品服务平台，致力于为客户提供高品质的礼品选择和全球配送服务。",
         "footer.contact": "联系我们",
         "footer.follow": "关注我们",
-        "footer.copyright": "© 2023 Gift Buy Buy. 保留所有权利。"
+        "footer.copyright": "© 2023 Gift Buy Buy. 保留所有权利。",
+
+        // 通用提示
+        "login.required": "请输入账号和密码",
+        "login.success": "登录成功！",
+        "login.failed": "登录失败",
+        "login.expired": "登录已过期，请重新登录",
+        "login.network": "登录失败，请检查网络连接",
+
+        "register.required": "请填写所有必填字段",
+        "register.success": "注册成功！请登录",
+        "register.length": "密码长度至少6位",
+        "register.username.length": "用户名长度2-20个字符",
+        "register.mismatch": "两次输入的密码不一致",
+        "register.failed": "注册失败",
+        "register.network": "注册请求失败，请检查网络连接",
+
+        "contact.required": "请填写所有必填字段",
+        "contact.success": "消息发送成功！我们会尽快回复您。",
+
+        "product.notexist": "产品不存在",
+        "product.invalid": "产品信息异常，请刷新页面重试",
+        "product.nostock": "该产品暂时缺货",
+        "product.infoerror": "无法获取产品信息，请重试",
+        "product.incomplete": "产品信息不完整，请重新选择产品",
+
+        "order.submit.success": "订单提交成功！订单号: {orderId}",
+        "order.submit.failed": "订单提交失败",
+        "order.required": "请填写完整的必填信息",
+        "order.incomplete": "产品信息不完整，请重新选择产品",
+        "order.network": "网络连接失败，请检查网络设置",
+
+        "loading": "加载中...",
+        "loading.payment": "正在查询支付结果...",
+        "loading.retry": "重新查询中...",
+
+        "checkout.required": "请填写完整的必填信息",
+        "checkout.success": "订单提交成功！我们将尽快处理您的订单。",
+
+        "prompt.username": "用户名",
+        "prompt.email": "邮箱",
+        "prompt.phone": "手机号",
+
+        "prompt.edit": "修改",
+        "prompt.notset": "未设置",
+        "prompt.unknown": "未知",
+
+        "profile.title": "个人信息",
+        "profile.edit": "修改信息",
+        "profile.inprogress": "个人信息编辑功能开发中...",
+        "profile.success": "{field}修改成功！",
+
+        "status.unpaid": "未支付",
+        "status.pending": "待处理",
+        "status.shipped": "已发货",
+        "status.delivered": "已送达",
+        "status.cancelled": "已取消",
+
+        "order.id": "订单号: {id}",
+        "order.date": "下单时间: {date}",
+        "order.quantity": "数量: {quantity}",
+        "order.paid": "实付: {amount}",
+        "order.recipient": "收件人: {name}",
+        "order.phone": "电话: {phone}",
+        "order.address": "地址: {address}",
+        "order.actions.pay": "立即支付",
+        "order.actions.detail": "查看详情",
+        "order.nologin": "请先登录查看订单",
+        "order.empty": "您还没有任何订单",
+        "order.shop": "去选购",
+        "order.load.failed": "获取订单失败: {error}",
+        "order.reload": "重新加载",
+        "order.detail.inprogress": "查看订单 {orderId} 的详情功能开发中...",
+        "order.track.inprogress": "跟踪订单 {orderId} 的物流功能开发中...",
+        "order.invalid": "订单信息异常，请刷新页面重试",
+        "order.payment.unavailable": "支付功能暂不可用，请稍后重试",
+
+        "cart.clear": "🗑️ 清空表单",
+        "cart.clear.confirm": "确定要清空所有表单信息吗？这将删除所有已填写的内容。",
+        "cart.cleared": "表单已清空",
+
+        "notification.order": "订单信息异常，请刷新页面重试",
+
+        "stripe.card": "银行卡支付",
+        "stripe.hint": "请输入您的银行卡信息完成支付",
+        "stripe.confirm": "确认支付",
+        "stripe.secure": "支付安全由Stripe保障，我们不会存储您的银行卡信息",
+        "prompt.registration": "注册时间",
+
+        // 国家选择
+        "country.china": "中国",
+        "country.usa": "美国",
+        "country.uk": "英国",
+        "country.germany": "德国",
+        "country.japan": "日本",
+
+        // 节日选择
+        "holiday.christmas": "圣诞节",
+        "holiday.newyear": "新年",
+        "holiday.thanksgiving": "感恩节",
+        "holiday.midautumn": "中秋节",
+        "holiday.spring": "春节",
+
+        // 支付相关
+        "payment.card.pay": "确认银行卡支付",
+        "payment.card.back": "返回",
+        "payment.method.unsupported": "当前不支持{method}",
+        "payment.min.amount": "支付金额不能低于0.5元（等值外币）",
+        "payment.select.required": "请先选择支付方式",
+        "payment.incomplete": "支付信息不完整",
+        "payment.create.failed": "支付创建失败",
+        "payment.network.error": "网络错误，请重试",
+        "payment.init.failed": "支付服务初始化失败，请刷新页面重试",
+        "payment.info.error": "支付信息错误: {error}",
+        "payment.failed": "支付失败: {error}",
+        "payment.processing": "支付处理中，请稍候...",
+        "payment.flow.error": "支付流程异常，请重试",
+        "payment.timeout": "支付超时，请检查支付状态",
+        "payment.cancelled": "支付已取消",
+        "payment.method.alipay": "支付宝",
+        "payment.method.wechat": "微信支付",
+        "payment.method.stripe": "Stripe",
+
+        // 支付处理状态
+        "payment.processing.text": "支付处理中...",
+        "payment.retry": "重新尝试支付"
     },
     en: {
         // Navigation
@@ -283,7 +424,23 @@ const I18N_RESOURCES = {
         "contact.email": "Email",
         "contact.address": "Address",
         "contact.hours": "Business Hours",
+        "contact.hours.value": "Mon-Fri 9:00-18:00",
         "contact.follow": "Follow Us",
+        "contact.wechat": "WeChat",
+        "contact.address.value": "Building 8, Room 451B, Bagualing Industrial Zone, Pengsheng Community, Yuanling Street, Futian District, Shenzhen",
+        "contact.wechat.account": "WeChat Public Account: GiftBuyBuy",
+
+        // Footer英文
+        "footer.about.title": "About Us",
+        "footer.about.text": "Gift Buy Buy is a professional cross-border business gift service platform dedicated to providing high-quality gift selection and global delivery services.",
+        "footer.contact.title": "Contact Us",
+        "footer.contact.wechat": "GiftBuyBuy",
+        "footer.contact.email": "service@GiftBuyBuy.com",
+        "footer.contact.address": "Building 8, Room 451B, Bagualing Industrial Zone, Pengsheng Community, Yuanling Street, Futian District, Shenzhen",
+        "footer.follow.title": "Follow Us",
+        "footer.follow.wechat": "WeChat Public Account",
+        "footer.follow.instagram": "Instagram",
+        "footer.follow.linkedin": "LinkedIn",
         "contact.message": "Send Message",
         "contact.form.name": "Name *",
         "contact.form.email": "Email *",
@@ -371,7 +528,7 @@ const I18N_RESOURCES = {
         "payment.back": "Back",
         "payment.success": "Payment Successful!",
         "payment.cancel": "Cancel",
-        "payment.confirm": "Confirm Alipay Payment",
+        "payment.confirm": "Confirm",
         "payment.view.order": "View Order",
 
         stock: 'Stock',
@@ -416,6 +573,131 @@ const I18N_RESOURCES = {
         "footer.about.text": "Gift Buy Buy is a professional cross-border business gift service platform dedicated to providing customers with high-quality gift selection and global delivery services.",
         "footer.contact": "Contact Us",
         "footer.follow": "Follow Us",
-        "footer.copyright": "© 2023 Gift Buy Buy. All rights reserved."
+        "footer.copyright": "© 2023 Gift Buy Buy. All rights reserved.",
+
+        // Common messages
+        "login.required": "Please enter account and password",
+        "login.success": "Login successful!",
+        "login.failed": "Login failed",
+        "login.expired": "Login expired, please login again",
+        "login.network": "Login failed, please check network connection",
+
+        "register.required": "Please fill in all required fields",
+        "register.success": "Registration successful! Please login",
+        "register.length": "Password must be at least 6 characters",
+        "register.username.length": "Username must be 2-20 characters",
+        "register.mismatch": "Passwords do not match",
+        "register.failed": "Registration failed",
+        "register.network": "Registration request failed, please check network connection",
+
+        "contact.required": "Please fill in all required fields",
+        "contact.success": "Message sent successfully! We will reply to you soon.",
+
+        "product.notexist": "Product does not exist",
+        "product.invalid": "Product information error, please refresh and try again",
+        "product.nostock": "This product is temporarily out of stock",
+        "product.infoerror": "Unable to get product information, please try again",
+        "product.incomplete": "Product information incomplete, please select product again",
+
+        "order.submit.success": "Order submitted successfully! Order ID: {orderId}",
+        "order.submit.failed": "Order submission failed",
+        "order.required": "Please fill in all required information",
+        "order.incomplete": "Product information incomplete, please select product again",
+        "order.network": "Network connection failed, please check network settings",
+
+        "loading": "Loading...",
+        "loading.payment": "Checking payment status...",
+        "loading.retry": "Retrying...",
+
+        "checkout.required": "Please fill in all required information",
+        "checkout.success": "Order submitted successfully! We will process your order as soon as possible.",
+
+        "prompt.username": "Username",
+        "prompt.email": "Email",
+        "prompt.phone": "Phone",
+
+        "prompt.edit": "Edit",
+        "prompt.notset": "Not set",
+        "prompt.unknown": "Unknown",
+
+        "profile.title": "Profile",
+        "profile.edit": "Edit Profile",
+        "profile.inprogress": "Profile editing feature under development...",
+        "profile.success": "{field} changed successfully!",
+
+        "status.unpaid": "Unpaid",
+        "status.pending": "Pending",
+        "status.shipped": "Shipped",
+        "status.delivered": "Delivered",
+        "status.cancelled": "Cancelled",
+
+        "order.id": "Order ID: {id}",
+        "order.date": "Order Date: {date}",
+        "order.quantity": "Quantity: {quantity}",
+        "order.paid": "Paid: {amount}",
+        "order.recipient": "Recipient: {name}",
+        "order.phone": "Phone: {phone}",
+        "order.address": "Address: {address}",
+        "order.actions.pay": "Pay Now",
+        "order.actions.detail": "View Details",
+        "order.nologin": "Please login to view orders",
+        "order.empty": "You have no orders yet",
+        "order.shop": "Shop Now",
+        "order.load.failed": "Failed to load orders: {error}",
+        "order.reload": "Reload",
+        "order.detail.inprogress": "Order details feature for {orderId} under development...",
+        "order.track.inprogress": "Order tracking feature for {orderId} under development...",
+        "order.invalid": "Order information error, please refresh and try again",
+        "order.payment.unavailable": "Payment feature temporarily unavailable, please try again later",
+
+        "cart.clear": "🗑️ Clear Form",
+        "cart.clear.confirm": "Are you sure you want to clear all form information? This will delete all filled content.",
+        "cart.cleared": "Form cleared",
+
+        "notification.order": "Order information error, please refresh and try again",
+
+        "stripe.card": "Card Payment",
+        "stripe.hint": "Please enter your card information to complete payment",
+        "stripe.confirm": "Confirm Payment",
+        "stripe.secure": "Payment security guaranteed by Stripe, we do not store your card information",
+        "prompt.registration": "Registration Date",
+
+        // Country selection
+        "country.china": "China",
+        "country.usa": "United States",
+        "country.uk": "United Kingdom",
+        "country.germany": "Germany",
+        "country.japan": "Japan",
+
+        // Holiday selection
+        "holiday.christmas": "Christmas",
+        "holiday.newyear": "New Year",
+        "holiday.thanksgiving": "Thanksgiving",
+        "holiday.midautumn": "Mid-Autumn Festival",
+        "holiday.spring": "Spring Festival",
+
+        // Payment related
+        "payment.card.pay": "Confirm Card Payment",
+        "payment.card.back": "Back",
+        "payment.method.unsupported": "Current not support {method}",
+        "payment.min.amount": "Payment amount cannot be less than 0.5 CNY (equivalent foreign currency)",
+        "payment.select.required": "Please select a payment method first",
+        "payment.incomplete": "Payment information incomplete",
+        "payment.create.failed": "Payment creation failed",
+        "payment.network.error": "Network error, please try again",
+        "payment.init.failed": "Payment service initialization failed, please refresh and try again",
+        "payment.info.error": "Payment info error: {error}",
+        "payment.failed": "Payment failed: {error}",
+        "payment.processing": "Payment processing, please wait...",
+        "payment.flow.error": "Payment flow error, please try again",
+        "payment.timeout": "Payment timeout, please check payment status",
+        "payment.cancelled": "Payment cancelled",
+        "payment.method.alipay": "Alipay",
+        "payment.method.wechat": "WeChat Pay",
+        "payment.method.stripe": "Stripe",
+
+        // Payment processing status
+        "payment.processing.text": "Processing payment...",
+        "payment.retry": "Retry Payment"
     }
 };
