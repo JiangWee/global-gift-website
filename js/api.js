@@ -325,6 +325,14 @@ class ApiService {
             return { success: false, message: '网络错误' };
         }
     }
+
+    // 联系表单 - 发送消息
+    async sendContactMessage(contactData) {
+        return this.request(API_CONFIG.ENDPOINTS.CONTACT_SEND, {
+            method: 'POST',
+            body: JSON.stringify(contactData)
+        });
+    }
 }
 
 const apiService = new ApiService();

@@ -10,7 +10,8 @@ const API_CONFIG = {
         UPLOAD: '/api/upload',
         FORGOT_PASSWORD_SEND_CODE: '/api/auth/forgot-password/send-code',
         FORGOT_PASSWORD_VERIFY_CODE: '/api/auth/forgot-password/verify-code',
-        FORGOT_PASSWORD_RESET: '/api/auth/forgot-password/reset'
+        FORGOT_PASSWORD_RESET: '/api/auth/forgot-password/reset',
+        CONTACT_SEND: '/api/contact/send'
     },
     TIMEOUT: 10000
 };

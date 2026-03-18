@@ -242,6 +242,8 @@ const I18N_RESOURCES = {
 
         "contact.required": "请填写所有必填字段",
         "contact.success": "消息发送成功！我们会尽快回复您。",
+        "contact.failed": "消息发送失败，请稍后重试",
+        "contact.message.minLength": "消息内容至少需要10个字符",
 
         "product.notexist": "产品不存在",
         "product.invalid": "产品信息异常，请刷新页面重试",
@@ -592,6 +594,8 @@ const I18N_RESOURCES = {
 
         "contact.required": "Please fill in all required fields",
         "contact.success": "Message sent successfully! We will reply to you soon.",
+        "contact.failed": "Failed to send message, please try again later",
+        "contact.message.minLength": "Message content requires at least 10 characters",
 
         "product.notexist": "Product does not exist",
         "product.invalid": "Product information error, please refresh and try again",

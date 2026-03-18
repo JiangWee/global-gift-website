@@ -226,22 +226,55 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function handleContactSubmit() {
-    const name = document.getElementById('contact-name').value;
-    const email = document.getElementById('contact-email').value;
-    const subject = document.getElementById('contact-subject').value;
-    const message = document.getElementById('contact-message').value;
+async function handleContactSubmit() {
+    const name = document.getElementById('contact-name').value.trim();
+    const email = document.getElementById('contact-email').value.trim();
+    const phone = document.getElementById('contact-phone').value.trim();
+    const subject = document.getElementById('contact-subject').value.trim();
+    const message = document.getElementById('contact-message').value.trim();
 
     if (!name || !email || !subject || !message) {
         showMessage(i18n.t('contact.required'), 'error');
         return;
     }
 
-    // 模拟发送消息（实际项目中应该调用API）
-    showMessage(i18n.t('contact.success'), 'success');
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showMessage(i18n.t('forgot.email.inputValidEmail') || '请输入有效的邮箱地址', 'error');
+        return;
+    }
 
-    // 清空表单
-    document.getElementById('contactForm').reset();
+    // 验证消息长度
+    if (message.length < 10) {
+        showMessage(i18n.t('contact.message.minLength') || '消息内容至少需要10个字符', 'error');
+        return;
+    }
+
+    showLoading(true);
+
+    try {
+        const result = await apiService.sendContactMessage({
+            name,
+            email,
+            phone,
+            subject,
+            message
+        });
+
+        if (result.success) {
+            showMessage(i18n.t('contact.success'), 'success');
+            // 清空表单
+            document.getElementById('contactForm').reset();
+        } else {
+            showMessage(result.message || i18n.t('contact.failed') || '消息发送失败，请稍后重试', 'error');
+        }
+    } catch (error) {
+        console.error('发送联系表单失败:', error);
+        showMessage(error.message || i18n.t('contact.failed') || '消息发送失败，请稍后重试', 'error');
+    } finally {
+        showLoading(false);
+    }
 }
 
 // 忘记密码相关功能
