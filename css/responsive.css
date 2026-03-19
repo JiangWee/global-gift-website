@@ -17,11 +17,15 @@
     .gift-detail {
         grid-template-columns: 1fr;
     }
-    
+
+    .gift-image-large {
+        height: 250px;
+    }
+
     .category-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .gift-grid {
         grid-template-columns: 1fr;
     }
